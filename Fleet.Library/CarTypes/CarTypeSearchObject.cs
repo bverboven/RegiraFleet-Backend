@@ -1,0 +1,9 @@
+﻿using Regira.Entities.Models;
+
+namespace Regira.Fleet.CarTypes;
+
+public class CarTypeSearchObject : SearchObject
+{
+    public string? Code { get; set; }
+    public string? Title { get; set; }
+}
