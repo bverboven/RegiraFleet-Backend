@@ -1,12 +1,14 @@
 ﻿using AutoMapper;
 using Regira.Fleet.Api.Models.Input;
-using Regira.Fleet.Bookings;
-using Regira.Fleet.Brands;
-using Regira.Fleet.Cars;
-using Regira.Fleet.CarTypes;
-using Regira.Fleet.InterventionTypes;
-using Regira.Fleet.Suppliers;
-using Regira.Fleet.SupplierTypes;
+using Regira.Fleet.Entities.Cars;
+using Regira.Fleet.Entities.Cars.Brands;
+using Regira.Fleet.Entities.Cars.CarTypes;
+using Regira.Fleet.Entities.Interventions;
+using Regira.Fleet.Entities.Interventions.InterventionTypes;
+using Regira.Fleet.Entities.Interventions.Invoices;
+using Regira.Fleet.Entities.Suppliers;
+using Regira.Fleet.Entities.Suppliers.ContactData;
+using Regira.Fleet.Entities.Suppliers.SupplierTypes;
 
 namespace Regira.Fleet.Api.Infrastructure;
 
@@ -14,24 +16,17 @@ public class FleetProfile : Profile
 {
     public FleetProfile()
     {
-        CreateMap<Brand, Brand>();
-        CreateMap<CarType, CarType>();
-        CreateMap<Car, Car>();
-        CreateMap<InterventionType, InterventionType>();
-        CreateMap<SupplierType, SupplierType>();
-        CreateMap<Supplier, Supplier>();
-        CreateMap<Booking, Booking>();
-
-        CreateMap<BrandInputDto, Brand>();
-        CreateMap<CarTypeInputDto, CarType>();
         CreateMap<CarInputDto, Car>();
-        CreateMap<InterventionTypeInputDto, InterventionType>();
-        CreateMap<SupplierTypeInputDto, SupplierType>();
+        CreateMap<CarTypeInputDto, CarType>();
+        CreateMap<BrandInputDto, Brand>();
+
         CreateMap<SupplierInputDto, Supplier>();
-        CreateMap<BookingInputDto, Booking>()
-            .AfterMap((dto, item) =>
-            {
-                item.TaxCategory = item.TaxCategory?.ToUpper();
-            });
+        CreateMap<SupplierTypeInputDto, SupplierType>();
+        CreateMap<AddressInputDto, Address>();
+        CreateMap<SupplierContactDataInputDto, SupplierContactData>();
+
+        CreateMap<InterventionInputDto, Intervention>();
+        CreateMap<InvoiceInputDto, Invoice>();
+        CreateMap<InterventionTypeInputDto, InterventionType>();
     }
 }

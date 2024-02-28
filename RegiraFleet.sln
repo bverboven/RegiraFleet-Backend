@@ -3,11 +3,15 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.8.34525.116
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Fleet.Library", "Fleet.Library\Fleet.Library.csproj", "{94760880-1AC7-4421-8560-4C19236A9191}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Fleet.Library", "Fleet.Library\Fleet.Library.csproj", "{94760880-1AC7-4421-8560-4C19236A9191}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Fleet.Api", "Fleet.Api\Fleet.Api.csproj", "{F216C794-FA87-4165-A22C-791080347958}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Fleet.Authentication", "Fleet.Authentication\Fleet.Authentication.csproj", "{8DF2C5D5-6E2B-48D6-B174-F60E0F399F66}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Fleet.Authentication", "Fleet.Authentication\Fleet.Authentication.csproj", "{8DF2C5D5-6E2B-48D6-B174-F60E0F399F66}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Fleet.EfCoreConsole", "Fleet.EfCoreConsole\Fleet.EfCoreConsole.csproj", "{D5F6C855-715E-4DB8-A76B-8975096BA9B5}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Fleet.Identity", "Fleet.Identity\Fleet.Identity.csproj", "{C3474DDD-DD07-4BDD-AEBD-D54FC8F19421}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -27,6 +31,14 @@ Global
 		{8DF2C5D5-6E2B-48D6-B174-F60E0F399F66}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8DF2C5D5-6E2B-48D6-B174-F60E0F399F66}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{8DF2C5D5-6E2B-48D6-B174-F60E0F399F66}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D5F6C855-715E-4DB8-A76B-8975096BA9B5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D5F6C855-715E-4DB8-A76B-8975096BA9B5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D5F6C855-715E-4DB8-A76B-8975096BA9B5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D5F6C855-715E-4DB8-A76B-8975096BA9B5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C3474DDD-DD07-4BDD-AEBD-D54FC8F19421}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C3474DDD-DD07-4BDD-AEBD-D54FC8F19421}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C3474DDD-DD07-4BDD-AEBD-D54FC8F19421}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C3474DDD-DD07-4BDD-AEBD-D54FC8F19421}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

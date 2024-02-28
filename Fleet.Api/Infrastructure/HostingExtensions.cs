@@ -7,15 +7,15 @@ using Newtonsoft.Json.Converters;
 using Regira.Entities.DependencyInjection.Extensions;
 using Regira.Entities.Models;
 using Regira.Fleet.Api.Models.Input;
-using Regira.Fleet.Bookings;
-using Regira.Fleet.Brands;
-using Regira.Fleet.Cars;
-using Regira.Fleet.CarTypes;
 using Regira.Fleet.Data;
-using Regira.Fleet.InterventionTypes;
+using Regira.Fleet.Entities.Cars;
+using Regira.Fleet.Entities.Cars.Brands;
+using Regira.Fleet.Entities.Cars.CarTypes;
+using Regira.Fleet.Entities.Interventions;
+using Regira.Fleet.Entities.Interventions.InterventionTypes;
+using Regira.Fleet.Entities.Suppliers;
+using Regira.Fleet.Entities.Suppliers.SupplierTypes;
 using Regira.Fleet.Statistics;
-using Regira.Fleet.Suppliers;
-using Regira.Fleet.SupplierTypes;
 using Regira.Office.Excel.Abstractions;
 using Regira.Security.Abstractions;
 using Regira.Security.Encryption;
@@ -102,7 +102,7 @@ public static class HostingExtensions
 
         services
             .UseEntities<FleetContext>(c => c.ProfileAssemblies.Add(typeof(FleetProfile).Assembly))
-            .For<Booking, BookingRepository, BookingSearchObject, EntitySortBy, BookingIncludes>(e => e.AddMapping<Booking, BookingInputDto>())
+            .For<Intervention, InterventionRepository, InterventionSearchObject, EntitySortBy, InterventionIncludes>(e => e.AddMapping<Intervention, InterventionInputDto>())
             .For<Brand, BrandRepository, BrandSearchObject, EntitySortBy, EntityIncludes>(e => e.AddMapping<Brand, BrandInputDto>())
             .For<Car, CarRepository, CarSearchObject, EntitySortBy, EntityIncludes>(e => e.AddMapping<Car, CarInputDto>())
             .For<CarType, CarTypeRepository, CarTypeSearchObject, EntitySortBy, EntityIncludes>(e => e.AddMapping<CarType, CarTypeInputDto>())

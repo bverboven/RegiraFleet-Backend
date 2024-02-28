@@ -1,0 +1,18 @@
+﻿using Regira.Entities.Models.Abstractions;
+using System.ComponentModel.DataAnnotations;
+
+namespace Regira.Fleet.Entities.Interventions.Invoices;
+
+public class Invoice : IEntityWithSerial
+{
+    public int Id { get; set; }
+    [MaxLength(32)]
+    public string? InvoiceNumber { get; set; }
+    public DateTime? InvoiceDate { get; set; }
+    [MaxLength(1)]
+    public TaxCategory? TaxCategory { get; set; }
+    public decimal? TaxAmount { get; set; }
+    public decimal? PriceExcl { get; set; }
+    public decimal? PriceIncl { get; set; }
+    public string? Notes { get; set; }
+}

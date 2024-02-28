@@ -1,0 +1,16 @@
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace Regira.Fleet.Api.Models.Input;
+
+public class InvoiceInputDto
+{
+    public int Id { get; set; }
+    [MaxLength(32)]
+    public string? InvoiceNumber { get; set; }
+    public DateTime? InvoiceDate { get; set; }
+    [MaxLength(1)]
+    public string? TaxCategory { get; set; }
+    public decimal? TaxAmount { get; set; }
+    public decimal? PriceExcl { get; set; }
+    public decimal? PriceIncl { get; set; }
+}

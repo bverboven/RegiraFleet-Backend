@@ -1,0 +1,24 @@
+﻿using Regira.Entities.Models.Abstractions;
+using Regira.Fleet.Entities.Abstractions;
+using Regira.Normalizing;
+using System.ComponentModel.DataAnnotations;
+
+namespace Regira.Fleet.Entities.Cars.Brands;
+
+public class Brand : IFleetEntity, IEntityWithSerial, IHasCode, IHasNormalizedTitle, IArchivable
+{
+    public int Id { get; set; }
+    public string Guid { get; set; } = System.Guid.NewGuid().ToString("N");
+    public int ClientId { get; set; }
+    [MaxLength(3)]
+    public string? Code { get; set; }
+    [MaxLength(64)]
+    public string? Title { get; set; }
+    public DateTime Created { get; set; } = DateTime.Now;
+    public DateTime? LastModified { get; set; }
+    public bool IsArchived { get; set; }
+
+    [MaxLength(256)]
+    [Normalized(SourceProperties = new[] { nameof(Title), nameof(Code) })]
+    public string? NormalizedTitle { get; set; }
+}

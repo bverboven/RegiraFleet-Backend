@@ -3,9 +3,12 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
+using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using Regira.Fleet.Data;
 
-namespace Regira.Fleet.Aca.Library.Migrations
+#nullable disable
+
+namespace Regira.Fleet.Migrations
 {
     [DbContext(typeof(FleetContext))]
     partial class FleetContextModelSnapshot : ModelSnapshot
@@ -14,422 +17,761 @@ namespace Regira.Fleet.Aca.Library.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "3.1.9")
-                .HasAnnotation("Relational:MaxIdentifierLength", 64);
+                .HasAnnotation("ProductVersion", "8.0.2")
+                .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
-            modelBuilder.Entity("Regira.Fleet.Aca.Library.Entities.Booking", b =>
+            NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
+
+            modelBuilder.Entity("Regira.Fleet.Entities.Cars.Brands.Brand", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnName("id")
-                        .HasColumnType("int");
+                        .HasColumnType("integer")
+                        .HasColumnName("id");
 
-                    b.Property<int?>("CarId")
-                        .HasColumnName("car_id")
-                        .HasColumnType("int");
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
-                    b.Property<string>("Comments")
-                        .HasColumnName("comments")
-                        .HasColumnType("varchar(256) CHARACTER SET utf8mb4")
-                        .HasMaxLength(256);
-
-                    b.Property<DateTime>("Created")
-                        .HasColumnName("created")
-                        .HasColumnType("datetime(6)");
-
-                    b.Property<string>("Hyperlink")
-                        .HasColumnName("hyperlink")
-                        .HasColumnType("varchar(256) CHARACTER SET utf8mb4")
-                        .HasMaxLength(256);
-
-                    b.Property<int?>("InterventionTypeId")
-                        .HasColumnName("intervention_type_id")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime?>("InvoiceDate")
-                        .HasColumnName("invoice_date")
-                        .HasColumnType("datetime(6)");
-
-                    b.Property<string>("InvoiceNumber")
-                        .HasColumnName("invoice_number")
-                        .HasColumnType("varchar(32) CHARACTER SET utf8mb4")
-                        .HasMaxLength(32);
-
-                    b.Property<DateTime>("LastModified")
-                        .HasColumnName("last_modified")
-                        .HasColumnType("datetime(6)");
-
-                    b.Property<int?>("Mileage")
-                        .HasColumnName("mileage")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Notes")
-                        .HasColumnName("notes")
-                        .HasColumnType("longtext CHARACTER SET utf8mb4");
-
-                    b.Property<decimal?>("PriceExcl")
-                        .HasColumnName("price_excl")
-                        .HasColumnType("decimal(9, 2)");
-
-                    b.Property<decimal?>("PriceIncl")
-                        .HasColumnName("price_incl")
-                        .HasColumnType("decimal(9, 2)");
-
-                    b.Property<int?>("SupplierId")
-                        .HasColumnName("supplier_id")
-                        .HasColumnType("int");
-
-                    b.Property<decimal?>("TaxAmount")
-                        .HasColumnName("tax_amount")
-                        .HasColumnType("decimal(9, 2)");
-
-                    b.Property<string>("TaxCategory")
-                        .HasColumnName("tax_category")
-                        .HasColumnType("varchar(1) CHARACTER SET utf8mb4")
-                        .HasMaxLength(1);
-
-                    b.HasKey("Id")
-                        .HasName("pk_bookings");
-
-                    b.HasIndex("CarId")
-                        .HasName("ix_bookings_car_id");
-
-                    b.HasIndex("InterventionTypeId")
-                        .HasName("ix_bookings_intervention_type_id");
-
-                    b.HasIndex("InvoiceDate")
-                        .HasName("ix_bookings_invoice_date");
-
-                    b.HasIndex("InvoiceNumber")
-                        .HasName("ix_bookings_invoice_number");
-
-                    b.HasIndex("SupplierId")
-                        .HasName("ix_bookings_supplier_id");
-
-                    b.ToTable("bookings");
-                });
-
-            modelBuilder.Entity("Regira.Fleet.Aca.Library.Entities.Brand", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnName("id")
-                        .HasColumnType("int");
+                    b.Property<int>("ClientId")
+                        .HasColumnType("integer")
+                        .HasColumnName("client_id");
 
                     b.Property<string>("Code")
-                        .HasColumnName("code")
-                        .HasColumnType("varchar(3) CHARACTER SET utf8mb4")
-                        .HasMaxLength(3);
+                        .HasMaxLength(3)
+                        .HasColumnType("character varying(3)")
+                        .HasColumnName("code");
+
+                    b.Property<DateTime>("Created")
+                        .HasColumnType("timestamp without time zone")
+                        .HasColumnName("created");
+
+                    b.Property<string>("Guid")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("guid");
 
                     b.Property<bool>("IsArchived")
-                        .HasColumnName("is_archived")
-                        .HasColumnType("tinyint(1)");
+                        .HasColumnType("boolean")
+                        .HasColumnName("is_archived");
+
+                    b.Property<DateTime?>("LastModified")
+                        .HasColumnType("timestamp without time zone")
+                        .HasColumnName("last_modified");
+
+                    b.Property<string>("NormalizedTitle")
+                        .HasMaxLength(256)
+                        .HasColumnType("character varying(256)")
+                        .HasColumnName("normalized_title");
 
                     b.Property<string>("Title")
-                        .HasColumnName("title")
-                        .HasColumnType("varchar(64) CHARACTER SET utf8mb4")
-                        .HasMaxLength(64);
+                        .HasMaxLength(64)
+                        .HasColumnType("character varying(64)")
+                        .HasColumnName("title");
 
                     b.HasKey("Id")
                         .HasName("pk_brands");
 
-                    b.HasIndex("Code")
+                    b.HasIndex("ClientId")
+                        .HasDatabaseName("ix_brands_client_id");
+
+                    b.HasIndex("NormalizedTitle")
+                        .HasDatabaseName("ix_brands_normalized_title");
+
+                    b.HasIndex("ClientId", "Code")
                         .IsUnique()
-                        .HasName("ix_brands_code");
+                        .HasDatabaseName("ix_brands_client_id_code");
 
-                    b.HasIndex("Title")
-                        .HasName("ix_brands_title");
-
-                    b.ToTable("brands");
+                    b.ToTable("brands", (string)null);
                 });
 
-            modelBuilder.Entity("Regira.Fleet.Aca.Library.Entities.Car", b =>
+            modelBuilder.Entity("Regira.Fleet.Entities.Cars.Car", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnName("id")
-                        .HasColumnType("int");
+                        .HasColumnType("integer")
+                        .HasColumnName("id");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<int?>("BrandId")
-                        .HasColumnName("brand_id")
-                        .HasColumnType("int");
+                        .HasColumnType("integer")
+                        .HasColumnName("brand_id");
 
                     b.Property<int?>("CarTypeId")
-                        .HasColumnName("car_type_id")
-                        .HasColumnType("int");
+                        .HasColumnType("integer")
+                        .HasColumnName("car_type_id");
+
+                    b.Property<int>("ClientId")
+                        .HasColumnType("integer")
+                        .HasColumnName("client_id");
 
                     b.Property<string>("Code")
-                        .HasColumnName("code")
-                        .HasColumnType("varchar(8) CHARACTER SET utf8mb4")
-                        .HasMaxLength(8);
+                        .HasMaxLength(8)
+                        .HasColumnType("character varying(8)")
+                        .HasColumnName("code");
+
+                    b.Property<DateTime>("Created")
+                        .HasColumnType("timestamp without time zone")
+                        .HasColumnName("created");
+
+                    b.Property<string>("Guid")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("guid");
 
                     b.Property<bool>("IsArchived")
-                        .HasColumnName("is_archived")
-                        .HasColumnType("tinyint(1)");
+                        .HasColumnType("boolean")
+                        .HasColumnName("is_archived");
+
+                    b.Property<DateTime?>("LastModified")
+                        .HasColumnType("timestamp without time zone")
+                        .HasColumnName("last_modified");
 
                     b.Property<string>("Model")
-                        .HasColumnName("model")
-                        .HasColumnType("varchar(64) CHARACTER SET utf8mb4")
-                        .HasMaxLength(64);
+                        .HasMaxLength(64)
+                        .HasColumnType("character varying(64)")
+                        .HasColumnName("model");
+
+                    b.Property<string>("NormalizedContent")
+                        .HasMaxLength(2048)
+                        .HasColumnType("character varying(2048)")
+                        .HasColumnName("normalized_content");
+
+                    b.Property<string>("Notes")
+                        .HasColumnType("text")
+                        .HasColumnName("notes");
 
                     b.HasKey("Id")
                         .HasName("pk_cars");
 
                     b.HasIndex("BrandId")
-                        .HasName("ix_cars_brand_id");
+                        .HasDatabaseName("ix_cars_brand_id");
 
                     b.HasIndex("CarTypeId")
-                        .HasName("ix_cars_car_type_id");
+                        .HasDatabaseName("ix_cars_car_type_id");
 
-                    b.HasIndex("Code")
+                    b.HasIndex("ClientId")
+                        .HasDatabaseName("ix_cars_client_id");
+
+                    b.HasIndex("ClientId", "Code")
                         .IsUnique()
-                        .HasName("ix_cars_code");
+                        .HasDatabaseName("ix_cars_client_id_code");
 
-                    b.ToTable("cars");
+                    b.ToTable("cars", (string)null);
                 });
 
-            modelBuilder.Entity("Regira.Fleet.Aca.Library.Entities.CarType", b =>
+            modelBuilder.Entity("Regira.Fleet.Entities.Cars.CarTypes.CarType", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnName("id")
-                        .HasColumnType("int");
+                        .HasColumnType("integer")
+                        .HasColumnName("id");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("ClientId")
+                        .HasColumnType("integer")
+                        .HasColumnName("client_id");
 
                     b.Property<string>("Code")
-                        .HasColumnName("code")
-                        .HasColumnType("varchar(3) CHARACTER SET utf8mb4")
-                        .HasMaxLength(3);
+                        .HasMaxLength(3)
+                        .HasColumnType("character varying(3)")
+                        .HasColumnName("code");
+
+                    b.Property<DateTime>("Created")
+                        .HasColumnType("timestamp without time zone")
+                        .HasColumnName("created");
+
+                    b.Property<string>("Guid")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("guid");
 
                     b.Property<bool>("IsArchived")
-                        .HasColumnName("is_archived")
-                        .HasColumnType("tinyint(1)");
+                        .HasColumnType("boolean")
+                        .HasColumnName("is_archived");
+
+                    b.Property<DateTime?>("LastModified")
+                        .HasColumnType("timestamp without time zone")
+                        .HasColumnName("last_modified");
+
+                    b.Property<string>("NormalizedTitle")
+                        .HasMaxLength(256)
+                        .HasColumnType("character varying(256)")
+                        .HasColumnName("normalized_title");
 
                     b.Property<string>("Title")
-                        .HasColumnName("title")
-                        .HasColumnType("varchar(64) CHARACTER SET utf8mb4")
-                        .HasMaxLength(64);
+                        .HasMaxLength(64)
+                        .HasColumnType("character varying(64)")
+                        .HasColumnName("title");
 
                     b.HasKey("Id")
                         .HasName("pk_car_types");
 
-                    b.HasIndex("Code")
+                    b.HasIndex("ClientId")
+                        .HasDatabaseName("ix_car_types_client_id");
+
+                    b.HasIndex("NormalizedTitle")
+                        .HasDatabaseName("ix_car_types_normalized_title");
+
+                    b.HasIndex("ClientId", "Code")
                         .IsUnique()
-                        .HasName("ix_car_types_code");
+                        .HasDatabaseName("ix_car_types_client_id_code");
 
-                    b.HasIndex("Title")
-                        .HasName("ix_car_types_title");
-
-                    b.ToTable("car_types");
+                    b.ToTable("car_types", (string)null);
                 });
 
-            modelBuilder.Entity("Regira.Fleet.Aca.Library.Entities.InterventionType", b =>
+            modelBuilder.Entity("Regira.Fleet.Entities.Interventions.Intervention", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnName("id")
-                        .HasColumnType("int");
+                        .HasColumnType("integer")
+                        .HasColumnName("id");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<int?>("CarId")
+                        .HasColumnType("integer")
+                        .HasColumnName("car_id");
+
+                    b.Property<int>("ClientId")
+                        .HasColumnType("integer")
+                        .HasColumnName("client_id");
+
+                    b.Property<DateTime>("Created")
+                        .HasColumnType("timestamp without time zone")
+                        .HasColumnName("created");
+
+                    b.Property<string>("Description")
+                        .HasMaxLength(512)
+                        .HasColumnType("character varying(512)")
+                        .HasColumnName("description");
+
+                    b.Property<string>("Guid")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("guid");
+
+                    b.Property<int?>("InterventionTypeId")
+                        .HasColumnType("integer")
+                        .HasColumnName("intervention_type_id");
+
+                    b.Property<int?>("InvoiceId")
+                        .HasColumnType("integer")
+                        .HasColumnName("invoice_id");
+
+                    b.Property<DateTime?>("LastModified")
+                        .HasColumnType("timestamp without time zone")
+                        .HasColumnName("last_modified");
+
+                    b.Property<int?>("Mileage")
+                        .HasColumnType("integer")
+                        .HasColumnName("mileage");
+
+                    b.Property<string>("NormalizedContent")
+                        .HasMaxLength(2048)
+                        .HasColumnType("character varying(2048)")
+                        .HasColumnName("normalized_content");
+
+                    b.Property<string>("Notes")
+                        .HasColumnType("text")
+                        .HasColumnName("notes");
+
+                    b.Property<int?>("SupplierId")
+                        .HasColumnType("integer")
+                        .HasColumnName("supplier_id");
+
+                    b.HasKey("Id")
+                        .HasName("pk_interventions");
+
+                    b.HasIndex("CarId")
+                        .HasDatabaseName("ix_interventions_car_id");
+
+                    b.HasIndex("ClientId")
+                        .HasDatabaseName("ix_interventions_client_id");
+
+                    b.HasIndex("InterventionTypeId")
+                        .HasDatabaseName("ix_interventions_intervention_type_id");
+
+                    b.HasIndex("SupplierId")
+                        .HasDatabaseName("ix_interventions_supplier_id");
+
+                    b.ToTable("interventions", (string)null);
+                });
+
+            modelBuilder.Entity("Regira.Fleet.Entities.Interventions.InterventionTypes.InterventionType", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasColumnName("id");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("ClientId")
+                        .HasColumnType("integer")
+                        .HasColumnName("client_id");
 
                     b.Property<string>("Code")
-                        .HasColumnName("code")
-                        .HasColumnType("varchar(3) CHARACTER SET utf8mb4")
-                        .HasMaxLength(3);
+                        .HasMaxLength(3)
+                        .HasColumnType("character varying(3)")
+                        .HasColumnName("code");
+
+                    b.Property<DateTime>("Created")
+                        .HasColumnType("timestamp without time zone")
+                        .HasColumnName("created");
+
+                    b.Property<string>("Guid")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("guid");
 
                     b.Property<bool>("IsArchived")
-                        .HasColumnName("is_archived")
-                        .HasColumnType("tinyint(1)");
+                        .HasColumnType("boolean")
+                        .HasColumnName("is_archived");
+
+                    b.Property<DateTime?>("LastModified")
+                        .HasColumnType("timestamp without time zone")
+                        .HasColumnName("last_modified");
+
+                    b.Property<string>("NormalizedTitle")
+                        .HasMaxLength(256)
+                        .HasColumnType("character varying(256)")
+                        .HasColumnName("normalized_title");
 
                     b.Property<string>("Title")
-                        .HasColumnName("title")
-                        .HasColumnType("varchar(64) CHARACTER SET utf8mb4")
-                        .HasMaxLength(64);
+                        .HasMaxLength(64)
+                        .HasColumnType("character varying(64)")
+                        .HasColumnName("title");
 
                     b.HasKey("Id")
                         .HasName("pk_intervention_types");
 
-                    b.HasIndex("Code")
+                    b.HasIndex("ClientId")
+                        .HasDatabaseName("ix_intervention_types_client_id");
+
+                    b.HasIndex("NormalizedTitle")
+                        .HasDatabaseName("ix_intervention_types_normalized_title");
+
+                    b.HasIndex("ClientId", "Code")
                         .IsUnique()
-                        .HasName("ix_intervention_types_code");
+                        .HasDatabaseName("ix_intervention_types_client_id_code");
 
-                    b.HasIndex("Title")
-                        .HasName("ix_intervention_types_title");
-
-                    b.ToTable("intervention_types");
+                    b.ToTable("intervention_types", (string)null);
                 });
 
-            modelBuilder.Entity("Regira.Fleet.Aca.Library.Entities.Supplier", b =>
+            modelBuilder.Entity("Regira.Fleet.Entities.Suppliers.Supplier", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnName("id")
-                        .HasColumnType("int");
+                        .HasColumnType("integer")
+                        .HasColumnName("id");
 
-                    b.Property<string>("Address1")
-                        .HasColumnName("address1")
-                        .HasColumnType("varchar(128) CHARACTER SET utf8mb4")
-                        .HasMaxLength(128);
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
-                    b.Property<string>("Address2")
-                        .HasColumnName("address2")
-                        .HasColumnType("varchar(128) CHARACTER SET utf8mb4")
-                        .HasMaxLength(128);
+                    b.Property<int>("ClientId")
+                        .HasColumnType("integer")
+                        .HasColumnName("client_id");
 
                     b.Property<string>("Code")
-                        .HasColumnName("code")
-                        .HasColumnType("varchar(10) CHARACTER SET utf8mb4")
-                        .HasMaxLength(10);
+                        .HasMaxLength(16)
+                        .HasColumnType("character varying(16)")
+                        .HasColumnName("code");
 
-                    b.Property<string>("CountryCode")
-                        .HasColumnName("country_code")
-                        .HasColumnType("varchar(2) CHARACTER SET utf8mb4")
-                        .HasMaxLength(2);
+                    b.Property<DateTime>("Created")
+                        .HasColumnType("timestamp without time zone")
+                        .HasColumnName("created");
 
-                    b.Property<DateTime?>("Created")
-                        .HasColumnName("created")
-                        .HasColumnType("datetime(6)");
+                    b.Property<string>("Description")
+                        .HasMaxLength(512)
+                        .HasColumnType("character varying(512)")
+                        .HasColumnName("description");
 
-                    b.Property<string>("Email")
-                        .HasColumnName("email")
-                        .HasColumnType("varchar(128) CHARACTER SET utf8mb4")
-                        .HasMaxLength(128);
+                    b.Property<string>("Guid")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("guid");
+
+                    b.Property<string>("IdentificationNumber")
+                        .HasMaxLength(32)
+                        .HasColumnType("character varying(32)")
+                        .HasColumnName("identification_number");
 
                     b.Property<bool>("IsArchived")
-                        .HasColumnName("is_archived")
-                        .HasColumnType("tinyint(1)");
+                        .HasColumnType("boolean")
+                        .HasColumnName("is_archived");
 
                     b.Property<DateTime?>("LastModified")
-                        .HasColumnName("last_modified")
-                        .HasColumnType("datetime(6)");
+                        .HasColumnType("timestamp without time zone")
+                        .HasColumnName("last_modified");
 
-                    b.Property<string>("Location")
-                        .HasColumnName("location")
-                        .HasColumnType("varchar(128) CHARACTER SET utf8mb4")
-                        .HasMaxLength(128);
+                    b.Property<string>("NormalizedContent")
+                        .HasMaxLength(2048)
+                        .HasColumnType("character varying(2048)")
+                        .HasColumnName("normalized_content");
 
-                    b.Property<string>("Name")
-                        .HasColumnName("name")
-                        .HasColumnType("varchar(128) CHARACTER SET utf8mb4")
-                        .HasMaxLength(128);
+                    b.Property<string>("NormalizedIdentificationNumber")
+                        .HasMaxLength(32)
+                        .HasColumnType("character varying(32)")
+                        .HasColumnName("normalized_identification_number");
 
-                    b.Property<string>("Name2")
-                        .HasColumnName("name2")
-                        .HasColumnType("varchar(128) CHARACTER SET utf8mb4")
-                        .HasMaxLength(128);
+                    b.Property<string>("NormalizedTitle")
+                        .HasMaxLength(256)
+                        .HasColumnType("character varying(256)")
+                        .HasColumnName("normalized_title");
 
                     b.Property<string>("Notes")
-                        .HasColumnName("notes")
-                        .HasColumnType("longtext CHARACTER SET utf8mb4");
-
-                    b.Property<string>("Phone1")
-                        .HasColumnName("phone1")
-                        .HasColumnType("varchar(64) CHARACTER SET utf8mb4")
-                        .HasMaxLength(64);
-
-                    b.Property<string>("Phone2")
-                        .HasColumnName("phone2")
-                        .HasColumnType("varchar(64) CHARACTER SET utf8mb4")
-                        .HasMaxLength(64);
-
-                    b.Property<string>("PostalCode")
-                        .HasColumnName("postal_code")
-                        .HasColumnType("varchar(32) CHARACTER SET utf8mb4")
-                        .HasMaxLength(32);
+                        .HasColumnType("text")
+                        .HasColumnName("notes");
 
                     b.Property<int?>("SupplierTypeId")
-                        .HasColumnName("supplier_type_id")
-                        .HasColumnType("int");
+                        .HasColumnType("integer")
+                        .HasColumnName("supplier_type_id");
 
-                    b.Property<string>("VATNumber")
-                        .HasColumnName("vat_number")
-                        .HasColumnType("varchar(32) CHARACTER SET utf8mb4")
-                        .HasMaxLength(32);
+                    b.Property<string>("Title")
+                        .HasMaxLength(128)
+                        .HasColumnType("character varying(128)")
+                        .HasColumnName("title");
 
                     b.HasKey("Id")
                         .HasName("pk_suppliers");
 
-                    b.HasIndex("Code")
-                        .IsUnique()
-                        .HasName("ix_suppliers_code");
+                    b.HasIndex("ClientId")
+                        .HasDatabaseName("ix_suppliers_client_id");
 
-                    b.HasIndex("Name")
-                        .HasName("ix_suppliers_name");
+                    b.HasIndex("NormalizedTitle")
+                        .HasDatabaseName("ix_suppliers_normalized_title");
 
                     b.HasIndex("SupplierTypeId")
-                        .HasName("ix_suppliers_supplier_type_id");
+                        .HasDatabaseName("ix_suppliers_supplier_type_id");
 
-                    b.ToTable("suppliers");
+                    b.HasIndex("ClientId", "Code")
+                        .IsUnique()
+                        .HasDatabaseName("ix_suppliers_client_id_code");
+
+                    b.ToTable("suppliers", (string)null);
                 });
 
-            modelBuilder.Entity("Regira.Fleet.Aca.Library.Entities.SupplierType", b =>
+            modelBuilder.Entity("Regira.Fleet.Entities.Suppliers.SupplierTypes.SupplierType", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnName("id")
-                        .HasColumnType("int");
+                        .HasColumnType("integer")
+                        .HasColumnName("id");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("ClientId")
+                        .HasColumnType("integer")
+                        .HasColumnName("client_id");
 
                     b.Property<string>("Code")
-                        .HasColumnName("code")
-                        .HasColumnType("varchar(3) CHARACTER SET utf8mb4")
-                        .HasMaxLength(3);
+                        .HasMaxLength(3)
+                        .HasColumnType("character varying(3)")
+                        .HasColumnName("code");
+
+                    b.Property<DateTime>("Created")
+                        .HasColumnType("timestamp without time zone")
+                        .HasColumnName("created");
+
+                    b.Property<string>("Guid")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("guid");
 
                     b.Property<bool>("IsArchived")
-                        .HasColumnName("is_archived")
-                        .HasColumnType("tinyint(1)");
+                        .HasColumnType("boolean")
+                        .HasColumnName("is_archived");
+
+                    b.Property<DateTime?>("LastModified")
+                        .HasColumnType("timestamp without time zone")
+                        .HasColumnName("last_modified");
+
+                    b.Property<string>("NormalizedTitle")
+                        .HasMaxLength(256)
+                        .HasColumnType("character varying(256)")
+                        .HasColumnName("normalized_title");
 
                     b.Property<string>("Title")
-                        .HasColumnName("title")
-                        .HasColumnType("varchar(64) CHARACTER SET utf8mb4")
-                        .HasMaxLength(64);
+                        .HasMaxLength(64)
+                        .HasColumnType("character varying(64)")
+                        .HasColumnName("title");
 
                     b.HasKey("Id")
                         .HasName("pk_supplier_types");
 
-                    b.HasIndex("Code")
+                    b.HasIndex("ClientId")
+                        .HasDatabaseName("ix_supplier_types_client_id");
+
+                    b.HasIndex("NormalizedTitle")
+                        .HasDatabaseName("ix_supplier_types_normalized_title");
+
+                    b.HasIndex("ClientId", "Code")
                         .IsUnique()
-                        .HasName("ix_supplier_types_code");
+                        .HasDatabaseName("ix_supplier_types_client_id_code");
 
-                    b.HasIndex("Title")
-                        .HasName("ix_supplier_types_title");
-
-                    b.ToTable("supplier_types");
+                    b.ToTable("supplier_types", (string)null);
                 });
 
-            modelBuilder.Entity("Regira.Fleet.Aca.Library.Entities.Booking", b =>
+            modelBuilder.Entity("Regira.Fleet.Entities.Cars.Car", b =>
                 {
-                    b.HasOne("Regira.Fleet.Aca.Library.Entities.Car", "Car")
-                        .WithMany()
-                        .HasForeignKey("CarId")
-                        .HasConstraintName("fk_bookings_cars_car_id");
-
-                    b.HasOne("Regira.Fleet.Aca.Library.Entities.InterventionType", "InterventionType")
-                        .WithMany()
-                        .HasForeignKey("InterventionTypeId")
-                        .HasConstraintName("fk_bookings_intervention_types_intervention_type_id");
-
-                    b.HasOne("Regira.Fleet.Aca.Library.Entities.Supplier", "Supplier")
-                        .WithMany()
-                        .HasForeignKey("SupplierId")
-                        .HasConstraintName("fk_bookings_suppliers_supplier_id");
-                });
-
-            modelBuilder.Entity("Regira.Fleet.Aca.Library.Entities.Car", b =>
-                {
-                    b.HasOne("Regira.Fleet.Aca.Library.Entities.Brand", "Brand")
+                    b.HasOne("Regira.Fleet.Entities.Cars.Brands.Brand", "Brand")
                         .WithMany()
                         .HasForeignKey("BrandId")
                         .HasConstraintName("fk_cars_brands_brand_id");
 
-                    b.HasOne("Regira.Fleet.Aca.Library.Entities.CarType", "CarType")
+                    b.HasOne("Regira.Fleet.Entities.Cars.CarTypes.CarType", "CarType")
                         .WithMany()
                         .HasForeignKey("CarTypeId")
                         .HasConstraintName("fk_cars_car_types_car_type_id");
+
+                    b.Navigation("Brand");
+
+                    b.Navigation("CarType");
                 });
 
-            modelBuilder.Entity("Regira.Fleet.Aca.Library.Entities.Supplier", b =>
+            modelBuilder.Entity("Regira.Fleet.Entities.Interventions.Intervention", b =>
                 {
-                    b.HasOne("Regira.Fleet.Aca.Library.Entities.SupplierType", "SupplierType")
+                    b.HasOne("Regira.Fleet.Entities.Cars.Car", "Car")
+                        .WithMany()
+                        .HasForeignKey("CarId")
+                        .HasConstraintName("fk_interventions_cars_car_id");
+
+                    b.HasOne("Regira.Fleet.Entities.Interventions.InterventionTypes.InterventionType", "InterventionType")
+                        .WithMany()
+                        .HasForeignKey("InterventionTypeId")
+                        .HasConstraintName("fk_interventions_intervention_types_intervention_type_id");
+
+                    b.HasOne("Regira.Fleet.Entities.Suppliers.Supplier", "Supplier")
+                        .WithMany()
+                        .HasForeignKey("SupplierId")
+                        .HasConstraintName("fk_interventions_suppliers_supplier_id");
+
+                    b.OwnsOne("Regira.Fleet.Entities.Interventions.Invoices.Invoice", "Invoice", b1 =>
+                        {
+                            b1.Property<int>("InterventionId")
+                                .HasColumnType("integer")
+                                .HasColumnName("id");
+
+                            b1.Property<int>("Id")
+                                .HasColumnType("integer")
+                                .HasColumnName("id");
+
+                            b1.Property<DateTime?>("InvoiceDate")
+                                .HasColumnType("timestamp without time zone")
+                                .HasColumnName("invoice_date");
+
+                            b1.Property<string>("InvoiceNumber")
+                                .HasMaxLength(32)
+                                .HasColumnType("character varying(32)")
+                                .HasColumnName("invoice_number");
+
+                            b1.Property<string>("Notes")
+                                .HasColumnType("text")
+                                .HasColumnName("notes");
+
+                            b1.Property<decimal?>("PriceExcl")
+                                .HasColumnType("decimal(9, 2)")
+                                .HasColumnName("price_excl");
+
+                            b1.Property<decimal?>("PriceIncl")
+                                .HasColumnType("decimal(9, 2)")
+                                .HasColumnName("price_incl");
+
+                            b1.Property<decimal?>("TaxAmount")
+                                .HasColumnType("decimal(9, 2)")
+                                .HasColumnName("tax_amount");
+
+                            b1.Property<int?>("TaxCategory")
+                                .HasMaxLength(1)
+                                .HasColumnType("integer")
+                                .HasColumnName("tax_category");
+
+                            b1.HasKey("InterventionId")
+                                .HasName("pk_invoices");
+
+                            b1.HasIndex("InvoiceDate")
+                                .HasDatabaseName("ix_invoices_invoice_date");
+
+                            b1.HasIndex("InvoiceNumber")
+                                .HasDatabaseName("ix_invoices_invoice_number");
+
+                            b1.ToTable("invoices", null, t =>
+                                {
+                                    t.Property("Id")
+                                        .HasColumnName("id1");
+                                });
+
+                            b1.WithOwner()
+                                .HasForeignKey("InterventionId")
+                                .HasConstraintName("fk_invoices_interventions_id");
+                        });
+
+                    b.Navigation("Car");
+
+                    b.Navigation("InterventionType");
+
+                    b.Navigation("Invoice");
+
+                    b.Navigation("Supplier");
+                });
+
+            modelBuilder.Entity("Regira.Fleet.Entities.Suppliers.Supplier", b =>
+                {
+                    b.HasOne("Regira.Fleet.Entities.Suppliers.SupplierTypes.SupplierType", "SupplierType")
                         .WithMany()
                         .HasForeignKey("SupplierTypeId")
                         .HasConstraintName("fk_suppliers_supplier_types_supplier_type_id");
+
+                    b.OwnsMany("Regira.Fleet.Entities.Suppliers.ContactData.Address", "Addresses", b1 =>
+                        {
+                            b1.Property<int>("SupplierId")
+                                .HasColumnType("integer")
+                                .HasColumnName("supplier_id");
+
+                            b1.Property<int>("Id")
+                                .ValueGeneratedOnAdd()
+                                .HasColumnType("integer")
+                                .HasColumnName("id");
+
+                            NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b1.Property<int>("Id"));
+
+                            b1.Property<string>("BoxNumber")
+                                .HasMaxLength(8)
+                                .HasColumnType("character varying(8)")
+                                .HasColumnName("box_number");
+
+                            b1.Property<string>("CountryCode")
+                                .HasMaxLength(2)
+                                .HasColumnType("character varying(2)")
+                                .HasColumnName("country_code");
+
+                            b1.Property<string>("Description")
+                                .HasMaxLength(512)
+                                .HasColumnType("character varying(512)")
+                                .HasColumnName("description");
+
+                            b1.Property<string>("Municipality")
+                                .HasMaxLength(256)
+                                .HasColumnType("character varying(256)")
+                                .HasColumnName("municipality");
+
+                            b1.Property<string>("NormalizedContent")
+                                .HasMaxLength(2048)
+                                .HasColumnType("character varying(2048)")
+                                .HasColumnName("normalized_content");
+
+                            b1.Property<string>("PoBox")
+                                .HasMaxLength(16)
+                                .HasColumnType("character varying(16)")
+                                .HasColumnName("po_box");
+
+                            b1.Property<string>("PostalCode")
+                                .HasMaxLength(32)
+                                .HasColumnType("character varying(32)")
+                                .HasColumnName("postal_code");
+
+                            b1.Property<string>("Street")
+                                .HasMaxLength(256)
+                                .HasColumnType("character varying(256)")
+                                .HasColumnName("street");
+
+                            b1.Property<string>("StreetNumber")
+                                .HasMaxLength(8)
+                                .HasColumnType("character varying(8)")
+                                .HasColumnName("street_number");
+
+                            b1.Property<string>("Title")
+                                .HasMaxLength(256)
+                                .HasColumnType("character varying(256)")
+                                .HasColumnName("title");
+
+                            b1.HasKey("SupplierId", "Id")
+                                .HasName("pk_supplier_addresses");
+
+                            b1.HasIndex("NormalizedContent")
+                                .HasDatabaseName("ix_supplier_addresses_normalized_content");
+
+                            b1.ToTable("supplier_addresses", (string)null);
+
+                            b1.WithOwner()
+                                .HasForeignKey("SupplierId")
+                                .HasConstraintName("fk_supplier_addresses_suppliers_supplier_id");
+                        });
+
+                    b.OwnsMany("Regira.Fleet.Entities.Suppliers.ContactData.SupplierContactData", "ContactData", b1 =>
+                        {
+                            b1.Property<int>("SupplierId")
+                                .HasColumnType("integer")
+                                .HasColumnName("supplier_id");
+
+                            b1.Property<int>("Id")
+                                .ValueGeneratedOnAdd()
+                                .HasColumnType("integer")
+                                .HasColumnName("id");
+
+                            NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b1.Property<int>("Id"));
+
+                            b1.Property<DateTime>("Created")
+                                .HasColumnType("timestamp without time zone")
+                                .HasColumnName("created");
+
+                            b1.Property<int>("DataType")
+                                .HasColumnType("integer")
+                                .HasColumnName("data_type");
+
+                            b1.Property<string>("Description")
+                                .HasColumnType("text")
+                                .HasColumnName("description");
+
+                            b1.Property<DateTime?>("LastModified")
+                                .HasColumnType("timestamp without time zone")
+                                .HasColumnName("last_modified");
+
+                            b1.Property<string>("NormalizedValue")
+                                .HasMaxLength(256)
+                                .HasColumnType("character varying(256)")
+                                .HasColumnName("normalized_value");
+
+                            b1.Property<string>("Notes")
+                                .HasColumnType("text")
+                                .HasColumnName("notes");
+
+                            b1.Property<int>("SortOrder")
+                                .HasColumnType("integer")
+                                .HasColumnName("sort_order");
+
+                            b1.Property<string>("Title")
+                                .HasMaxLength(32)
+                                .HasColumnType("character varying(32)")
+                                .HasColumnName("title");
+
+                            b1.Property<string>("Value")
+                                .IsRequired()
+                                .HasMaxLength(256)
+                                .HasColumnType("character varying(256)")
+                                .HasColumnName("value");
+
+                            b1.HasKey("SupplierId", "Id")
+                                .HasName("pk_supplier_contact_data");
+
+                            b1.HasIndex("DataType")
+                                .HasDatabaseName("ix_supplier_contact_data_data_type");
+
+                            b1.HasIndex("NormalizedValue")
+                                .HasDatabaseName("ix_supplier_contact_data_normalized_value");
+
+                            b1.ToTable("supplier_contact_data", (string)null);
+
+                            b1.WithOwner()
+                                .HasForeignKey("SupplierId")
+                                .HasConstraintName("fk_supplier_contact_data_suppliers_supplier_id");
+                        });
+
+                    b.Navigation("Addresses");
+
+                    b.Navigation("ContactData");
+
+                    b.Navigation("SupplierType");
                 });
 #pragma warning restore 612, 618
         }

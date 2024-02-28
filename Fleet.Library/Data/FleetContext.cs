@@ -1,31 +1,24 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Regira.DAL.EFcore.Extensions;
-using Regira.Fleet.Bookings;
-using Regira.Fleet.Brands;
-using Regira.Fleet.Cars;
-using Regira.Fleet.CarTypes;
-using Regira.Fleet.InterventionTypes;
-using Regira.Fleet.Suppliers;
-using Regira.Fleet.SupplierTypes;
-using Regira.Utilities;
+using Regira.Fleet.Entities.Cars;
+using Regira.Fleet.Entities.Cars.Brands;
+using Regira.Fleet.Entities.Cars.CarTypes;
+using Regira.Fleet.Entities.Interventions;
+using Regira.Fleet.Entities.Interventions.InterventionTypes;
+using Regira.Fleet.Entities.Suppliers;
+using Regira.Fleet.Entities.Suppliers.SupplierTypes;
 
 namespace Regira.Fleet.Data;
 
-public class FleetContext : DbContext
+public class FleetContext(DbContextOptions<FleetContext> options) : DbContext(options)
 {
-    public FleetContext(DbContextOptions<FleetContext> options)
-        : base(options)
-    {
-    }
-
-
-    public DbSet<Booking> Bookings { get; set; }
-    public DbSet<Brand> Brands { get; set; }
-    public DbSet<Car> Cars { get; set; }
-    public DbSet<CarType> CarTypes { get; set; }
-    public DbSet<InterventionType> InterventionTypes { get; set; }
-    public DbSet<Supplier> Suppliers { get; set; }
-    public DbSet<SupplierType> SupplierTypes { get; set; }
+    public DbSet<Brand> Brands { get; set; } = null!;
+    public DbSet<Car> Cars { get; set; } = null!;
+    public DbSet<CarType> CarTypes { get; set; } = null!;
+    public DbSet<Intervention> Interventions { get; set; } = null!;
+    public DbSet<InterventionType> InterventionTypes { get; set; } = null!;
+    public DbSet<Supplier> Suppliers { get; set; } = null!;
+    public DbSet<SupplierType> SupplierTypes { get; set; } = null!;
 
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
@@ -37,67 +30,81 @@ public class FleetContext : DbContext
     {
         base.OnModelCreating(modelBuilder);
 
-        modelBuilder.Entity<Booking>(entity =>
+        modelBuilder.Entity<Brand>(entity =>
         {
-            entity.HasIndex(e => e.InvoiceNumber);
-            entity.HasIndex(e => e.InvoiceDate);
+            entity.HasIndex(e => e.ClientId);
+            entity.HasIndex(e => new { e.ClientId, e.Code })
+                .IsUnique();
+            entity.HasIndex(e => e.NormalizedTitle);
         });
         modelBuilder.Entity<Car>(entity =>
         {
-            entity.HasIndex(e => e.Code)
+            entity.HasIndex(e => e.ClientId);
+            entity.HasIndex(e => new { e.ClientId, e.Code })
                 .IsUnique();
-        });
-        modelBuilder.Entity<Supplier>(entity =>
-        {
-            entity.HasIndex(e => e.Code)
-                .IsUnique();
-            entity.HasIndex(e => e.Name);
-        });
-
-
-        modelBuilder.Entity<Brand>(entity =>
-        {
-            entity.HasIndex(e => e.Code)
-                .IsUnique();
-            entity.HasIndex(e => e.Title);
         });
         modelBuilder.Entity<CarType>(entity =>
         {
-            entity.HasIndex(e => e.Code)
+            entity.HasIndex(e => e.ClientId);
+            entity.HasIndex(e => new { e.ClientId, e.Code })
                 .IsUnique();
-            entity.HasIndex(e => e.Title);
+            entity.HasIndex(e => e.NormalizedTitle);
+        });
+        modelBuilder.Entity<Intervention>(entity =>
+        {
+            entity.HasIndex(e => e.ClientId);
+
+            entity.OwnsOne(e => e.Invoice, e =>
+            {
+                e.ToTable("invoices");
+                e.HasIndex(i => i.InvoiceNumber);
+                e.HasIndex(i => i.InvoiceDate);
+            });
         });
         modelBuilder.Entity<InterventionType>(entity =>
         {
-            entity.HasIndex(e => e.Code)
+            entity.HasIndex(e => e.ClientId);
+            entity.HasIndex(e => new { e.ClientId, e.Code })
                 .IsUnique();
-            entity.HasIndex(e => e.Title);
+            entity.HasIndex(e => e.NormalizedTitle);
+        });
+        modelBuilder.Entity<Supplier>(entity =>
+        {
+            entity.HasIndex(e => e.ClientId);
+            entity.HasIndex(e => new { e.ClientId, e.Code })
+                .IsUnique();
+            entity.HasIndex(e => e.NormalizedTitle);
+            entity.OwnsMany(e => e.Addresses, e =>
+            {
+                e.ToTable("supplier_addresses");
+                e.HasIndex(cd => cd.NormalizedContent);
+            });
+            entity.OwnsMany(e => e.ContactData, e =>
+            {
+                e.HasIndex(cd => cd.DataType);
+                e.HasIndex(cd => cd.NormalizedValue);
+            });
         });
         modelBuilder.Entity<SupplierType>(entity =>
         {
-            entity.HasIndex(e => e.Code)
+            entity.HasIndex(e => e.ClientId);
+            entity.HasIndex(e => new { e.ClientId, e.Code })
                 .IsUnique();
-            entity.HasIndex(e => e.Title);
+            entity.HasIndex(e => e.NormalizedTitle);
         });
 
         // Decimals
-        // https://stackoverflow.com/questions/43277154/entity-framework-core-setting-the-decimal-precision-and-scale-to-all-decimal-p#answer-43282620
-        var entityTypes = modelBuilder.Model.GetEntityTypes()
-            .ToArray();
-        foreach (var property in entityTypes
-                     .SelectMany(t => t.GetProperties())
-                     .Where(p => TypeUtility.GetSimpleType(p.ClrType) == typeof(decimal)))
-        {
-            property.SetColumnType("decimal(9, 2)");
-        }
+        modelBuilder.SetDecimalPrecisionConvention(9, 2);
     }
 
+
+    // AutoTruncate
     public override int SaveChanges()
     {
         this.AutoTruncateStringsToMaxLengthForEntries();
         return base.SaveChanges();
     }
-    public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = new CancellationToken())
+    public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = new())
     {
         this.AutoTruncateStringsToMaxLengthForEntries();
         return base.SaveChangesAsync(cancellationToken);
@@ -107,7 +114,7 @@ public class FleetContext : DbContext
         this.AutoTruncateStringsToMaxLengthForEntries();
         return base.SaveChanges(acceptAllChangesOnSuccess);
     }
-    public override Task<int> SaveChangesAsync(bool acceptAllChangesOnSuccess, CancellationToken cancellationToken = new CancellationToken())
+    public override Task<int> SaveChangesAsync(bool acceptAllChangesOnSuccess, CancellationToken cancellationToken = new())
     {
         this.AutoTruncateStringsToMaxLengthForEntries();
         return base.SaveChangesAsync(acceptAllChangesOnSuccess, cancellationToken);

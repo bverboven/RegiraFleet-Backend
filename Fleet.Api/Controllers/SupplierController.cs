@@ -2,7 +2,7 @@
 using Regira.Entities.Models;
 using Regira.Entities.Web.Controllers.Abstractions;
 using Regira.Fleet.Api.Models.Input;
-using Regira.Fleet.Suppliers;
+using Regira.Fleet.Entities.Suppliers;
 
 namespace Regira.Fleet.Api.Controllers;
 
