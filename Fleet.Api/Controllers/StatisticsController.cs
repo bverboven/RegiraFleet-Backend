@@ -15,10 +15,10 @@ namespace Regira.Fleet.Api.Controllers;
 public class StatisticsController(StatisticsService statsService, IExcelManager excelManager) : ControllerBase
 {
 
-    [HttpGet("per-cartype/{year}")]
-    public async Task<IActionResult> CarTypes_Per_Month(int? year = null, bool asTable = true)
+    [HttpGet("per-vehicletype/{year}")]
+    public async Task<IActionResult> VehicleTypes_Per_Month(int? year = null, bool asTable = true)
     {
-        var stats = await statsService.CarTypes_Per_Month(year ?? DateTime.Now.Year);
+        var stats = await statsService.VehicleTypes_Per_Month(year ?? DateTime.Now.Year);
 
         if (asTable)
         {
@@ -27,18 +27,18 @@ public class StatisticsController(StatisticsService statsService, IExcelManager 
 
         return Ok(stats);
     }
-    [HttpGet("per-cartype/{year}/xlsx")]
-    public async Task<IActionResult> CarTypes_Per_Month_Excel(int? year = null)
+    [HttpGet("per-vehicletype/{year}/xlsx")]
+    public async Task<IActionResult> VehicleTypes_Per_Month_Excel(int? year = null)
     {
         year ??= DateTime.Now.Year;
-        var stats = await statsService.CarTypes_Per_Month(year.Value);
+        var stats = await statsService.VehicleTypes_Per_Month(year.Value);
         return GetExcel(stats, "Wagentypes per maand", $"wagentypes-per-maand-{year}.xlsx");
     }
 
-    [HttpGet("per-car/{carTypeCode}/{year}")]
-    public async Task<IActionResult> Cars_Per_CarType_Per_Month(string carTypeCode, int? year = null, bool asTable = true)
+    [HttpGet("per-vehicle/{vehicleTypeCode}/{year}")]
+    public async Task<IActionResult> Vehicles_Per_VehicleType_Per_Month(string vehicleTypeCode, int? year = null, bool asTable = true)
     {
-        var stats = await statsService.Cars_Per_CarType_Per_Month(carTypeCode, year ?? DateTime.Now.Year);
+        var stats = await statsService.Vehicles_Per_VehicleType_Per_Month(vehicleTypeCode, year ?? DateTime.Now.Year);
 
         if (asTable)
         {
@@ -47,18 +47,18 @@ public class StatisticsController(StatisticsService statsService, IExcelManager 
 
         return Ok(stats);
     }
-    [HttpGet("per-car/{carTypeCode}/{year}/xlsx")]
-    public async Task<IActionResult> Cars_Per_CarType_Per_Month_Excel(string carTypeCode, int? year = null)
+    [HttpGet("per-vehicle/{vehicleTypeCode}/{year}/xlsx")]
+    public async Task<IActionResult> Vehicles_Per_VehicleType_Per_Month_Excel(string vehicleTypeCode, int? year = null)
     {
         year ??= DateTime.Now.Year;
-        var stats = await statsService.Cars_Per_CarType_Per_Month(carTypeCode, year.Value);
+        var stats = await statsService.Vehicles_Per_VehicleType_Per_Month(vehicleTypeCode, year.Value);
         return GetExcel(stats, "Wagens per type per maand", $"wagens-per-type-per-maand-{year}.xlsx");
     }
 
-    [HttpGet("per-car/{year}")]
-    public async Task<IActionResult> Cars_Per_Month(int? year = null, bool asTable = true)
+    [HttpGet("per-vehicle/{year}")]
+    public async Task<IActionResult> Vehicles_Per_Month(int? year = null, bool asTable = true)
     {
-        var stats = await statsService.Cars_Per_Month(year ?? DateTime.Now.Year);
+        var stats = await statsService.Vehicles_Per_Month(year ?? DateTime.Now.Year);
 
         if (asTable)
         {
@@ -67,11 +67,11 @@ public class StatisticsController(StatisticsService statsService, IExcelManager 
 
         return Ok(stats);
     }
-    [HttpGet("per-car/{year}/xlsx")]
-    public async Task<IActionResult> Cars_Per_Month_Excel(int? year = null)
+    [HttpGet("per-vehicle/{year}/xlsx")]
+    public async Task<IActionResult> Vehicles_Per_Month_Excel(int? year = null)
     {
         year ??= DateTime.Now.Year;
-        var stats = await statsService.Cars_Per_Month(year.Value);
+        var stats = await statsService.Vehicles_Per_Month(year.Value);
         return GetExcel(stats, "Wagens per maand", $"wagens-per-maand-{year}.xlsx");
     }
 
@@ -115,10 +115,10 @@ public class StatisticsController(StatisticsService statsService, IExcelManager 
         return GetExcel(stats, "Leveranciers per maand", $"leveranciers-per-maand-{year}.xlsx");
     }
 
-    [HttpGet("per-interventiontype-and-cartype/{year}")]
-    public async Task<IActionResult> InterventionTypes_And_CarTypes_Per_Month(int? year = null, bool asTable = true)
+    [HttpGet("per-interventiontype-and-vehicletype/{year}")]
+    public async Task<IActionResult> InterventionTypes_And_VehicleTypes_Per_Month(int? year = null, bool asTable = true)
     {
-        var stats = await statsService.InterventionTypes_And_CarTypes_Per_Month(year ?? DateTime.Now.Year);
+        var stats = await statsService.InterventionTypes_And_VehicleTypes_Per_Month(year ?? DateTime.Now.Year);
 
         if (asTable)
         {
@@ -127,11 +127,11 @@ public class StatisticsController(StatisticsService statsService, IExcelManager 
 
         return Ok(stats);
     }
-    [HttpGet("per-interventiontype-and-cartype/{year}/xlsx")]
-    public async Task<IActionResult> InterventionTypes_And_CarTypes_Per_Month_Excel(int? year = null)
+    [HttpGet("per-interventiontype-and-vehicletype/{year}/xlsx")]
+    public async Task<IActionResult> InterventionTypes_And_VehicleTypes_Per_Month_Excel(int? year = null)
     {
         year ??= DateTime.Now.Year;
-        var stats = await statsService.InterventionTypes_And_CarTypes_Per_Month(year.Value);
+        var stats = await statsService.InterventionTypes_And_VehicleTypes_Per_Month(year.Value);
         return GetExcel(stats, "Interventietypes+Wagentypes per maand", $"interventietypes-en-wagentypes-per-maand-{year}.xlsx");
     }
 

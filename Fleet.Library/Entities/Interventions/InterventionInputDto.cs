@@ -1,17 +1,16 @@
-﻿using System.ComponentModel.DataAnnotations;
-using Regira.Entities.Web.Attachments.Models;
+﻿using Regira.Entities.Web.Attachments.Models;
+using Regira.Fleet.Entities.Interventions.InterventionTypes;
 using Regira.Fleet.Entities.Interventions.Invoices;
+using System.ComponentModel.DataAnnotations;
 
 namespace Regira.Fleet.Entities.Interventions;
 
 public class InterventionInputDto
 {
     [Required]
-    public int CarId { get; set; }
+    public int VehicleId { get; set; }
     [Required]
     public int SupplierId { get; set; }
-    [Required]
-    public int InterventionTypeId { get; set; }
 
     public int? Mileage { get; set; }
     [MaxLength(256)]
@@ -19,5 +18,6 @@ public class InterventionInputDto
     public string? Notes { get; set; }
 
     public InvoiceInputDto? Invoice { get; set; }
+    public ICollection<InterventionTypeInputDto>? InterventionTypes { get; set; }
     public ICollection<EntityAttachmentInputDto>? Attachments { get; set; }
 }

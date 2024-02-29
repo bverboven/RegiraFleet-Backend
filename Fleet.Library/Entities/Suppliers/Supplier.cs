@@ -1,9 +1,9 @@
 ﻿using Regira.Entities.Attachments.Abstractions;
 using Regira.Entities.Models.Abstractions;
 using Regira.Fleet.Entities.Abstractions;
+using Regira.Fleet.Entities.Interventions.InterventionTypes;
 using Regira.Fleet.Entities.Suppliers.Addresses;
 using Regira.Fleet.Entities.Suppliers.ContactData;
-using Regira.Fleet.Entities.Suppliers.SupplierTypes;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -14,7 +14,6 @@ public class Supplier : IFleetEntity, IEntityWithSerial, IHasCode, IHasNormalize
     public int Id { get; set; }
     public string Guid { get; set; } = System.Guid.NewGuid().ToString("N");
     public int ClientId { get; set; }
-    public int? SupplierTypeId { get; set; }
     [MaxLength(16)]
     public string? Code { get; set; }
     [MaxLength(128)]
@@ -32,7 +31,7 @@ public class Supplier : IFleetEntity, IEntityWithSerial, IHasCode, IHasNormalize
     public DateTime? LastModified { get; set; }
     public bool IsArchived { get; set; }
 
-    public SupplierType? SupplierType { get; set; }
+    public ICollection<InterventionType>? InterventionTypes { get; set; }
     public ICollection<Address>? Addresses { get; set; }
     public ICollection<SupplierContactData>? ContactData { get; set; }
 

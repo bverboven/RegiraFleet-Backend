@@ -9,7 +9,7 @@ public class StatisticsService(FleetContext dbContext) : IDisposable
 {
     private readonly DbConnection _dbConnection = dbContext.Database.GetDbConnection();
 
-    public async Task<IList<IDictionary<string, object?>>> CarTypes_Per_Month(int year)
+    public async Task<IList<IDictionary<string, object?>>> VehicleTypes_Per_Month(int year)
     {
         var list = new List<dynamic>();
         await using (var cmd = _dbConnection.CreateCommand())
@@ -57,7 +57,7 @@ public class StatisticsService(FleetContext dbContext) : IDisposable
 
         return stats;
     }
-    public async Task<IList<IDictionary<string, object?>>> Cars_Per_CarType_Per_Month(string carTypeCode, int year)
+    public async Task<IList<IDictionary<string, object?>>> Vehicles_Per_VehicleType_Per_Month(string carTypeCode, int year)
     {
         var list = new List<dynamic>();
         await using (var cmd = _dbConnection.CreateCommand())
@@ -113,7 +113,7 @@ public class StatisticsService(FleetContext dbContext) : IDisposable
 
         return stats;
     }
-    public async Task<IList<IDictionary<string, object?>>> Cars_Per_Month(int year)
+    public async Task<IList<IDictionary<string, object?>>> Vehicles_Per_Month(int year)
     {
         var list = new List<dynamic>();
         await using (var cmd = _dbConnection.CreateCommand())
@@ -246,7 +246,7 @@ public class StatisticsService(FleetContext dbContext) : IDisposable
 
         return stats;
     }
-    public async Task<IList<IDictionary<string, object?>>> InterventionTypes_And_CarTypes_Per_Month(int year)
+    public async Task<IList<IDictionary<string, object?>>> InterventionTypes_And_VehicleTypes_Per_Month(int year)
     {
         var list = new List<dynamic>();
         await using (var cmd = _dbConnection.CreateCommand())

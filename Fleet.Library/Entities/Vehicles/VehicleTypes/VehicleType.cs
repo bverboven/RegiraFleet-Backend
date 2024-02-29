@@ -3,9 +3,9 @@ using Regira.Fleet.Entities.Abstractions;
 using Regira.Normalizing;
 using System.ComponentModel.DataAnnotations;
 
-namespace Regira.Fleet.Entities.Cars.CarTypes;
+namespace Regira.Fleet.Entities.Vehicles.VehicleTypes;
 
-public class CarType : IFleetEntity, IEntityWithSerial, IHasCode, IHasNormalizedTitle, IArchivable
+public class VehicleType : IFleetEntity, IEntityWithSerial, IHasCode, IHasNormalizedTitle, IArchivable
 {
     public int Id { get; set; }
     public string Guid { get; set; } = System.Guid.NewGuid().ToString("N");

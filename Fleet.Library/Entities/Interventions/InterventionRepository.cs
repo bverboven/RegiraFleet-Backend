@@ -13,7 +13,7 @@ public class InterventionRepository(FleetContext dbContext) : FleetRepository<In
 
         if (so?.CarId?.Any() == true)
         {
-            query = query.Where(x => so.CarId.Contains(x.CarId!.Value));
+            query = query.Where(x => so.CarId.Contains(x.VehicleId!.Value));
         }
         if (so?.SupplierId?.Any() == true)
         {
@@ -21,7 +21,7 @@ public class InterventionRepository(FleetContext dbContext) : FleetRepository<In
         }
         if (so?.InterventionTypeId?.Any() == true)
         {
-            query = query.Where(x => so.InterventionTypeId.Contains(x.InterventionTypeId!.Value));
+            query = query.Where(x => x.InterventionTypes!.Any(it => so.InterventionTypeId.Contains(it.Id)));
         }
 
         return query;
@@ -38,24 +38,29 @@ public class InterventionRepository(FleetContext dbContext) : FleetRepository<In
 
         if (includes.HasValue)
         {
-            if (includes.Value.HasFlag(InterventionIncludes.Cars))
+            if (includes.Value.HasFlag(InterventionIncludes.Vehicles))
             {
                 query = query
-                    .Include(x => x.Car)
-                    .ThenInclude(c => c.CarType)
-                    .Include(x => x.Car)
+                    .Include(x => x.Vehicle!)
+                    .ThenInclude(c => c.VehicleType)
+                    .Include(x => x.Vehicle!)
                     .ThenInclude(c => c.Brand);
             }
             if (includes.Value.HasFlag(InterventionIncludes.Suppliers))
             {
                 query = query
-                    .Include(x => x.Supplier)
-                    .ThenInclude(s => s.SupplierType);
+                    .Include(x => x.Supplier!)
+                    .ThenInclude(s => s.ContactData);
             }
             if (includes.Value.HasFlag(InterventionIncludes.InterventionTypes))
             {
                 query = query
-                    .Include(x => x.InterventionType);
+                    .Include(x => x.InterventionTypes);
+            }
+            if (includes.Value.HasFlag(InterventionIncludes.Attachments))
+            {
+                query = query
+                    .Include(x => x.Attachments);
             }
         }
 

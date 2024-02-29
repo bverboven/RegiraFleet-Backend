@@ -6,13 +6,12 @@ using Regira.Entities.EFcore.Attachments;
 using Regira.Entities.Models;
 using Regira.Fleet.Data;
 using Regira.Fleet.Entities;
-using Regira.Fleet.Entities.Cars;
-using Regira.Fleet.Entities.Cars.Brands;
-using Regira.Fleet.Entities.Cars.CarTypes;
 using Regira.Fleet.Entities.Interventions;
 using Regira.Fleet.Entities.Interventions.InterventionTypes;
 using Regira.Fleet.Entities.Suppliers;
-using Regira.Fleet.Entities.Suppliers.SupplierTypes;
+using Regira.Fleet.Entities.Vehicles;
+using Regira.Fleet.Entities.Vehicles.Brands;
+using Regira.Fleet.Entities.Vehicles.VehicleTypes;
 using Regira.IO.Storage.Abstractions;
 
 namespace Regira.Fleet.DependencyInjection;
@@ -44,19 +43,18 @@ public static class ServiceCollectionExtensions
                 e.HasAttachments<FleetContext, Intervention, InterventionAttachment>();
             })
             .For<Brand, BrandRepository, BrandSearchObject, EntitySortBy, EntityIncludes>()
-            .For<Car, CarRepository, CarSearchObject, EntitySortBy, EntityIncludes>(e =>
+            .For<Vehicle, VehicleRepository, VehicleSearchObject, EntitySortBy, EntityIncludes>(e =>
             {
-                e.HasRepository<CarRepository>();
-                e.HasAttachments<FleetContext, Car, CarAttachment>();
+                e.HasRepository<VehicleRepository>();
+                e.HasAttachments<FleetContext, Vehicle, VehicleAttachment>();
             })
-            .For<CarType, CarTypeRepository, CarTypeSearchObject, EntitySortBy, EntityIncludes>()
+            .For<VehicleType, VehicleTypeRepository, VehicleTypeSearchObject, EntitySortBy, EntityIncludes>()
             .For<InterventionType, InterventionTypeRepository, InterventionTypeSearchObject, EntitySortBy, EntityIncludes>()
-            .For<Supplier, SupplierRepository, SupplierSearchObject, EntitySortBy, EntityIncludes>(e =>
+            .For<Supplier, SupplierRepository, SupplierSearchObject, EntitySortBy, SupplierIncludes>(e =>
             {
                 e.HasRepository<SupplierRepository>();
                 e.HasAttachments<FleetContext, Supplier, SupplierAttachment>();
-            })
-            .For<SupplierType, SupplierTypeRepository, SupplierTypeSearchObject, EntitySortBy, EntityIncludes>();
+            });
 
         return services;
     }
@@ -67,7 +65,7 @@ public static class ServiceCollectionExtensions
             .ConfigureAttachmentService(configure)
             .ConfigureTypedAttachmentService(db => new[]
             {
-                db.CarAttachments.ToDescriptor<Car>(),
+                db.CarAttachments.ToDescriptor<Vehicle>(),
             });
     }
 }

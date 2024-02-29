@@ -1,6 +1,6 @@
-﻿namespace Regira.Fleet.Entities.Cars.Brands;
+﻿namespace Regira.Fleet.Entities.Vehicles.VehicleTypes;
 
-public class BrandDto
+public class VehicleTypeDto
 {
     public int Id { get; set; }
     public string Guid { get; set; } = null!;

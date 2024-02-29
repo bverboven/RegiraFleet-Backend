@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Regira.Entities.Models;
 using Regira.Entities.Web.Controllers.Abstractions;
-using Regira.Fleet.Entities.Cars.Brands;
+using Regira.Fleet.Entities.Vehicles.Brands;
 
 namespace Regira.Fleet.Api.Controllers;
 

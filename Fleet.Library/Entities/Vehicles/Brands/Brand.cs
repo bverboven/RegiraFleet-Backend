@@ -3,7 +3,7 @@ using Regira.Fleet.Entities.Abstractions;
 using Regira.Normalizing;
 using System.ComponentModel.DataAnnotations;
 
-namespace Regira.Fleet.Entities.Cars.Brands;
+namespace Regira.Fleet.Entities.Vehicles.Brands;
 
 public class Brand : IFleetEntity, IEntityWithSerial, IHasCode, IHasNormalizedTitle, IArchivable
 {

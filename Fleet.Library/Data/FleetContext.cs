@@ -1,13 +1,13 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Regira.DAL.EFcore.Extensions;
 using Regira.Entities.Attachments.Models;
-using Regira.Fleet.Entities.Cars;
-using Regira.Fleet.Entities.Cars.Brands;
-using Regira.Fleet.Entities.Cars.CarTypes;
+using Regira.Fleet.Entities.Clients;
 using Regira.Fleet.Entities.Interventions;
 using Regira.Fleet.Entities.Interventions.InterventionTypes;
 using Regira.Fleet.Entities.Suppliers;
-using Regira.Fleet.Entities.Suppliers.SupplierTypes;
+using Regira.Fleet.Entities.Vehicles;
+using Regira.Fleet.Entities.Vehicles.Brands;
+using Regira.Fleet.Entities.Vehicles.VehicleTypes;
 
 namespace Regira.Fleet.Data;
 
@@ -16,15 +16,15 @@ public class FleetContext(DbContextOptions<FleetContext> options) : DbContext(op
     // Attachments
     public DbSet<Attachment<int>> Attachments { get; set; } = null!;
     public DbSet<Brand> Brands { get; set; } = null!;
-    public DbSet<Car> Cars { get; set; } = null!;
-    public DbSet<CarAttachment> CarAttachments { get; set; } = null!;
-    public DbSet<CarType> CarTypes { get; set; } = null!;
+    public DbSet<Client> Clients { get; set; } = null!;
+    public DbSet<VehicleAttachment> CarAttachments { get; set; } = null!;
+    public DbSet<VehicleType> VehicleTypes { get; set; } = null!;
     public DbSet<Intervention> Interventions { get; set; } = null!;
     public DbSet<InterventionAttachment> InterventionAttachments { get; set; } = null!;
     public DbSet<InterventionType> InterventionTypes { get; set; } = null!;
     public DbSet<Supplier> Suppliers { get; set; } = null!;
     public DbSet<SupplierAttachment> SupplierAttachments { get; set; } = null!;
-    public DbSet<SupplierType> SupplierTypes { get; set; } = null!;
+    public DbSet<Vehicle> Vehicles { get; set; } = null!;
 
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
@@ -43,7 +43,7 @@ public class FleetContext(DbContextOptions<FleetContext> options) : DbContext(op
                 .IsUnique();
             entity.HasIndex(e => e.NormalizedTitle);
         });
-        modelBuilder.Entity<Car>(entity =>
+        modelBuilder.Entity<Vehicle>(entity =>
         {
             entity.HasIndex(e => e.ClientId);
             entity.HasIndex(e => new { e.ClientId, e.Code })
@@ -55,7 +55,7 @@ public class FleetContext(DbContextOptions<FleetContext> options) : DbContext(op
                 .HasForeignKey(e => e.ObjectId)
                 .HasPrincipalKey(e => e.Id);
         });
-        modelBuilder.Entity<CarType>(entity =>
+        modelBuilder.Entity<VehicleType>(entity =>
         {
             entity.HasIndex(e => e.ClientId);
             entity.HasIndex(e => new { e.ClientId, e.Code })
@@ -73,6 +73,11 @@ public class FleetContext(DbContextOptions<FleetContext> options) : DbContext(op
                 e.HasIndex(i => i.InvoiceNumber);
                 e.HasIndex(i => i.InvoiceDate);
             });
+
+            // Intervention Types
+            entity.HasMany(e => e.InterventionTypes)
+                .WithMany()
+                .UsingEntity("intervention_intervention_types");
 
             // Attachments
             entity.HasMany(e => e.Attachments)
@@ -93,7 +98,10 @@ public class FleetContext(DbContextOptions<FleetContext> options) : DbContext(op
             entity.HasIndex(e => new { e.ClientId, e.Code })
                 .IsUnique();
             entity.HasIndex(e => e.NormalizedTitle);
-
+            // Intervention Types
+            entity.HasMany(e => e.InterventionTypes)
+                .WithMany()
+                .UsingEntity("supplier_intervention_types");
             // Addresses
             entity.OwnsMany(e => e.Addresses, e =>
             {
@@ -113,13 +121,6 @@ public class FleetContext(DbContextOptions<FleetContext> options) : DbContext(op
                 .WithOne()
                 .HasForeignKey(e => e.ObjectId)
                 .HasPrincipalKey(e => e.Id);
-        });
-        modelBuilder.Entity<SupplierType>(entity =>
-        {
-            entity.HasIndex(e => e.ClientId);
-            entity.HasIndex(e => new { e.ClientId, e.Code })
-                .IsUnique();
-            entity.HasIndex(e => e.NormalizedTitle);
         });
 
         // Decimals

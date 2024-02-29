@@ -1,11 +1,11 @@
 ﻿using Regira.Entities.Models;
 
-namespace Regira.Fleet.Entities.Cars;
+namespace Regira.Fleet.Entities.Vehicles;
 
-public class CarSearchObject : SearchObject
+public class VehicleSearchObject : SearchObject
 {
     public string? Code { get; set; }
     public string? Model { get; set; }
     public string? Brand { get; set; }
-    public string? CarType { get; set; }
+    public string? VehicleType { get; set; }
 }

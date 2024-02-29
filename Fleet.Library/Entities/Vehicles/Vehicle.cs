@@ -1,20 +1,20 @@
 ﻿using Regira.Entities.Attachments.Abstractions;
 using Regira.Entities.Models.Abstractions;
 using Regira.Fleet.Entities.Abstractions;
-using Regira.Fleet.Entities.Cars.Brands;
-using Regira.Fleet.Entities.Cars.CarTypes;
+using Regira.Fleet.Entities.Vehicles.Brands;
+using Regira.Fleet.Entities.Vehicles.VehicleTypes;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace Regira.Fleet.Entities.Cars;
+namespace Regira.Fleet.Entities.Vehicles;
 
-public class Car : IFleetEntity, IEntityWithSerial, IHasCode, IArchivable, IHasAttachments<CarAttachment>, IHasAttachments
+public class Vehicle : IFleetEntity, IEntityWithSerial, IHasCode, IArchivable, IHasAttachments<VehicleAttachment>, IHasAttachments
 {
     public int Id { get; set; }
     public string Guid { get; set; } = System.Guid.NewGuid().ToString("N");
     public int ClientId { get; set; }
     public int? BrandId { get; set; }
-    public int? CarTypeId { get; set; }
+    public int? VehicleTypeId { get; set; }
     [MaxLength(8)]
     public string? Code { get; set; }
     [MaxLength(64)]
@@ -25,16 +25,16 @@ public class Car : IFleetEntity, IEntityWithSerial, IHasCode, IArchivable, IHasA
     public bool IsArchived { get; set; }
 
     public virtual Brand? Brand { get; set; }
-    public virtual CarType? CarType { get; set; }
+    public virtual VehicleType? VehicleType { get; set; }
 
 
     [NotMapped]
     public bool? HasAttachment { get; set; }
-    public ICollection<CarAttachment>? Attachments { get; set; }
+    public ICollection<VehicleAttachment>? Attachments { get; set; }
     ICollection<IEntityAttachment>? IHasAttachments.Attachments
     {
         get => Attachments?.Cast<IEntityAttachment>().ToList();
-        set => Attachments = value?.Cast<CarAttachment>().ToList();
+        set => Attachments = value?.Cast<VehicleAttachment>().ToList();
     }
 
     [MaxLength(2048)]

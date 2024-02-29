@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Fleet.EfCoreConsole;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -18,6 +19,9 @@ await accountContext.Database.EnsureCreatedAsync();
 var fleetContext = host.Services.GetRequiredService<FleetContext>();
 await fleetContext.Database.EnsureDeletedAsync();
 await fleetContext.Database.EnsureCreatedAsync();
+
+var seeder = host.Services.GetRequiredService<Seeder>();
+await seeder.Seed();
 
 Console.WriteLine("Created Host");
 
@@ -42,7 +46,8 @@ static void ConfigureServices(HostBuilderContext context, IServiceCollection ser
     var config = context.Configuration;
 
     services
-        .AddTransient<IEncrypter, SymmetricEncrypter>();
+        .AddTransient<IEncrypter, SymmetricEncrypter>()
+        .AddTransient<Seeder>();
 
     // PostgreSQL
     services

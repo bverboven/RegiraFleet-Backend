@@ -1,12 +1,12 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using Regira.Entities.Web.Attachments.Models;
 
-namespace Regira.Fleet.Entities.Cars;
+namespace Regira.Fleet.Entities.Vehicles;
 
-public class CarInputDto
+public class VehicleInputDto
 {
     public int? BrandId { get; set; }
-    public int? CarTypeId { get; set; }
+    public int? VehicleTypeId { get; set; }
     [Required]
     [MaxLength(8)]
     public string Code { get; set; } = null!;

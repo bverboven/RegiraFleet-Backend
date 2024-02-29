@@ -4,12 +4,11 @@ using Regira.Entities.Keywords;
 using Regira.Fleet.Abstractions;
 using Regira.Fleet.Data;
 
-namespace Regira.Fleet.Entities.Cars.Brands;
+namespace Regira.Fleet.Entities.Vehicles.VehicleTypes;
 
-public class BrandRepository(FleetContext dbContext) : FleetRepository<Brand, BrandSearchObject>(dbContext)
+public class VehicleTypeRepository(FleetContext dbContext) : FleetRepository<VehicleType, VehicleTypeSearchObject>(dbContext)
 {
-
-    public override IQueryable<Brand> Filter(IQueryable<Brand> query, BrandSearchObject? so)
+    public override IQueryable<VehicleType> Filter(IQueryable<VehicleType> query, VehicleTypeSearchObject? so)
     {
         query = base.Filter(query, so);
         if (so != null)

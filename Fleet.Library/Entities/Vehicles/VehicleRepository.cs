@@ -3,11 +3,11 @@ using Regira.Entities.Models;
 using Regira.Fleet.Abstractions;
 using Regira.Fleet.Data;
 
-namespace Regira.Fleet.Entities.Cars;
+namespace Regira.Fleet.Entities.Vehicles;
 
-public class CarRepository(FleetContext dbContext) : FleetRepository<Car, CarSearchObject>(dbContext)
+public class VehicleRepository(FleetContext dbContext) : FleetRepository<Vehicle, VehicleSearchObject>(dbContext)
 {
-    public override IQueryable<Car> Filter(IQueryable<Car> query, CarSearchObject? so)
+    public override IQueryable<Vehicle> Filter(IQueryable<Vehicle> query, VehicleSearchObject? so)
     {
         query = base.Filter(query, so);
 
@@ -28,18 +28,18 @@ public class CarRepository(FleetContext dbContext) : FleetRepository<Car, CarSea
                     x.Brand.Code!.Equals(so.Brand, StringComparison.InvariantCultureIgnoreCase));
             }
 
-            if (!string.IsNullOrWhiteSpace(so.CarType))
+            if (!string.IsNullOrWhiteSpace(so.VehicleType))
             {
                 query = query.Where(x =>
-                    x.CarType!.Code!.Equals(so.CarType, StringComparison.InvariantCultureIgnoreCase) ||
-                    x.CarType.Title!.Equals(so.CarType, StringComparison.InvariantCultureIgnoreCase));
+                    x.VehicleType!.Code!.Equals(so.VehicleType, StringComparison.InvariantCultureIgnoreCase) ||
+                    x.VehicleType.Title!.Equals(so.VehicleType, StringComparison.InvariantCultureIgnoreCase));
             }
         }
 
         return query;
     }
 
-    public override IQueryable<Car> SortBy(IQueryable<Car> query, EntitySortBy? sortBy = null)
+    public override IQueryable<Vehicle> SortBy(IQueryable<Vehicle> query, EntitySortBy? sortBy = null)
     {
         return query.OrderBy(x => x.Code);
     }
