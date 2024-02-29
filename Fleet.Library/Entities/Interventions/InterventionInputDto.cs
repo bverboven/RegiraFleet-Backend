@@ -1,6 +1,8 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using Regira.Entities.Web.Attachments.Models;
+using Regira.Fleet.Entities.Interventions.Invoices;
 
-namespace Regira.Fleet.Api.Models.Input;
+namespace Regira.Fleet.Entities.Interventions;
 
 public class InterventionInputDto
 {
@@ -17,4 +19,5 @@ public class InterventionInputDto
     public string? Notes { get; set; }
 
     public InvoiceInputDto? Invoice { get; set; }
+    public ICollection<EntityAttachmentInputDto>? Attachments { get; set; }
 }

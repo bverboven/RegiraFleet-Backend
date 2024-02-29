@@ -1,8 +1,8 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace Regira.Fleet.Api.Models.Input;
+namespace Regira.Fleet.Entities.Interventions.InterventionTypes;
 
-public class BrandInputDto
+public class InterventionTypeInputDto
 {
     [Required]
     [MaxLength(3)]

@@ -1,13 +1,11 @@
-﻿using Regira.Fleet.Entities.Suppliers.ContactData;
+﻿using System.ComponentModel.DataAnnotations;
 using Regira.Normalizing;
-using System.ComponentModel.DataAnnotations;
 
-namespace Regira.Fleet.Api.Models.Input;
+namespace Regira.Fleet.Entities.Suppliers.ContactData;
 
 public class SupplierContactDataInputDto
 {
     public int Id { get; set; }
-    public int SupplierId { get; set; }
     [MaxLength(32)]
     public string? Title { get; set; }
     [MaxLength(256)]

@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace Regira.Fleet.Api.Models.Input;
+namespace Regira.Fleet.Entities.Suppliers.SupplierTypes;
 
 public class SupplierTypeInputDto
 {

@@ -1,14 +1,16 @@
-﻿using Regira.Entities.Models.Abstractions;
+﻿using Regira.Entities.Attachments.Abstractions;
+using Regira.Entities.Models.Abstractions;
 using Regira.Fleet.Entities.Abstractions;
 using Regira.Fleet.Entities.Cars;
 using Regira.Fleet.Entities.Interventions.InterventionTypes;
 using Regira.Fleet.Entities.Interventions.Invoices;
 using Regira.Fleet.Entities.Suppliers;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Regira.Fleet.Entities.Interventions;
 
-public class Intervention : IFleetEntity, IEntityWithSerial, IHasDescription, IHasNormalizedContent
+public class Intervention : IFleetEntity, IEntityWithSerial, IHasDescription, IHasNormalizedContent, IHasAttachments, IHasAttachments<InterventionAttachment>
 {
     public int Id { get; set; }
     public string Guid { get; set; } = System.Guid.NewGuid().ToString("N");
@@ -31,6 +33,16 @@ public class Intervention : IFleetEntity, IEntityWithSerial, IHasDescription, IH
     public Supplier? Supplier { get; set; }
     public InterventionType? InterventionType { get; set; }
     public Invoice? Invoice { get; set; }
+
+    [NotMapped]
+    public bool? HasAttachment { get; set; }
+    public ICollection<InterventionAttachment>? Attachments { get; set; }
+    ICollection<IEntityAttachment>? IHasAttachments.Attachments
+    {
+        get => Attachments?.Cast<IEntityAttachment>().ToList();
+        set => Attachments = value?.Cast<InterventionAttachment>().ToList();
+    }
+
 
     [MaxLength(2048)]
     public string? NormalizedContent { get; set; }

@@ -5,8 +5,8 @@ var builder = WebApplication.CreateBuilder(args);
 
 // services
 builder.Services
-    .AddApi(builder.Configuration)
-    .AddFleet(builder.Configuration)
+    .AddApi()
+    .AddServices(builder.Configuration)
     .AddFleetAuthentication(builder.Configuration);
 
 var app = builder.Build();

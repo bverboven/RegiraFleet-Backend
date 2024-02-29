@@ -7,7 +7,6 @@ namespace Regira.Fleet.Entities.Suppliers.ContactData;
 public class SupplierContactData : IEntityWithSerial
 {
     public int Id { get; set; }
-    public int SupplierId { get; set; }
     [MaxLength(32)]
     public string? Title { get; set; }
     [MaxLength(256)]

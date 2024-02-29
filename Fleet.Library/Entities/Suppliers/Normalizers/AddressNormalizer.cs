@@ -1,4 +1,4 @@
-﻿using Regira.Fleet.Entities.Suppliers.ContactData;
+﻿using Regira.Fleet.Entities.Suppliers.Addresses;
 using Regira.Globalization;
 using Regira.Normalizing.Abstractions;
 

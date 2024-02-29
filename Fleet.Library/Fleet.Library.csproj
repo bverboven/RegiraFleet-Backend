@@ -1,27 +1,28 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup>
-    <TargetFramework>net8.0</TargetFramework>
-    <RootNamespace>Regira.Fleet</RootNamespace>
-    <AssemblyName>Regira.Fleet</AssemblyName>
-    <Authors>B.Verboven</Authors>
-    <Company>Regira</Company>
-    <ImplicitUsings>enable</ImplicitUsings>
-    <Nullable>enable</Nullable>
-  </PropertyGroup>
+    <PropertyGroup>
+        <TargetFramework>net8.0</TargetFramework>
+        <RootNamespace>Regira.Fleet</RootNamespace>
+        <AssemblyName>Regira.Fleet</AssemblyName>
+        <Authors>B.Verboven</Authors>
+        <Company>Regira</Company>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+    </PropertyGroup>
 
-  <ItemGroup>
-    <PackageReference Include="AutoMapper" Version="13.0.1" />
-    <PackageReference Include="EFCore.NamingConventions" Version="8.0.3" />
-    <PackageReference Include="Pomelo.EntityFrameworkCore.MySql" Version="8.0.0" />
-    <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="8.0.2" />
-    <PackageReference Include="Regira.DAL.EFcore" Version="4.0.2" />
-    <PackageReference Include="Regira.Entities.EFcore" Version="4.0.2" />
-    <PackageReference Include="Regira.Globalization.LibPhoneNumber" Version="4.0.3" />
-  </ItemGroup>
+    <ItemGroup>
+        <PackageReference Include="AutoMapper" Version="13.0.1" />
+        <PackageReference Include="EFCore.NamingConventions" Version="8.0.3" />
+        <PackageReference Include="Pomelo.EntityFrameworkCore.MySql" Version="8.0.0" />
+        <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="8.0.2" />
+        <PackageReference Include="Regira.DAL.EFcore" Version="4.0.2" />
+        <PackageReference Include="Regira.Entities.DependencyInjection" Version="4.0.3" />
+        <PackageReference Include="Regira.Entities.EFcore" Version="4.0.2" />
+        <PackageReference Include="Regira.Globalization.LibPhoneNumber" Version="4.0.3" />
+    </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Migrations\" />
-  </ItemGroup>
+    <ItemGroup>
+        <Folder Include="Migrations\" />
+    </ItemGroup>
 
 </Project>

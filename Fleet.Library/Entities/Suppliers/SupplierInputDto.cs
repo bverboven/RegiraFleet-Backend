@@ -1,6 +1,9 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using Regira.Entities.Web.Attachments.Models;
+using Regira.Fleet.Entities.Suppliers.Addresses;
+using Regira.Fleet.Entities.Suppliers.ContactData;
 
-namespace Regira.Fleet.Api.Models.Input;
+namespace Regira.Fleet.Entities.Suppliers;
 
 public class SupplierInputDto
 {
@@ -18,4 +21,5 @@ public class SupplierInputDto
     public bool IsArchived { get; set; }
     public AddressInputDto? Address { get; set; }
     public ICollection<SupplierContactDataInputDto>? ContactData { get; set; }
+    public ICollection<EntityAttachmentInputDto>? Attachments { get; set; }
 }

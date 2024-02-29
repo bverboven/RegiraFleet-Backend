@@ -1,34 +1,22 @@
-﻿using System.Text.Json.Serialization;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.EntityFrameworkCore;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
-using Regira.Entities.DependencyInjection.Extensions;
-using Regira.Entities.Models;
-using Regira.Fleet.Api.Models.Input;
-using Regira.Fleet.Data;
-using Regira.Fleet.Entities.Cars;
-using Regira.Fleet.Entities.Cars.Brands;
-using Regira.Fleet.Entities.Cars.CarTypes;
-using Regira.Fleet.Entities.Interventions;
-using Regira.Fleet.Entities.Interventions.InterventionTypes;
-using Regira.Fleet.Entities.Suppliers;
-using Regira.Fleet.Entities.Suppliers.SupplierTypes;
+using Regira.Fleet.DependencyInjection;
 using Regira.Fleet.Statistics;
+using Regira.IO.Storage.FileSystem;
 using Regira.Office.Excel.Abstractions;
 using Regira.Security.Abstractions;
 using Regira.Security.Encryption;
 using Regira.Serializing.Abstractions;
 using Regira.Serializing.Newtonsoft.Json;
 using Regira.Web.Swagger.Security;
+using System.Text.Json.Serialization;
 using JsonSerializer = Regira.Serializing.Newtonsoft.Json.JsonSerializer;
 
 namespace Regira.Fleet.Api.Infrastructure;
 
 public static class HostingExtensions
 {
-    public static IServiceCollection AddApi(this IServiceCollection services, IConfiguration config)
+    public static IServiceCollection AddApi(this IServiceCollection services)
     {
         services
             .AddControllers(_ =>
@@ -86,29 +74,22 @@ public static class HostingExtensions
 
         return services;
     }
-    public static IServiceCollection AddFleet(this IServiceCollection services, IConfiguration config)
+
+    public static IServiceCollection AddServices(this IServiceCollection services, IConfiguration config)
     {
         services
-            .AddAutoMapper(typeof(FleetProfile).Assembly)
-            .AddDbContext<FleetContext>(db =>
+            .AddFleet(c =>
             {
-                var connectionString = config["ConnectionStrings:AcaFleetNet"];
-                db.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString));
-            });
-
-        services
+                var dataDirectory = config["Data:Directory"];
+                c.ConnectionString = config["ConnectionStrings:FleetData"];
+                var fsConfig = new BinaryFileService.FileServiceOptions
+                {
+                    RootFolder = dataDirectory!
+                };
+                c.ConfigureStorageService(_ => new BinaryFileService(fsConfig));
+            })
             .AddScoped<StatisticsService>()
             .AddTransient<IExcelManager, AcaExcelManager>();
-
-        services
-            .UseEntities<FleetContext>(c => c.ProfileAssemblies.Add(typeof(FleetProfile).Assembly))
-            .For<Intervention, InterventionRepository, InterventionSearchObject, EntitySortBy, InterventionIncludes>(e => e.AddMapping<Intervention, InterventionInputDto>())
-            .For<Brand, BrandRepository, BrandSearchObject, EntitySortBy, EntityIncludes>(e => e.AddMapping<Brand, BrandInputDto>())
-            .For<Car, CarRepository, CarSearchObject, EntitySortBy, EntityIncludes>(e => e.AddMapping<Car, CarInputDto>())
-            .For<CarType, CarTypeRepository, CarTypeSearchObject, EntitySortBy, EntityIncludes>(e => e.AddMapping<CarType, CarTypeInputDto>())
-            .For<InterventionType, InterventionTypeRepository, InterventionTypeSearchObject, EntitySortBy, EntityIncludes>(e => e.AddMapping<InterventionType, InterventionTypeInputDto>())
-            .For<Supplier, SupplierRepository, SupplierSearchObject, EntitySortBy, EntityIncludes>(e => e.AddMapping<Supplier, SupplierInputDto>())
-            .For<SupplierType, SupplierTypeRepository, SupplierTypeSearchObject, EntitySortBy, EntityIncludes>(e => e.AddMapping<SupplierType, SupplierTypeInputDto>());
 
         return services;
     }
@@ -144,7 +125,7 @@ public static class HostingExtensions
 
         app
             .MapControllers()
-            .RequireAuthorization(new AuthorizeAttribute { AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme })
+            //.RequireAuthorization(new AuthorizeAttribute { AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme })
             ;
 
         return app;
