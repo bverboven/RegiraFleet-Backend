@@ -6,6 +6,6 @@ namespace Regira.Fleet.Api.Controllers;
 
 [ApiController]
 [Route("supplier-types")]
-public class SupplierTypeController : EntityControllerBase<SupplierType, SupplierTypeSearchObject, SupplierType, SupplierTypeInputDto>
+public class SupplierTypeController : EntityControllerBase<SupplierType, SupplierTypeSearchObject, SupplierTypeDto, SupplierTypeInputDto>
 {
 }

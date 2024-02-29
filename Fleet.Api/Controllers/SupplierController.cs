@@ -9,7 +9,7 @@ namespace Regira.Fleet.Api.Controllers;
 
 [ApiController]
 [Route("suppliers")]
-public class SupplierController : EntityControllerBase<Supplier, SupplierSearchObject, EntitySortBy, EntityIncludes, Supplier, SupplierInputDto>
+public class SupplierController : EntityControllerBase<Supplier, SupplierSearchObject, EntitySortBy, EntityIncludes, SupplierDto, SupplierInputDto>
 {
 }
 
