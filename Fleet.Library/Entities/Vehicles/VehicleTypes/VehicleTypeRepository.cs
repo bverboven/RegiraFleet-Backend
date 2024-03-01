@@ -2,11 +2,12 @@
 using Regira.Entities.EFcore.Extensions;
 using Regira.Entities.Keywords;
 using Regira.Fleet.Abstractions;
+using Regira.Fleet.Core.Abstractions;
 using Regira.Fleet.Data;
 
 namespace Regira.Fleet.Entities.Vehicles.VehicleTypes;
 
-public class VehicleTypeRepository(FleetContext dbContext) : FleetRepositoryBase<VehicleType, VehicleTypeSearchObject>(dbContext)
+public class VehicleTypeRepository(FleetContext dbContext, IFleetAppContext appContext) : FleetRepositoryBase<VehicleType, VehicleTypeSearchObject>(dbContext, appContext)
 {
     public override IQueryable<VehicleType> Filter(IQueryable<VehicleType> query, VehicleTypeSearchObject? so)
     {

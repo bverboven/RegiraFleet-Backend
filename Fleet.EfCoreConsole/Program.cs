@@ -5,6 +5,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Regira.Fleet.Data;
 using Regira.Fleet.Identity.Data;
+using Regira.Fleet.Identity.DependencyInjection;
 using Regira.Security.Abstractions;
 using Regira.Security.Encryption;
 
@@ -15,14 +16,16 @@ var host = CreateHostBuilder(args)
     .Build();
 
 var accountContext = host.Services.GetRequiredService<AccountsContext>();
-//await accountContext.Database.EnsureDeletedAsync();
+await accountContext.Database.EnsureDeletedAsync();
 await accountContext.Database.EnsureCreatedAsync();
 var fleetContext = host.Services.GetRequiredService<FleetContext>();
 await fleetContext.Database.EnsureDeletedAsync();
 await fleetContext.Database.EnsureCreatedAsync();
 
-var seeder = host.Services.GetRequiredService<Seeder>();
-await seeder.Seed();
+var dataSeeder = host.Services.GetRequiredService<DataSeeder>();
+var clients = await dataSeeder.Seed();
+var accountSeeder = host.Services.GetRequiredService<AccountSeeder>();
+await accountSeeder.Seed(clients);
 
 Console.WriteLine("Created Host");
 
@@ -48,7 +51,8 @@ static void ConfigureServices(HostBuilderContext context, IServiceCollection ser
 
     services
         .AddTransient<IEncrypter, SymmetricEncrypter>()
-        .AddTransient<Seeder>();
+        .AddTransient<DataSeeder>()
+        .AddTransient<AccountSeeder>();
 
     // PostgreSQL
     services
@@ -57,5 +61,8 @@ static void ConfigureServices(HostBuilderContext context, IServiceCollection ser
     services
         // Fleet Data
         .AddDbContext<FleetContext>(db => db.UseNpgsql(config["ConnectionStrings:FleetData"], o => o.MigrationsAssembly(typeof(FleetContext).Assembly.GetName().Name)));
+
+    services.AddAuthentication();
+    services.AddFleetAuthentication();
 }
 #endregion

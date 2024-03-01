@@ -4,6 +4,7 @@ namespace Regira.Fleet.Entities.Vehicles.Brands;
 
 public class BrandInputDto
 {
+    public int Id { get; set; }
     [MaxLength(8)]
     public string? Code { get; set; }
     [Required]

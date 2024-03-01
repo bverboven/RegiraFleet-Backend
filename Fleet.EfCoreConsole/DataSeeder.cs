@@ -7,7 +7,7 @@ using Regira.Fleet.Entities.Vehicles.VehicleTypes;
 
 namespace Fleet.EfCoreConsole;
 
-public class Seeder(FleetContext dbContext)
+public class DataSeeder(FleetContext dbContext)
 {
     Dictionary<string, string> CarBrands => new()
     {
@@ -43,16 +43,18 @@ public class Seeder(FleetContext dbContext)
     private IList<Client> _clients = null!;
     private Client PublicTransport => _clients.Single(x => x.Code == "TRA");
     private Client Police => _clients.Single(x => x.Code == "POL");
-    private Client FireBrigade => _clients.Single(x => x.Code == "BDW");
+    private Client FireBrigade => _clients.Single(x => x.Code == "BWR");
     private Client Ambulance => _clients.Single(x => x.Code == "AMB");
 
 
-    public async Task Seed()
+    public async Task<IList<Client>> Seed()
     {
         _clients = await SeedClients();
         await SeedBrands();
         await SeedInterventionTypes();
         await SeedVehicleTypes();
+
+        return _clients;
     }
 
     public async Task<IList<Client>> SeedClients()
@@ -64,7 +66,7 @@ public class Seeder(FleetContext dbContext)
             {
                 new() { Code = "TRA", Title = "Openbaar vervoer" },
                 new() { Code = "POL", Title = "Politie" },
-                new() { Code = "BDW", Title = "Brandweer" },
+                new() { Code = "BWR", Title = "Brandweer" },
                 new() { Code = "AMB", Title = "Ambulance" }
             });
             dbContext.Clients.AddRange(items);
@@ -182,5 +184,9 @@ public class Seeder(FleetContext dbContext)
             dbContext.VehicleTypes.AddRange(items);
             await dbContext.SaveChangesAsync();
         }
+    }
+    public async Task SeedOperators()
+    {
+
     }
 }

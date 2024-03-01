@@ -1,11 +1,11 @@
 ﻿using Regira.Entities.Attachments.Abstractions;
 using Regira.Entities.Models.Abstractions;
-using Regira.Fleet.Entities.Abstractions;
 using Regira.Fleet.Entities.InterventionTypes;
 using Regira.Fleet.Entities.InterventionOperators.Addresses;
 using Regira.Fleet.Entities.InterventionOperators.ContactData;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using Regira.Fleet.Abstractions;
 
 namespace Regira.Fleet.Entities.InterventionOperators.Operators;
 

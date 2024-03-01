@@ -13,8 +13,6 @@ public class FleetUserClaimsPrincipalFactory(FleetUserManager userManager, RoleM
     {
         var identity = await base.GenerateClaimsAsync(user);
 
-        identity.AddClaim(new Claim(FleetClaimTypes.ClientId, user.ClientId));
-
         // culture
         if (!string.IsNullOrWhiteSpace(user.Culture))
         {

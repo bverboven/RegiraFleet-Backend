@@ -36,7 +36,8 @@ public class FleetContext(DbContextOptions<FleetContext> options) : DbContext(op
     {
         base.OnModelCreating(modelBuilder);
 
-        modelBuilder.Entity<Brand>(entity =>
+        // Interventions
+        modelBuilder.Entity<InterventionType>(entity =>
         {
             entity.HasIndex(e => e.ClientId);
             entity.HasIndex(e => new { e.ClientId, e.Code })
@@ -52,7 +53,7 @@ public class FleetContext(DbContextOptions<FleetContext> options) : DbContext(op
             // Invoice
             entity.OwnsMany(e => e.Invoices, e =>
             {
-                e.ToTable("invoices");
+                e.ToTable("intervention_action_invoices");
                 e.HasIndex(i => i.InvoiceNumber);
                 e.HasIndex(i => i.InvoiceDate);
             });
@@ -60,7 +61,7 @@ public class FleetContext(DbContextOptions<FleetContext> options) : DbContext(op
             // Intervention Types
             entity.HasMany(e => e.InterventionTypes)
                 .WithMany()
-                .UsingEntity("intervention_intervention_types");
+                .UsingEntity("intervention_action_intervention_types");
 
             // Attachments
             entity.HasMany(e => e.Attachments)
@@ -98,8 +99,10 @@ public class FleetContext(DbContextOptions<FleetContext> options) : DbContext(op
                 .HasForeignKey(e => e.ObjectId)
                 .HasPrincipalKey(e => e.Id);
         });
-        modelBuilder.Entity<InterventionType>(entity =>
+        // Vehicles
+        modelBuilder.Entity<Brand>(entity =>
         {
+            entity.ToTable("vehicle_brands");
             entity.HasIndex(e => e.ClientId);
             entity.HasIndex(e => new { e.ClientId, e.Code })
                 .IsUnique();

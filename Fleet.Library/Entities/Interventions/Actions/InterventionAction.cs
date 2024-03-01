@@ -1,6 +1,6 @@
 ﻿using Regira.Entities.Attachments.Abstractions;
 using Regira.Entities.Models.Abstractions;
-using Regira.Fleet.Entities.Abstractions;
+using Regira.Fleet.Abstractions;
 using Regira.Fleet.Entities.InterventionOperators.Operators;
 using Regira.Fleet.Entities.Interventions.Invoices;
 using Regira.Fleet.Entities.InterventionTypes;

@@ -2,7 +2,7 @@
 using Regira.Fleet.Core.Abstractions;
 using Regira.Fleet.Identity.Constants;
 
-namespace Regira.Fleet.Identity.Middleware;
+namespace Regira.Fleet.Identity.Web.Middleware;
 
 public class AppContextLoaderMiddleware(RequestDelegate next)
 {

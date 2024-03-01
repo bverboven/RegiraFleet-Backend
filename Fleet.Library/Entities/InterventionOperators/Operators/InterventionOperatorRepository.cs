@@ -2,11 +2,12 @@
 using Regira.Entities.EFcore.Extensions;
 using Regira.Entities.Models;
 using Regira.Fleet.Abstractions;
+using Regira.Fleet.Core.Abstractions;
 using Regira.Fleet.Data;
 
 namespace Regira.Fleet.Entities.InterventionOperators.Operators;
 
-public class InterventionOperatorRepository(FleetContext dbContext) : FleetRepositoryBase<InterventionOperator, InterventionOperatorSearchObject, EntitySortBy, InterventionOperatorIncludes>(dbContext)
+public class InterventionOperatorRepository(FleetContext dbContext, IFleetAppContext appContext) : FleetRepositoryBase<InterventionOperator, InterventionOperatorSearchObject, EntitySortBy, InterventionOperatorIncludes>(dbContext, appContext)
 {
     public override IQueryable<InterventionOperator> Filter(IQueryable<InterventionOperator> query, InterventionOperatorSearchObject? so)
     {

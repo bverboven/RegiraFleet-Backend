@@ -1,8 +1,8 @@
-﻿using Regira.Entities.Models;
+﻿using Regira.Fleet.Abstractions;
 
 namespace Regira.Fleet.Entities.InterventionTypes;
 
-public class InterventionTypeSearchObject : SearchObject
+public class InterventionTypeSearchObject : FleetSearchObject
 {
     public string? Code { get; set; }
     public string? Title { get; set; }

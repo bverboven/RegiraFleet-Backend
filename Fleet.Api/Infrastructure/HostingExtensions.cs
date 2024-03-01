@@ -1,10 +1,12 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using Regira.CRM.Identity.Web.DependencyInjection;
 using Regira.Fleet.DependencyInjection;
 using Regira.Fleet.Identity.Data;
-using Regira.Fleet.Identity.Middleware;
+using Regira.Fleet.Identity.Web.Middleware;
 using Regira.Fleet.Statistics;
 using Regira.IO.Storage.FileSystem;
 using Regira.Office.Excel.Abstractions;
@@ -143,7 +145,7 @@ public static class HostingExtensions
 
         app
             .MapControllers()
-            //.RequireAuthorization(new AuthorizeAttribute { AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme })
+            .RequireAuthorization(new AuthorizeAttribute { AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme })
             ;
 
         return app;

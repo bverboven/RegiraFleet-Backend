@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using Regira.DAL.EFcore.Normalizing;
 using Regira.Entities.DependencyInjection;
 using Regira.Entities.DependencyInjection.Extensions;
 using Regira.Entities.EFcore.Abstractions;
@@ -105,12 +106,13 @@ public static class ServiceCollectionExtensions
                 .AddTransient<IObjectNormalizer>(
                     p => new FleetEntityNormalizer(p.GetRequiredService<INormalizer>()))
                 .AddTransient<AddressNormalizer>()
-                .AddTransient(p => new PhoneNumberFormatter(p.GetRequiredService<CultureContext>().Culture))
+                .AddTransient(p => new PhoneNumberFormatter(p.GetRequiredService<ICultureContext>().Culture))
                 .AddTransient<ContactDataNormalizer>()
                 .AddTransient<IdentificationNumberNormalizer>()
                 .AddTransient<IFleetEntityNormalizer<InterventionAction>, InterventionActionNormalizer>()
                 .AddTransient<IFleetEntityNormalizer<InterventionOperator>, InterventionOperatorNormalizer>()
-            ;
+                // finally (put last)
+                .AddObjectNormalizingContainer((_, c) => c.ExtractFromServiceCollection(services));
     }
     static IServiceCollection AddPrimers(this IServiceCollection services)
     {

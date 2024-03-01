@@ -1,11 +1,12 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Regira.Entities.Models;
 using Regira.Fleet.Abstractions;
+using Regira.Fleet.Core.Abstractions;
 using Regira.Fleet.Data;
 
 namespace Regira.Fleet.Entities.Interventions.Actions;
 
-public class InterventionActionRepository(FleetContext dbContext) : FleetRepositoryBase<InterventionAction, InterventionActionSearchObject, EntitySortBy, InterventionActionIncludes>(dbContext)
+public class InterventionActionRepository(FleetContext dbContext, IFleetAppContext appContext) : FleetRepositoryBase<InterventionAction, InterventionActionSearchObject, EntitySortBy, InterventionActionIncludes>(dbContext, appContext)
 {
     public override IQueryable<InterventionAction> Filter(IQueryable<InterventionAction> query, InterventionActionSearchObject? so)
     {

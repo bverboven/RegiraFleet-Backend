@@ -10,7 +10,7 @@
         <Product>Fleet Manager</Product>
         <Nullable>enable</Nullable>
         <ImplicitUsings>enable</ImplicitUsings>
-        <InvariantGlobalization>true</InvariantGlobalization>
+        <!--<InvariantGlobalization>true</InvariantGlobalization>-->
     </PropertyGroup>
 
     <ItemGroup>

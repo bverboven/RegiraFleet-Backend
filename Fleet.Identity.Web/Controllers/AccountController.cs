@@ -36,7 +36,11 @@ public class AccountController(JwtTokenHelper _tokenHelper, FleetUserManager _us
                 if (isAuthenticated)
                 {
                     var principal = await _claimsFactory.CreateAsync(user);
-                    return Ok(CreateSuccessResponse(principal.Claims, clientId));
+                    // check if user is linked to correct client
+                    if (principal.HasClaim(FleetClaimTypes.ClientId, model.Client))
+                    {
+                        return Ok(CreateSuccessResponse(principal.Claims, clientId));
+                    }
                 }
                 // authentication failed
                 await _userManager.AccessFailedAsync(user);

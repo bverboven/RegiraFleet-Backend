@@ -2,11 +2,12 @@
 using Regira.Entities.EFcore.Extensions;
 using Regira.Entities.Keywords;
 using Regira.Fleet.Abstractions;
+using Regira.Fleet.Core.Abstractions;
 using Regira.Fleet.Data;
 
 namespace Regira.Fleet.Entities.InterventionTypes;
 
-public class InterventionTypeRepository(FleetContext dbContext) : FleetRepositoryBase<InterventionType, InterventionTypeSearchObject>(dbContext)
+public class InterventionTypeRepository(FleetContext dbContext, IFleetAppContext appContext) : FleetRepositoryBase<InterventionType, InterventionTypeSearchObject>(dbContext, appContext)
 {
     public override IQueryable<InterventionType> Filter(IQueryable<InterventionType> query, InterventionTypeSearchObject? so)
     {

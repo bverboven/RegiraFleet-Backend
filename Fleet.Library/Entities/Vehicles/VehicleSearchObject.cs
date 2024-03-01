@@ -1,8 +1,8 @@
-﻿using Regira.Entities.Models;
+﻿using Regira.Fleet.Abstractions;
 
 namespace Regira.Fleet.Entities.Vehicles;
 
-public class VehicleSearchObject : SearchObject
+public class VehicleSearchObject : FleetSearchObject
 {
     public string? Code { get; set; }
     public string? Model { get; set; }

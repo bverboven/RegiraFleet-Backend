@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Builder;
 
-namespace Regira.Fleet.Identity.Middleware;
+namespace Regira.Fleet.Identity.Web.Middleware;
 
 public static class AppContextLoaderMiddlewareExtensions
 {
