@@ -11,7 +11,7 @@ namespace Regira.Fleet.Identity.DependencyInjection;
 
 public static class ServiceCollectionExtensions
 {
-    public class RegiraAuthenticateOptions
+    public class FleetAuthenticateOptions
     {
         internal Func<IServiceProvider, IMailer>? MailerFactory;
         public void AddMailer(Func<IServiceProvider, IMailer> factory)
@@ -20,7 +20,7 @@ public static class ServiceCollectionExtensions
         }
     }
 
-    public static IdentityBuilder AddRegiraAuthentication(this IServiceCollection services, RegiraAuthenticateOptions options)
+    public static IdentityBuilder AddFleetAuthentication(this IServiceCollection services, FleetAuthenticateOptions options)
     {
         var builder = services
             .AddIdentityCore<FleetUser>(o =>
@@ -50,11 +50,11 @@ public static class ServiceCollectionExtensions
 
         return builder;
     }
-    public static IdentityBuilder AddRegiraAuthentication(this IServiceCollection services, Action<RegiraAuthenticateOptions>? configure = null)
+    public static IdentityBuilder AddFleetAuthentication(this IServiceCollection services, Action<FleetAuthenticateOptions>? configure = null)
     {
-        var options = new RegiraAuthenticateOptions();
+        var options = new FleetAuthenticateOptions();
         configure?.Invoke(options);
 
-        return AddRegiraAuthentication(services, options);
+        return AddFleetAuthentication(services, options);
     }
 }

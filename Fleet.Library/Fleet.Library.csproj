@@ -11,12 +11,6 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <Compile Remove="Entities\Suppliers\SupplierTypes\**" />
-      <EmbeddedResource Remove="Entities\Suppliers\SupplierTypes\**" />
-      <None Remove="Entities\Suppliers\SupplierTypes\**" />
-    </ItemGroup>
-
-    <ItemGroup>
         <PackageReference Include="AutoMapper" Version="13.0.1" />
         <PackageReference Include="EFCore.NamingConventions" Version="8.0.3" />
         <PackageReference Include="Pomelo.EntityFrameworkCore.MySql" Version="8.0.0" />
@@ -29,6 +23,10 @@
 
     <ItemGroup>
         <Folder Include="Migrations\" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\Fleet.Core\Fleet.Core.csproj" />
     </ItemGroup>
 
 </Project>

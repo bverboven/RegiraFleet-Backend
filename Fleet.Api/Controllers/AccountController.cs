@@ -1,70 +1,137 @@
-﻿using System.Security.Claims;
-using IdentityModel;
+﻿using IdentityModel;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Net.Http.Headers;
 using Regira.Fleet.Api.Models.Authentication;
-using Regira.Fleet.Authentication;
+using Regira.Fleet.Identity.Constants;
+using Regira.Fleet.Identity.Models;
+using Regira.Fleet.Identity.Services;
+using Regira.Security.Authentication.Jwt.Extensions;
 using Regira.Security.Authentication.Jwt.Services;
+using Regira.Web.Utilities;
+using System.Security.Claims;
 
 namespace Regira.Fleet.Api.Controllers;
 
 [ApiController]
 [Route("auth")]
-public class AccountController(JwtTokenHelper tokenHelper, UserManager userManager) : ControllerBase
+public class AccountController(JwtTokenHelper tokenHelper, FleetUserManager userManager, IUserClaimsPrincipalFactory<FleetUser> claimsFactory, ILogger<AccountController> logger) : ControllerBase
 {
     [AllowAnonymous]
     [HttpPost]
-    public IActionResult Authenticate([FromBody] AuthenticateInputDto model)
+    public async Task<IActionResult> Authenticate([FromBody] AuthenticateInputDto model, [FromQuery] string clientId)
     {
-        var user = userManager.Verify(model.Username, model.Password);
-        if (user == null)
+        bool? isLockedOut = null;
+        DateTimeOffset? lockedOutEnd = null;
+
+        var user = await userManager.FindByNameAsync(model.Username!);
+        if (user != null)
         {
-            return StatusCode(StatusCodes.Status401Unauthorized, new
+            isLockedOut = await userManager.IsLockedOutAsync(user);
+            if (isLockedOut == false)
+            {
+                bool isAuthenticated = await userManager.CheckPasswordAsync(user, model.Password ?? string.Empty);
+                if (isAuthenticated)
+                {
+                    var principal = await claimsFactory.CreateAsync(user);
+
+                    return Ok(CreateSuccessResponse(principal.Claims, clientId));
+                }
+                // authentication failed
+                await userManager.AccessFailedAsync(user);
+            }
+            else
+            {
+                lockedOutEnd = await userManager.GetLockoutEndDateAsync(user);
+                logger.LogWarning($"User {user.Id} {Request.GetIPAddress()} locked out until {lockedOutEnd:HH:mm:ss}");
+            }
+        }
+
+        return StatusCode(StatusCodes.Status401Unauthorized, CreateFailedResponse(isLockedOut, lockedOutEnd));
+    }
+
+    [HttpPost("validate")]
+    public async Task<IActionResult> Validate()
+    {
+        if (User.Identity?.IsAuthenticated ?? false)
+        {
+            // check if user is valid
+            var exists = await userManager.FindByIdAsync(User.FindUserId()!) != null;
+            return exists ? NoContent() : Forbid();
+        }
+
+        return Unauthorized();
+    }
+    [HttpPost("refresh")]
+    public async Task<IActionResult> Refresh()
+    {
+        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        if (string.IsNullOrWhiteSpace(userId))
+        {
+            return Unauthorized(new
             {
                 isAuthenticated = false
             });
         }
-
-        var claims = new List<Claim>
+        var user = await userManager.FindByIdAsync(userId);
+        if (user == null)
         {
-            new (JwtClaimTypes.Id,model.Username),
-        };
-        if (!string.IsNullOrWhiteSpace(user.DisplayName))
-        {
-            claims.Add(new(JwtClaimTypes.Name, user.DisplayName));
+            return Unauthorized(new
+            {
+                isAuthenticated = false
+            });
         }
-        claims.AddRange(user.Permissions.Select(p => new Claim("permission", p)));
-
-        var token = tokenHelper.Create(claims: claims);
-
-
-        return Ok(CreateResponse(claims, token));
+        var principal = await claimsFactory.CreateAsync(user);
+        return Ok(CreateSuccessResponse(principal.Claims, User.FindFirstValue("aud")!));
     }
 
-    [HttpPost("validate")]
-    public IActionResult Validate()
+
+    [HttpGet("personal-data")]
+    public async Task<IActionResult> GetPersonalData()
     {
-        var token = Request.Headers[HeaderNames.Authorization].ToString().Split(" ")[1];
-        return Ok(CreateResponse(User.Claims.ToList(), token));
+        var user = await userManager.FindByIdAsync(User.FindUserId()!);
+        if (user == null)
+        {
+            return Unauthorized();
+        }
+        var principal = await claimsFactory.CreateAsync(user);
+        var personalDataClaimTypes = new[]
+        {
+            JwtClaimTypes.GivenName, JwtClaimTypes.FamilyName
+        };
+        var personalData = principal.Claims.Where(c => personalDataClaimTypes.Contains(c.Type))
+            .ToDictionary(x => x.Type, x => x.Value);
+        return Ok(personalData);
     }
-    [HttpPost("refresh")]
-    public IActionResult Refresh()
+    [HttpGet("permissions")]
+    public async Task<IActionResult> GetPermissions()
     {
-        var token = tokenHelper.Create(User.Claims);
-        return Ok(CreateResponse(User.Claims.ToList(), token));
+        var user = await userManager.FindByIdAsync(User.FindUserId()!);
+        if (user == null)
+        {
+            return Unauthorized();
+        }
+        var principal = await claimsFactory.CreateAsync(user);
+        var permissions = principal.Claims.Where(c => c.Type == FleetClaimTypes.Permission).Select(c => c.Value);
+        return Ok(permissions);
     }
 
-    protected AuthenticateResponseDto CreateResponse(IList<Claim> claims, string token)
-    {
-        var permissions = claims.Where(c => c.Type == "permission").Select(c => c.Value).ToList();
-        var displayName = claims.FirstOrDefault(c => c.Type == JwtClaimTypes.Name)?.Value;
 
+    protected AuthenticateResponseDto CreateFailedResponse(bool? isLockedOut = null, DateTimeOffset? lockedOutEnd = null)
+    {
+        return new AuthenticateResponseDto
+        {
+            IsLockedOut = isLockedOut,
+            // datetime without timezone
+            LockedOutEnd = lockedOutEnd.HasValue ? new DateTime(lockedOutEnd.Value.Ticks) : null
+        };
+    }
+    protected AuthenticateResponseDto CreateSuccessResponse(IEnumerable<Claim> claims, string? audience = null)
+    {
+        var token = tokenHelper.Create(claims, audience);
         return new AuthenticateResponseDto
         {
             IsAuthenticated = true,
-            DisplayName = displayName,
-            Permissions = permissions,
             Token = token
         };
     }

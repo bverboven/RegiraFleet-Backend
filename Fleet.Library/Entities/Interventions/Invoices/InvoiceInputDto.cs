@@ -8,9 +8,9 @@ public class InvoiceInputDto
     [MaxLength(32)]
     public string? InvoiceNumber { get; set; }
     public DateTime? InvoiceDate { get; set; }
-    [MaxLength(1)]
-    public string? TaxCategory { get; set; }
+    public TaxCategory? TaxCategory { get; set; }
     public decimal? TaxAmount { get; set; }
     public decimal? PriceExcl { get; set; }
     public decimal? PriceIncl { get; set; }
+    public string? Notes { get; set; }
 }

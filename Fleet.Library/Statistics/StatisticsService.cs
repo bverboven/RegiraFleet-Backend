@@ -14,7 +14,7 @@ public class StatisticsService(FleetContext dbContext) : IDisposable
         var list = new List<dynamic>();
         await using (var cmd = _dbConnection.CreateCommand())
         {
-            cmd.CommandText = CARTYPES_PER_MONTH;
+            cmd.CommandText = VEHICLETYPES_PER_MONTH;
             var yearParam = cmd.CreateParameter();
             yearParam.ParameterName = "year";
             yearParam.Value = year;
@@ -62,7 +62,7 @@ public class StatisticsService(FleetContext dbContext) : IDisposable
         var list = new List<dynamic>();
         await using (var cmd = _dbConnection.CreateCommand())
         {
-            cmd.CommandText = CARS_PER_CARTYPES_PER_MONTH;
+            cmd.CommandText = VEHICLES_PER_VEHICLETYPES_PER_MONTH;
             var yearParam = cmd.CreateParameter();
             yearParam.ParameterName = "year";
             yearParam.Value = year;
@@ -118,7 +118,7 @@ public class StatisticsService(FleetContext dbContext) : IDisposable
         var list = new List<dynamic>();
         await using (var cmd = _dbConnection.CreateCommand())
         {
-            cmd.CommandText = CARS_PER_MONTH;
+            cmd.CommandText = VEHICLES_PER_MONTH;
             var yearParam = cmd.CreateParameter();
             yearParam.ParameterName = "year";
             yearParam.Value = year;
@@ -163,7 +163,7 @@ public class StatisticsService(FleetContext dbContext) : IDisposable
         var list = new List<dynamic>();
         await using (var cmd = _dbConnection.CreateCommand())
         {
-            cmd.CommandText = INTERVENTIONTYPES_PER_MONTH;
+            cmd.CommandText = INTERVENTION_TYPES_PER_MONTH;
             var yearParam = cmd.CreateParameter();
             yearParam.ParameterName = "year";
             yearParam.Value = year;
@@ -199,12 +199,12 @@ public class StatisticsService(FleetContext dbContext) : IDisposable
 
         return stats;
     }
-    public async Task<IList<IDictionary<string, object?>>> Suppliers_Per_Month(int year)
+    public async Task<IList<IDictionary<string, object?>>> InterventionOperators_Per_Month(int year)
     {
         var list = new List<dynamic>();
         await using (var cmd = _dbConnection.CreateCommand())
         {
-            cmd.CommandText = SUPPLIERS_PER_MONTH;
+            cmd.CommandText = INTERVENTION_OPERATORS_PER_MONTH;
             var yearParam = cmd.CreateParameter();
             yearParam.ParameterName = "year";
             yearParam.Value = year;
@@ -215,26 +215,26 @@ public class StatisticsService(FleetContext dbContext) : IDisposable
                 while (await reader.ReadAsync())
                 {
                     var month = reader.GetInt32("month");
-                    var supplierId = reader.GetInt32("supplier_id");
-                    var supplier = reader.GetString("supplier");
+                    var intervention_operatorId = reader.GetInt32("intervention_operator_id");
+                    var intervention_operator = reader.GetString("intervention_operator");
                     var total = reader.GetDecimal("total");
-                    list.Add(new { month, supplierId, supplier, total });
+                    list.Add(new { month, intervention_operatorId, intervention_operator, total });
                 }
             }
         }
 
         var months = list.Select(x => (int)x.month).Distinct().OrderBy(x => x).ToArray();
-        var suppliers = list
-            .GroupBy(x => x.supplierId)
-            .ToDictionary(x => x.Key, x => x.First().supplier);
+        var intervention_operators = list
+            .GroupBy(x => x.intervention_operatorId)
+            .ToDictionary(x => x.Key, x => x.First().intervention_operator);
         var stats = list
-            .OrderBy(x => x.supplier)
-            .GroupBy(x => x.supplierId)
+            .OrderBy(x => x.intervention_operator)
+            .GroupBy(x => x.intervention_operatorId)
             .Select(x =>
             {
                 var dic = new Dictionary<string, object?>
                 {
-                    {"Leverancier", suppliers[x.Key]},
+                    {"Leverancier", intervention_operators[x.Key]},
                     {"JaarTotaal", x.Sum(v => (decimal?) v.total ?? 0)}
                 };
                 AddMonthTotals(dic, year, months, x);
@@ -251,7 +251,7 @@ public class StatisticsService(FleetContext dbContext) : IDisposable
         var list = new List<dynamic>();
         await using (var cmd = _dbConnection.CreateCommand())
         {
-            cmd.CommandText = INTERVENTIONTYPES_AND_CARTYPES_PER_MONTH;
+            cmd.CommandText = INTERVENTIONTYPES_AND_VEHICLETYPES_PER_MONTH;
             var yearParam = cmd.CreateParameter();
             yearParam.ParameterName = "year";
             yearParam.Value = year;
@@ -369,7 +369,7 @@ public class StatisticsService(FleetContext dbContext) : IDisposable
     }
 
     #region SQL
-    const string CARTYPES_PER_MONTH = @"SELECT year, month, cartype_code, total
+    const string VEHICLETYPES_PER_MONTH = @"SELECT year, month, cartype_code, total
 FROM (
 	SELECT Year(b.invoice_date) year, Month(b.invoice_date) month, ct.code cartype_code, Sum(b.price_incl) total
 	FROM bookings b
@@ -379,7 +379,7 @@ FROM (
 ) q
 WHERE year = @year
 ORDER BY 1, 3, 2;";
-    const string CARS_PER_CARTYPES_PER_MONTH = @"SELECT year, month, car_code, brand_code, model, total
+    const string VEHICLES_PER_VEHICLETYPES_PER_MONTH = @"SELECT year, month, car_code, brand_code, model, total
 FROM (
 	SELECT Year(b.invoice_date) year, Month(b.invoice_date) month, ct.code car_type_code, c.code car_code, cb.code brand_code, c.model, Sum(b.price_incl) total
 	FROM bookings b
@@ -391,7 +391,7 @@ FROM (
 WHERE year = @year
 AND car_type_code = @car_type_code
 ORDER BY 1, 2, 3;";
-    const string CARS_PER_MONTH = @"SELECT year, month, car_code, brand_code, model, total
+    const string VEHICLES_PER_MONTH = @"SELECT year, month, car_code, brand_code, model, total
 FROM (
 	SELECT Year(b.invoice_date) year, Month(b.invoice_date) month, c.code car_code, cb.code brand_code, c.model, Sum(b.price_incl) total
 	FROM bookings b
@@ -401,7 +401,7 @@ FROM (
 ) q
 WHERE year = @year
 ORDER BY 1, 2, 3";
-    const string INTERVENTIONTYPES_PER_MONTH = @"SELECT year, month, interventiontype_code, total
+    const string INTERVENTION_TYPES_PER_MONTH = @"SELECT year, month, interventiontype_code, total
 FROM (
 	SELECT Year(b.invoice_date) year, Month(b.invoice_date) month, it.code interventiontype_code, Sum(b.price_incl) total
 	FROM bookings b
@@ -410,16 +410,16 @@ FROM (
 ) q
 WHERE year = @year
 ORDER BY 1, 3, 2;";
-    const string SUPPLIERS_PER_MONTH = @"SELECT year, month, supplier_id, supplier, total
+    const string INTERVENTION_OPERATORS_PER_MONTH = @"SELECT year, month, intervention_operator_id, intervention_operator, total
 FROM (
-	SELECT Year(b.invoice_date) year, Month(b.invoice_date) month, s.id supplier_id, s.name supplier, Coalesce(Sum(b.price_incl),0) total
+	SELECT Year(b.invoice_date) year, Month(b.invoice_date) month, s.id intervention_operator_id, s.name intervention_operator, Coalesce(Sum(b.price_incl),0) total
 	FROM bookings b
-    INNER JOIN suppliers s ON b.supplier_id = s.id
+    INNER JOIN intervention_operators s ON b.intervention_operator_id = s.id
 	GROUP BY 1, 2, 3, 4
 ) q
 WHERE year = @year
 ORDER BY 1, 3;";
-    const string INTERVENTIONTYPES_AND_CARTYPES_PER_MONTH = @"SELECT year, month, interventiontype_code, car_type, total
+    const string INTERVENTIONTYPES_AND_VEHICLETYPES_PER_MONTH = @"SELECT year, month, interventiontype_code, car_type, total
 FROM (
 	SELECT Year(b.invoice_date) year, Month(b.invoice_date) month, it.code interventiontype_code, ct.code car_type, Sum(b.price_incl) total
 	FROM bookings b

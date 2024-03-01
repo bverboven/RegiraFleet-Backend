@@ -6,7 +6,7 @@ using Regira.Fleet.Data;
 
 namespace Regira.Fleet.Entities.Vehicles.Brands;
 
-public class BrandRepository(FleetContext dbContext) : FleetRepository<Brand, BrandSearchObject>(dbContext)
+public class BrandRepository(FleetContext dbContext) : FleetRepositoryBase<Brand, BrandSearchObject>(dbContext)
 {
     public override IQueryable<Brand> Filter(IQueryable<Brand> query, BrandSearchObject? so)
     {

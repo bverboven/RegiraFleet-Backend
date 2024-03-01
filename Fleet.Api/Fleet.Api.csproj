@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk.Web">
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
     <PropertyGroup>
         <TargetFramework>net8.0</TargetFramework>
@@ -14,14 +14,7 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <Compile Remove="Models\Input\**" />
-      <Content Remove="Models\Input\**" />
-      <EmbeddedResource Remove="Models\Input\**" />
-      <None Remove="Models\Input\**" />
-    </ItemGroup>
-
-    <ItemGroup>
-      <Compile Remove="Controllers\SupplierTypeController.cs" />
+      <Compile Remove="Controllers\AccountController.cs" />
     </ItemGroup>
 
     <ItemGroup>
@@ -37,7 +30,7 @@
     </ItemGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\Fleet.Authentication\Fleet.Authentication.csproj" />
+        <ProjectReference Include="..\Fleet.Identity.Web\Fleet.Identity.Web.csproj" />
         <ProjectReference Include="..\Fleet.Library\Fleet.Library.csproj" />
     </ItemGroup>
 

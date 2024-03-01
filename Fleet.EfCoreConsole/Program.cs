@@ -15,6 +15,7 @@ var host = CreateHostBuilder(args)
     .Build();
 
 var accountContext = host.Services.GetRequiredService<AccountsContext>();
+//await accountContext.Database.EnsureDeletedAsync();
 await accountContext.Database.EnsureCreatedAsync();
 var fleetContext = host.Services.GetRequiredService<FleetContext>();
 await fleetContext.Database.EnsureDeletedAsync();

@@ -1,5 +1,4 @@
 using Regira.Fleet.Api.Infrastructure;
-using Regira.Fleet.Authentication;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -7,7 +6,8 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services
     .AddApi()
     .AddServices(builder.Configuration)
-    .AddFleetAuthentication(builder.Configuration);
+    .AddIdentity(builder.Configuration)
+    ;
 
 var app = builder.Build();
 

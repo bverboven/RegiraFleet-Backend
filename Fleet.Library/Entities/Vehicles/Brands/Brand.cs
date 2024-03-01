@@ -8,12 +8,13 @@ namespace Regira.Fleet.Entities.Vehicles.Brands;
 public class Brand : IFleetEntity, IEntityWithSerial, IHasCode, IHasNormalizedTitle, IArchivable
 {
     public int Id { get; set; }
+    [StringLength(32)]
     public string Guid { get; set; } = System.Guid.NewGuid().ToString("N");
     public int ClientId { get; set; }
-    [MaxLength(3)]
+    [MaxLength(8)]
     public string? Code { get; set; }
     [MaxLength(64)]
-    public string? Title { get; set; }
+    public string Title { get; set; } = null!;
     public DateTime Created { get; set; } = DateTime.Now;
     public DateTime? LastModified { get; set; }
     public bool IsArchived { get; set; }

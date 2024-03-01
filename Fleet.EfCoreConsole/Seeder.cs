@@ -1,7 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Regira.Fleet.Data;
 using Regira.Fleet.Entities.Clients;
-using Regira.Fleet.Entities.Interventions.InterventionTypes;
+using Regira.Fleet.Entities.InterventionTypes;
 using Regira.Fleet.Entities.Vehicles.Brands;
 using Regira.Fleet.Entities.Vehicles.VehicleTypes;
 
@@ -9,6 +9,37 @@ namespace Fleet.EfCoreConsole;
 
 public class Seeder(FleetContext dbContext)
 {
+    Dictionary<string, string> CarBrands => new()
+    {
+        {"ALF", "Alfa Romeo"},
+        {"AUD", "Audi"},
+        {"BYD", "BYD"},
+        {"CIT", "Citroën"},
+        {"DAC", "Dacia"},
+        {"DSA", "DS Automobiles"},
+        {"FIA", "Fiat"},
+        {"FOR", "Ford"},
+        {"HON", "Honda"},
+        {"HYU", "Hyundai"},
+        {"JAG", "Jaguar"},
+        {"KIA", "Kia"},
+        {"LRV", "Land Rover"},
+        {"MAZ", "Mazda"},
+        {"MBZ", "Mercedes-Benz"},
+        {"MIN", "Mini"},
+        {"NIS", "Nissan"},
+        {"OPL", "Opel"},
+        {"PGT", "Peugeot"},
+        {"PLS", "Polestar"},
+        {"POR", "Porsche"},
+        {"RNT", "Renault"},
+        {"SKO", "Skoda"},
+        {"SUZ", "Suzuki"},
+        {"TES", "Tesla"},
+        {"TOY", "Toyota"},
+        {"VWG", "Volkswagen"},
+        {"VLV", "Volvo"}
+    };
     private IList<Client> _clients = null!;
     private Client PublicTransport => _clients.Single(x => x.Code == "TRA");
     private Client Police => _clients.Single(x => x.Code == "POL");
@@ -54,14 +85,7 @@ public class Seeder(FleetContext dbContext)
                 new() { ClientId = PublicTransport.Id, Code = "HOO", Title = "Van Hool" },
                 new() { ClientId = PublicTransport.Id, Code = "REN", Title = "Renault" },
             });
-            items.AddRange(new Brand[]
-            {
-                new() { ClientId = Police.Id, Code = "BMW", Title = "BMW" },
-                new() { ClientId = Police.Id, Code = "FOR", Title = "Ford" },
-                new() { ClientId = Police.Id, Code = "MER", Title = "Mercedes" },
-                new() { ClientId = Police.Id, Code = "PEU", Title = "Peugeot" },
-                new() { ClientId = Police.Id, Code = "REN", Title = "Renault" },
-            });
+            items.AddRange(CarBrands.Select(b => new Brand { ClientId = Police.Id, Code = b.Key, Title = b.Value }));
             items.AddRange(new Brand[]
             {
                 new() { ClientId = FireBrigade.Id, Code = "BMW", Title = "BMW" },
@@ -117,7 +141,7 @@ public class Seeder(FleetContext dbContext)
                 new() { ClientId = Ambulance.Id, Code = "BRAKE", Title = "Remmen" },
                 new() { ClientId = Ambulance.Id, Code = "BODY", Title = "Carrosserie" }
             });
-            
+
             dbContext.InterventionTypes.AddRange(items);
             await dbContext.SaveChangesAsync();
         }
@@ -154,7 +178,7 @@ public class Seeder(FleetContext dbContext)
                 new() { ClientId = Ambulance.Id, Code = "MOT", Title = "Motor" },
                 new() { ClientId = Ambulance.Id, Code = "EXEC", Title = "Directiewagen" },
             });
-            
+
             dbContext.VehicleTypes.AddRange(items);
             await dbContext.SaveChangesAsync();
         }

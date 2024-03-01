@@ -2,12 +2,12 @@
 using Regira.Fleet.Entities.Vehicles;
 using Regira.Fleet.Entities.Vehicles.Brands;
 using Regira.Fleet.Entities.Vehicles.VehicleTypes;
-using Regira.Fleet.Entities.Interventions;
-using Regira.Fleet.Entities.Interventions.InterventionTypes;
 using Regira.Fleet.Entities.Interventions.Invoices;
-using Regira.Fleet.Entities.Suppliers;
-using Regira.Fleet.Entities.Suppliers.Addresses;
-using Regira.Fleet.Entities.Suppliers.ContactData;
+using Regira.Fleet.Entities.InterventionOperators.Addresses;
+using Regira.Fleet.Entities.InterventionOperators.ContactData;
+using Regira.Fleet.Entities.InterventionTypes;
+using Regira.Fleet.Entities.Interventions.Actions;
+using Regira.Fleet.Entities.InterventionOperators.Operators;
 
 namespace Regira.Fleet.Entities;
 
@@ -22,15 +22,15 @@ public class FleetProfile : Profile
         CreateMap<Brand, BrandDto>();
         CreateMap<BrandInputDto, Brand>();
 
-        CreateMap<Supplier, SupplierDto>();
-        CreateMap<SupplierInputDto, Supplier>();
+        CreateMap<InterventionOperator, InterventionOperatorDto>();
+        CreateMap<InterventionOperatorInputDto, InterventionOperator>();
         CreateMap<Address, AddressDto>();
         CreateMap<AddressInputDto, Address>();
-        CreateMap<SupplierContactData, SupplierContactDataDto>();
-        CreateMap<SupplierContactDataInputDto, SupplierContactData>();
+        CreateMap<InterventionOperatorContactData, InterventionOperatorContactDataDto>();
+        CreateMap<InterventionOperatorContactDataInputDto, InterventionOperatorContactData>();
 
-        CreateMap<Intervention, InterventionDto>();
-        CreateMap<InterventionInputDto, Intervention>();
+        CreateMap<InterventionAction, InterventionActionDto>();
+        CreateMap<InterventionActionInputDto, InterventionAction>();
         CreateMap<Invoice, InvoiceDto>();
         CreateMap<InvoiceInputDto, Invoice>();
         CreateMap<InterventionType, InterventionTypeDto>();

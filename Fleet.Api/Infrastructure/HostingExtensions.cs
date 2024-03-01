@@ -1,6 +1,10 @@
-﻿using Newtonsoft.Json;
+﻿using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
+using Regira.CRM.Identity.Web.DependencyInjection;
 using Regira.Fleet.DependencyInjection;
+using Regira.Fleet.Identity.Data;
+using Regira.Fleet.Identity.Middleware;
 using Regira.Fleet.Statistics;
 using Regira.IO.Storage.FileSystem;
 using Regira.Office.Excel.Abstractions;
@@ -93,6 +97,19 @@ public static class HostingExtensions
 
         return services;
     }
+    public static IServiceCollection AddIdentity(this IServiceCollection services, IConfiguration config)
+    {
+        services
+            .AddDbContext<AccountsContext>(db => db.UseNpgsql(config["ConnectionStrings:FleetAccounts"], o => o.MigrationsAssembly(typeof(AccountsContext).Assembly.GetName().Name)))
+            .AddFleetIdentity(o =>
+            {
+                var options = config.GetSection("Identity").Get<FleetIdentityOptions>()!;
+                o.SecretKey = options.SecretKey;
+                o.Audiences.AddRange(options.Audiences);
+            });
+
+        return services;
+    }
 
     public static WebApplication ConfigureApp(this WebApplication app)
     {
@@ -107,18 +124,19 @@ public static class HostingExtensions
 
         // Authorization header renamed to X-Authorization header for compatibility with Swagger (ignores the normal Authorization header)
         // cf. https://github.com/domaindrivendev/Swashbuckle.AspNetCore/issues/1295#issuecomment-588297906
-        app.Use((httpContext, next) => // For the oauth2-less!
-        {
-            if (httpContext.Request.Headers.TryGetValue("X-Authorization", out var authHeader))
-            {
-                httpContext.Request.Headers.Append("Authorization", authHeader);
-            }
+        //app.Use((httpContext, next) => // For the oauth2-less!
+        //{
+        //    if (httpContext.Request.Headers.TryGetValue("X-Authorization", out var authHeader))
+        //    {
+        //        httpContext.Request.Headers.Append("Authorization", authHeader);
+        //    }
 
-            return next();
-        });
+        //    return next();
+        //});
 
         app.UseAuthentication();
         app.UseAuthorization();
+        app.UseAppContextLoader();
 
         // global exception handling
         //app.UseGlobalExceptionHandling();

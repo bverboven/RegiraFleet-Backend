@@ -2,17 +2,32 @@
 using Microsoft.Extensions.DependencyInjection;
 using Regira.Entities.DependencyInjection;
 using Regira.Entities.DependencyInjection.Extensions;
+using Regira.Entities.EFcore.Abstractions;
 using Regira.Entities.EFcore.Attachments;
+using Regira.Entities.EFcore.Services;
 using Regira.Entities.Models;
+using Regira.Entities.Models.Abstractions;
+using Regira.Fleet.Core.Abstractions;
+using Regira.Fleet.Core.Models;
 using Regira.Fleet.Data;
 using Regira.Fleet.Entities;
-using Regira.Fleet.Entities.Interventions;
-using Regira.Fleet.Entities.Interventions.InterventionTypes;
-using Regira.Fleet.Entities.Suppliers;
+using Regira.Fleet.Entities.Clients;
+using Regira.Fleet.Entities.InterventionOperators.Normalizers;
+using Regira.Fleet.Entities.InterventionOperators.Operators;
+using Regira.Fleet.Entities.Interventions.Actions;
+using Regira.Fleet.Entities.Interventions.Normalizers;
+using Regira.Fleet.Entities.InterventionTypes;
 using Regira.Fleet.Entities.Vehicles;
 using Regira.Fleet.Entities.Vehicles.Brands;
 using Regira.Fleet.Entities.Vehicles.VehicleTypes;
+using Regira.Fleet.Normalizing;
+using Regira.Fleet.Normalizing.Abstractions;
+using Regira.Fleet.Primers;
+using Regira.Globalization.LibPhoneNumber;
 using Regira.IO.Storage.Abstractions;
+using Regira.Normalizing;
+using Regira.Normalizing.Abstractions;
+using Regira.Normalizing.Models;
 
 namespace Regira.Fleet.DependencyInjection;
 
@@ -29,34 +44,46 @@ public static class ServiceCollectionExtensions
         var options = new FleetHostingOptions();
         configure.Invoke(options);
 
+        // DbContext
         services
             //.AddDbContext<FleetContext>(db => db.UseMySql(options.ConnectionString, ServerVersion.AutoDetect(options.ConnectionString)));
             .AddDbContext<FleetContext>(db => db.UseNpgsql(options.ConnectionString, o => o.MigrationsAssembly(typeof(FleetContext).Assembly.GetName().Name)));
 
+        // Contexts
         services
-            //.AddAutoMapper(typeof(FleetProfile).Assembly)
-            .UseEntities<FleetContext>(c => c.ProfileAssemblies.Add(typeof(FleetProfile).Assembly))
-            .AddAttachmentServices(options.FileServiceFactory ?? throw new InvalidOperationException($"No implementation for {nameof(IFileService)} configured"))
-            .For<Intervention, InterventionRepository, InterventionSearchObject, EntitySortBy, InterventionIncludes>(e =>
-            {
-                e.HasRepository<InterventionRepository>();
-                e.HasAttachments<FleetContext, Intervention, InterventionAttachment>();
-            })
-            .For<Brand, BrandRepository, BrandSearchObject, EntitySortBy, EntityIncludes>()
-            .For<Vehicle, VehicleRepository, VehicleSearchObject, EntitySortBy, EntityIncludes>(e =>
-            {
-                e.HasRepository<VehicleRepository>();
-                e.HasAttachments<FleetContext, Vehicle, VehicleAttachment>();
-            })
-            .For<VehicleType, VehicleTypeRepository, VehicleTypeSearchObject, EntitySortBy, EntityIncludes>()
-            .For<InterventionType, InterventionTypeRepository, InterventionTypeSearchObject, EntitySortBy, EntityIncludes>()
-            .For<Supplier, SupplierRepository, SupplierSearchObject, EntitySortBy, SupplierIncludes>(e =>
-            {
-                e.HasRepository<SupplierRepository>();
-                e.HasAttachments<FleetContext, Supplier, SupplierAttachment>();
-            });
+            .AddScoped<IClientContext, ClientContext>()
+            .AddScoped<ICultureContext, CultureContext>()
+            .AddScoped<IFleetAppContext, FleetAppContext>();
 
-        return services;
+        // Entities
+        return services
+                // Entity context
+                .UseEntities<FleetContext>(c => c.ProfileAssemblies.Add(typeof(FleetProfile).Assembly))
+                // Entity Items
+                .For<InterventionAction, InterventionActionRepository, InterventionActionSearchObject, EntitySortBy, InterventionActionIncludes>(e =>
+                {
+                    e.HasRepository<InterventionActionRepository>();
+                    e.HasAttachments<FleetContext, InterventionAction, InterventionActionAttachment>();
+                })
+                .For<Brand, BrandRepository, BrandSearchObject, EntitySortBy, EntityIncludes>()
+                .For<Vehicle, VehicleRepository, VehicleSearchObject, EntitySortBy, EntityIncludes>(e =>
+                {
+                    e.HasRepository<VehicleRepository>();
+                    e.HasAttachments<FleetContext, Vehicle, VehicleAttachment>();
+                })
+                .For<VehicleType, VehicleTypeRepository, VehicleTypeSearchObject, EntitySortBy, EntityIncludes>()
+                .For<InterventionType, InterventionTypeRepository, InterventionTypeSearchObject, EntitySortBy, EntityIncludes>()
+                .For<InterventionOperator, InterventionOperatorRepository, InterventionOperatorSearchObject, EntitySortBy, InterventionOperatorIncludes>(e =>
+                {
+                    e.HasRepository<InterventionOperatorRepository>();
+                    e.HasAttachments<FleetContext, InterventionOperator, InterventionOperatorAttachment>();
+                })
+                // Attachments
+                .AddAttachmentServices(options.FileServiceFactory ?? throw new InvalidOperationException($"No implementation for {nameof(IFileService)} configured"))
+                // Normalizers
+                .AddNormalizers()
+                // Primers
+                .AddPrimers();
     }
 
     static EntityServiceCollection<FleetContext> AddAttachmentServices(this EntityServiceCollection<FleetContext> services, Func<IServiceProvider, IFileService> configure)
@@ -65,7 +92,31 @@ public static class ServiceCollectionExtensions
             .ConfigureAttachmentService(configure)
             .ConfigureTypedAttachmentService(db => new[]
             {
-                db.CarAttachments.ToDescriptor<Vehicle>(),
+                db.InterventionActionAttachments.ToDescriptor<InterventionAction>(),
+                db.InterventionOperatorAttachments.ToDescriptor<InterventionOperator>(),
+                db.VehicleAttachments.ToDescriptor<Vehicle>(),
             });
+    }
+    static IServiceCollection AddNormalizers(this IServiceCollection services)
+    {
+        return services
+                .AddTransient<INormalizer>(_ =>
+                    new DefaultNormalizer(new NormalizeOptions { Transform = TextTransform.ToUpperCase }))
+                .AddTransient<IObjectNormalizer>(
+                    p => new FleetEntityNormalizer(p.GetRequiredService<INormalizer>()))
+                .AddTransient<AddressNormalizer>()
+                .AddTransient(p => new PhoneNumberFormatter(p.GetRequiredService<CultureContext>().Culture))
+                .AddTransient<ContactDataNormalizer>()
+                .AddTransient<IdentificationNumberNormalizer>()
+                .AddTransient<IFleetEntityNormalizer<InterventionAction>, InterventionActionNormalizer>()
+                .AddTransient<IFleetEntityNormalizer<InterventionOperator>, InterventionOperatorNormalizer>()
+            ;
+    }
+    static IServiceCollection AddPrimers(this IServiceCollection services)
+    {
+        return services
+            .AddTransient<IEntityPrimer<IHasCreated>, HasCreatedDbPrimer>()
+            .AddTransient<IEntityPrimer<IHasLastModified>, HasLastModifiedDbPrimer>()
+            .RegisterPrimerContainer<FleetContext>();
     }
 }

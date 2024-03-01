@@ -21,4 +21,8 @@
         <PackageReference Include="Regira.Security.Authentication" Version="4.0.4" />
     </ItemGroup>
 
+    <ItemGroup>
+      <ProjectReference Include="..\Fleet.Core\Fleet.Core.csproj" />
+    </ItemGroup>
+
 </Project>

@@ -6,7 +6,7 @@ public class BrandDto
     public string Guid { get; set; } = null!;
     public int ClientId { get; set; }
     public string? Code { get; set; }
-    public string? Title { get; set; }
+    public string Title { get; set; } = null!;
     public DateTime Created { get; set; }
     public DateTime? LastModified { get; set; }
     public bool IsArchived { get; set; }

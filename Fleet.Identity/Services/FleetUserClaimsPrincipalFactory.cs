@@ -13,16 +13,18 @@ public class FleetUserClaimsPrincipalFactory(FleetUserManager userManager, RoleM
     {
         var identity = await base.GenerateClaimsAsync(user);
 
+        identity.AddClaim(new Claim(FleetClaimTypes.ClientId, user.ClientId));
+
         // culture
         if (!string.IsNullOrWhiteSpace(user.Culture))
         {
             identity.AddClaim(new Claim(FleetClaimTypes.Culture, user.Culture));
         }
         // ui_culture
-        if (!string.IsNullOrWhiteSpace(user.UICulture))
-        {
-            identity.AddClaim(new Claim(FleetClaimTypes.UICulture, user.UICulture));
-        }
+        //if (!string.IsNullOrWhiteSpace(user.UICulture))
+        //{
+        //    identity.AddClaim(new Claim(FleetClaimTypes.UICulture, user.UICulture));
+        //}
 
         return identity;
     }

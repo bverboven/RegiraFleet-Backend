@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Regira.Fleet.Authentication;
+using Regira.Fleet.Identity.Constants;
 using Regira.Fleet.Statistics;
 using Regira.IO.Extensions;
 using Regira.IO.Utilities;
@@ -11,7 +11,7 @@ namespace Regira.Fleet.Api.Controllers;
 
 [ApiController]
 [Route("stats")]
-[Authorize(FleetConstants.CanReadPolicy)]
+[Authorize(FleetPolicies.CanReadPolicy)]
 public class StatisticsController(StatisticsService statsService, IExcelManager excelManager) : ControllerBase
 {
 
@@ -95,10 +95,10 @@ public class StatisticsController(StatisticsService statsService, IExcelManager 
         return GetExcel(stats, "Interventietypes per maand", $"interventietypes-per-maand-{year}.xlsx");
     }
 
-    [HttpGet("per-supplier/{year}")]
-    public async Task<IActionResult> Suppliers_Per_Month(int? year = null, bool asTable = true)
+    [HttpGet("per-intervention-operator/{year}")]
+    public async Task<IActionResult> InterventionOperators_Per_Month(int? year = null, bool asTable = true)
     {
-        var stats = await statsService.Suppliers_Per_Month(year ?? DateTime.Now.Year);
+        var stats = await statsService.InterventionOperators_Per_Month(year ?? DateTime.Now.Year);
 
         if (asTable)
         {
@@ -107,11 +107,11 @@ public class StatisticsController(StatisticsService statsService, IExcelManager 
 
         return Ok(stats);
     }
-    [HttpGet("per-supplier/{year}/xlsx")]
-    public async Task<IActionResult> Suppliers_Per_Month_Excel(int? year = null)
+    [HttpGet("per-intervention-operator/{year}/xlsx")]
+    public async Task<IActionResult> InterventionOperators_Per_Month_Excel(int? year = null)
     {
         year ??= DateTime.Now.Year;
-        var stats = await statsService.Suppliers_Per_Month(year.Value);
+        var stats = await statsService.InterventionOperators_Per_Month(year.Value);
         return GetExcel(stats, "Leveranciers per maand", $"leveranciers-per-maand-{year}.xlsx");
     }
 

@@ -6,7 +6,7 @@ using Regira.Fleet.Data;
 
 namespace Regira.Fleet.Entities.Vehicles.VehicleTypes;
 
-public class VehicleTypeRepository(FleetContext dbContext) : FleetRepository<VehicleType, VehicleTypeSearchObject>(dbContext)
+public class VehicleTypeRepository(FleetContext dbContext) : FleetRepositoryBase<VehicleType, VehicleTypeSearchObject>(dbContext)
 {
     public override IQueryable<VehicleType> Filter(IQueryable<VehicleType> query, VehicleTypeSearchObject? so)
     {
