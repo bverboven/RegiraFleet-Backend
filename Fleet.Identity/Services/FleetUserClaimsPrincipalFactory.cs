@@ -1,12 +1,14 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Options;
-using Regira.Fleet.Identity.Constants;
+using Regira.Fleet.Core.Abstractions;
+using Regira.Fleet.Core.Constants;
 using Regira.Fleet.Identity.Models;
 using System.Security.Claims;
 
 namespace Regira.Fleet.Identity.Services;
 
-public class FleetUserClaimsPrincipalFactory(FleetUserManager userManager, RoleManager<IdentityRole> roleManager, IOptions<IdentityOptions> options)
+public class FleetUserClaimsPrincipalFactory(FleetUserManager userManager, RoleManager<IdentityRole> roleManager, IOptions<IdentityOptions> options, IEnumerable<IClientUserClaimsService> clientUserClaimsService)
     : UserClaimsPrincipalFactory<FleetUser, IdentityRole>(userManager, roleManager, options)
 {
     protected override async Task<ClaimsIdentity> GenerateClaimsAsync(FleetUser user)
@@ -23,6 +25,12 @@ public class FleetUserClaimsPrincipalFactory(FleetUserManager userManager, RoleM
         //{
         //    identity.AddClaim(new Claim(FleetClaimTypes.UICulture, user.UICulture));
         //}
+
+        foreach (var claimService in clientUserClaimsService)
+        {
+            await claimService.Process(identity);
+        }
+
 
         return identity;
     }

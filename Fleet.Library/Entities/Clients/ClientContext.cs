@@ -9,6 +9,10 @@ public class ClientContext(FleetContext dbContext) : IClientContext
     public Client? Client { get; private set; }
     public int ClientId => Client?.Id ?? throw new Exception("Client not loaded");
 
-    public async Task Load(string clientId)
-        => Client = (await dbContext.Clients.SingleOrDefaultAsync(x => x.Guid == clientId)) ?? throw new Exception($"Client '{clientId}' not found");
+    public async Task Load(string clientId, string userId)
+    {
+        var client = await dbContext.Clients
+            .SingleOrDefaultAsync(x => x.Guid == clientId);
+        Client = client ?? throw new Exception($"Client '{clientId}' not found");
+    }
 }

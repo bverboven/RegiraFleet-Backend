@@ -1,4 +1,4 @@
-﻿namespace Regira.Fleet.Identity.Constants;
+﻿namespace Regira.Fleet.Core.Constants;
 
 public class FleetPolicies
 {

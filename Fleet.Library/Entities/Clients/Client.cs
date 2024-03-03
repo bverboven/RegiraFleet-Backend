@@ -1,12 +1,12 @@
 ﻿using Regira.Entities.Models.Abstractions;
+using Regira.Fleet.Entities.InterventionOperators.Operators;
+using Regira.Fleet.Entities.Interventions.Actions;
 using Regira.Fleet.Entities.InterventionTypes;
 using Regira.Fleet.Entities.Vehicles;
 using Regira.Fleet.Entities.Vehicles.Brands;
 using Regira.Fleet.Entities.Vehicles.VehicleTypes;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using Regira.Fleet.Entities.Interventions.Actions;
-using Regira.Fleet.Entities.InterventionOperators.Operators;
 
 namespace Regira.Fleet.Entities.Clients;
 
@@ -23,6 +23,7 @@ public class Client : IEntityWithSerial, IHasTitle
     public DateTime? LastModified { get; set; }
 
 
+    public ICollection<ClientUserClaim>? UserClaims { get; set; }
     public ICollection<Brand>? Brands { get; set; }
     public ICollection<InterventionAction>? Interventions { get; set; }
     public ICollection<InterventionType>? InterventionTypes { get; set; }

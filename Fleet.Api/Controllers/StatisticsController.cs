@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Regira.Fleet.Identity.Constants;
+using Regira.Fleet.Core.Constants;
 using Regira.Fleet.Statistics;
 using Regira.IO.Extensions;
 using Regira.IO.Utilities;

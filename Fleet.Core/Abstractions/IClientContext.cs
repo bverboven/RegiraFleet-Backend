@@ -4,5 +4,5 @@ public interface IClientContext
 {
     int ClientId { get; }
 
-    Task Load(string clientId);
+    Task Load(string clientId, string userId);
 }

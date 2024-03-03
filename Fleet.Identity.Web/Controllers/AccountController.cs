@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using Regira.Fleet.Identity.Constants;
+using Regira.Fleet.Core.Constants;
 using Regira.Fleet.Identity.Models;
 using Regira.Fleet.Identity.Services;
 using Regira.Fleet.Identity.Web.Models;
@@ -21,7 +21,7 @@ public class AccountController(JwtTokenHelper _tokenHelper, FleetUserManager _us
 {
     [AllowAnonymous]
     [HttpPost]
-    public async Task<IActionResult> Authenticate([FromBody] AuthenticateInputDto model, [FromQuery] string clientId)
+    public async Task<IActionResult> Authenticate([FromBody] AuthenticateInputDto model, [FromQuery] string clientId, [FromHeader] string clientApp)
     {
         bool? isLockedOut = null;
         DateTimeOffset? lockedOutEnd = null;
@@ -37,9 +37,9 @@ public class AccountController(JwtTokenHelper _tokenHelper, FleetUserManager _us
                 {
                     var principal = await _claimsFactory.CreateAsync(user);
                     // check if user is linked to correct client
-                    if (principal.HasClaim(FleetClaimTypes.ClientId, model.Client))
+                    if (principal.HasClaim(FleetClaimTypes.ClientId, clientId))
                     {
-                        return Ok(CreateSuccessResponse(principal.Claims, clientId));
+                        return Ok(CreateSuccessResponse(principal.Claims, clientApp));
                     }
                 }
                 // authentication failed
@@ -117,7 +117,7 @@ public class AccountController(JwtTokenHelper _tokenHelper, FleetUserManager _us
             return Unauthorized();
         }
         var principal = await _claimsFactory.CreateAsync(user);
-        var permissions = principal.Claims.Where(c => c.Type == FleetClaimTypes.Permission).Select(c => c.Value);
+        var permissions = principal.Claims.Where(c => c.Type == ClientClaimTypes.Permission).Select(c => c.Value);
         return Ok(permissions);
     }
 

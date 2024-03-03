@@ -25,7 +25,7 @@ await fleetContext.Database.EnsureCreatedAsync();
 var dataSeeder = host.Services.GetRequiredService<DataSeeder>();
 var clients = await dataSeeder.Seed();
 var accountSeeder = host.Services.GetRequiredService<AccountSeeder>();
-await accountSeeder.Seed(clients);
+await accountSeeder.Seed();
 
 Console.WriteLine("Created Host");
 

@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Mvc.Infrastructure;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Regira.DAL.EFcore.Normalizing;
 using Regira.Entities.DependencyInjection;
@@ -56,37 +57,47 @@ public static class ServiceCollectionExtensions
             .AddScoped<ICultureContext, CultureContext>()
             .AddScoped<IFleetAppContext, FleetAppContext>();
 
+        // Identity helpers
+        services
+            .AddHttpContextAccessor()
+            .AddTransient<IActionContextAccessor, ActionContextAccessor>()
+            .AddTransient<IClientUserClaimsService, IdentityClientUserClaimsService>();
+
         // Entities
-        return services
-                // Entity context
-                .UseEntities<FleetContext>(c => c.ProfileAssemblies.Add(typeof(FleetProfile).Assembly))
-                // Entity Items
-                .For<InterventionAction, InterventionActionRepository, InterventionActionSearchObject, EntitySortBy, InterventionActionIncludes>(e =>
-                {
-                    e.HasRepository<InterventionActionRepository>();
-                    e.HasAttachments<FleetContext, InterventionAction, InterventionActionAttachment>();
-                })
-                .For<Brand, BrandRepository, BrandSearchObject, EntitySortBy, EntityIncludes>()
-                .For<Vehicle, VehicleRepository, VehicleSearchObject, EntitySortBy, EntityIncludes>(e =>
-                {
-                    e.HasRepository<VehicleRepository>();
-                    e.HasAttachments<FleetContext, Vehicle, VehicleAttachment>();
-                })
-                .For<VehicleType, VehicleTypeRepository, VehicleTypeSearchObject, EntitySortBy, EntityIncludes>()
-                .For<InterventionType, InterventionTypeRepository, InterventionTypeSearchObject, EntitySortBy, EntityIncludes>()
-                .For<InterventionOperator, InterventionOperatorRepository, InterventionOperatorSearchObject, EntitySortBy, InterventionOperatorIncludes>(e =>
-                {
-                    e.HasRepository<InterventionOperatorRepository>();
-                    e.HasAttachments<FleetContext, InterventionOperator, InterventionOperatorAttachment>();
-                })
-                // Attachments
-                .AddAttachmentServices(options.FileServiceFactory ?? throw new InvalidOperationException($"No implementation for {nameof(IFileService)} configured"))
-                // Normalizers
-                .AddNormalizers()
-                // Primers
-                .AddPrimers();
+        return services.AddEntities(options);
     }
 
+    static IServiceCollection AddEntities(this IServiceCollection services, FleetHostingOptions options)
+    {
+        return services
+        // Entity context
+        .UseEntities<FleetContext>(c => c.ProfileAssemblies.Add(typeof(FleetProfile).Assembly))
+        // Entity Items
+        .For<InterventionAction, InterventionActionRepository, InterventionActionSearchObject, EntitySortBy, InterventionActionIncludes>(e =>
+        {
+            e.HasRepository<InterventionActionRepository>();
+            e.HasAttachments<FleetContext, InterventionAction, InterventionActionAttachment>();
+        })
+        .For<Brand, BrandRepository, BrandSearchObject, EntitySortBy, EntityIncludes>()
+        .For<Vehicle, VehicleRepository, VehicleSearchObject, EntitySortBy, EntityIncludes>(e =>
+        {
+            e.HasRepository<VehicleRepository>();
+            e.HasAttachments<FleetContext, Vehicle, VehicleAttachment>();
+        })
+        .For<VehicleType, VehicleTypeRepository, VehicleTypeSearchObject, EntitySortBy, EntityIncludes>()
+        .For<InterventionType, InterventionTypeRepository, InterventionTypeSearchObject, EntitySortBy, EntityIncludes>()
+        .For<InterventionOperator, InterventionOperatorRepository, InterventionOperatorSearchObject, EntitySortBy, InterventionOperatorIncludes>(e =>
+        {
+            e.HasRepository<InterventionOperatorRepository>();
+            e.HasAttachments<FleetContext, InterventionOperator, InterventionOperatorAttachment>();
+        })
+        // Attachments
+        .AddAttachmentServices(options.FileServiceFactory ?? throw new InvalidOperationException($"No implementation for {nameof(IFileService)} configured"))
+        // Normalizers
+        .AddNormalizers()
+        // Primers
+        .AddPrimers();
+    }
     static EntityServiceCollection<FleetContext> AddAttachmentServices(this EntityServiceCollection<FleetContext> services, Func<IServiceProvider, IFileService> configure)
     {
         return services

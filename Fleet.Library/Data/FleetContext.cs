@@ -17,6 +17,7 @@ public class FleetContext(DbContextOptions<FleetContext> options) : DbContext(op
     public DbSet<Attachment<int>> Attachments { get; set; } = null!;
     public DbSet<Brand> Brands { get; set; } = null!;
     public DbSet<Client> Clients { get; set; } = null!;
+    public DbSet<ClientUserClaim> ClientUserClaims { get; set; } = null!;
     public DbSet<InterventionAction> InterventionActions { get; set; } = null!;
     public DbSet<InterventionActionAttachment> InterventionActionAttachments { get; set; } = null!;
     public DbSet<InterventionType> InterventionTypes { get; set; } = null!;
@@ -35,6 +36,15 @@ public class FleetContext(DbContextOptions<FleetContext> options) : DbContext(op
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
+
+        // Client
+        modelBuilder.Entity<ClientUserClaim>(entity =>
+        {
+            entity.HasIndex(e => e.ClientId);
+            entity.HasIndex(e => e.UserId);
+            entity.HasIndex(e => new { e.ClientId, e.UserId, e.ClaimType, e.ClaimValue })
+                .IsUnique();
+        });
 
         // Interventions
         modelBuilder.Entity<InterventionType>(entity =>
