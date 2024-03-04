@@ -2,6 +2,7 @@
 using Regira.DAL.EFcore.Extensions;
 using Regira.Entities.Attachments.Models;
 using Regira.Fleet.Entities.Clients;
+using Regira.Fleet.Entities.InterventionOperators.Addresses;
 using Regira.Fleet.Entities.InterventionOperators.Operators;
 using Regira.Fleet.Entities.Interventions.Actions;
 using Regira.Fleet.Entities.InterventionTypes;
@@ -79,6 +80,12 @@ public class FleetContext(DbContextOptions<FleetContext> options) : DbContext(op
                 .HasForeignKey(e => e.ObjectId)
                 .HasPrincipalKey(e => e.Id);
         });
+        modelBuilder.Entity<Address>(entity =>
+        {
+            entity
+                .ToTable("intervention_operator_addresses")
+                .HasIndex(cd => cd.NormalizedContent);
+        });
         modelBuilder.Entity<InterventionOperator>(entity =>
         {
             entity.HasIndex(e => e.ClientId);
@@ -90,18 +97,27 @@ public class FleetContext(DbContextOptions<FleetContext> options) : DbContext(op
                 .WithMany()
                 .UsingEntity("intervention_operator_intervention_types");
             // Addresses
-            entity.OwnsMany(e => e.Addresses, e =>
-            {
-                e.ToTable("intervention_operator_addresses");
-                e.HasIndex(cd => cd.NormalizedContent);
-            });
+            entity
+                .HasMany(e => e.Addresses)
+                .WithOne()
+                .HasPrincipalKey(e => e.Id);
+
+            //entity.OwnsMany(e => e.Addresses, e =>
+            //{
+            //    e.ToTable("intervention_operator_addresses");
+            //    e.HasIndex(cd => cd.NormalizedContent);
+            //});
 
             // ContactData
-            entity.OwnsMany(e => e.ContactData, e =>
-            {
-                e.HasIndex(cd => cd.DataType);
-                e.HasIndex(cd => cd.NormalizedValue);
-            });
+            entity
+                .HasMany(e => e.ContactData)
+                .WithOne()
+                .HasPrincipalKey(e => e.Id);
+            //entity.OwnsMany(e => e.ContactData, e =>
+            //{
+            //    e.HasIndex(cd => cd.DataType);
+            //    e.HasIndex(cd => cd.NormalizedValue);
+            //});
 
             // Attachments
             entity.HasMany(e => e.Attachments)

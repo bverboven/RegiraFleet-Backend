@@ -14,6 +14,5 @@ public class InterventionOperatorContactDataInputDto
     public ContactDataTypes DataType { get; set; }
     [MaxLength(512)]
     public string? Description { get; set; }
-    public string? Notes { get; set; }
     public int SortOrder { get; set; }
 }

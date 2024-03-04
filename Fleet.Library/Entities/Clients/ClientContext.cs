@@ -9,7 +9,7 @@ public class ClientContext(FleetContext dbContext) : IClientContext
     public Client? Client { get; private set; }
     public int ClientId => Client?.Id ?? throw new Exception("Client not loaded");
 
-    public async Task Load(string clientId, string userId)
+    public async Task Load(string clientId)
     {
         var client = await dbContext.Clients
             .SingleOrDefaultAsync(x => x.Guid == clientId);

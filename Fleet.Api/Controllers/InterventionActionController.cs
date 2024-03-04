@@ -9,7 +9,7 @@ namespace Regira.Fleet.Api.Controllers;
 
 [ApiController]
 [Route("interventions")]
-public class InterventionController : EntityControllerBase<InterventionAction, InterventionActionSearchObject, EntitySortBy, InterventionActionIncludes, InterventionActionDto, InterventionActionInputDto>
+public class InterventionActionController : EntityControllerBase<InterventionAction, InterventionActionSearchObject, EntitySortBy, InterventionActionIncludes, InterventionActionDto, InterventionActionInputDto>
 {
 }
 

@@ -17,7 +17,6 @@ public class InterventionOperatorContactData : IEntityWithSerial, ISortable
     public ContactDataTypes DataType { get; set; }
     [MaxLength(512)]
     public string? Description { get; set; }
-    public string? Notes { get; set; }
     public int SortOrder { get; set; }
     public DateTime Created { get; set; } = DateTime.Now;
     public DateTime? LastModified { get; set; }

@@ -16,7 +16,7 @@ public class IdentityClientUserClaimsService(FleetContext dbContext, IHttpContex
 {
     public async Task Process(ClaimsIdentity identity)
     {
-        var requestedClientId = httpContextAccessor.HttpContext?.Request.Query["clientId"];
+        var requestedClientId = httpContextAccessor.HttpContext?.Request.Query["clientId"].ToString();
         var clientId = identity.FindFirst(c => c.Type == FleetClaimTypes.ClientId)?.Value;
         var userId = identity.FindFirst(ClaimTypes.NameIdentifier)!.Value;
 
@@ -29,6 +29,15 @@ public class IdentityClientUserClaimsService(FleetContext dbContext, IHttpContex
         foreach (var claim in claims)
         {
             identity.AddClaim(new Claim(claim.ClaimType, claim.ClaimValue ?? string.Empty));
+        }
+
+        // remove unused clientIds from IdentityClaims
+        var clientClaimsToRemove = identity.Claims
+            .Where(c => c.Type == FleetClaimTypes.ClientId && c.Value != requestedClientId)
+            .ToArray();
+        foreach (var claim in clientClaimsToRemove)
+        {
+            identity.RemoveClaim(claim);
         }
     }
 }

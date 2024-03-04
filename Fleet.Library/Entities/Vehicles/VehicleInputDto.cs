@@ -5,6 +5,7 @@ namespace Regira.Fleet.Entities.Vehicles;
 
 public class VehicleInputDto
 {
+    public int Id { get; set; }
     public int? BrandId { get; set; }
     public int? VehicleTypeId { get; set; }
     [Required]

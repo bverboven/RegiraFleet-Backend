@@ -4,7 +4,8 @@ namespace Regira.Fleet.Entities.InterventionTypes;
 
 public class InterventionTypeInputDto
 {
-    [MaxLength(3)]
+    public int Id { get; set; }
+    [MaxLength(8)]
     public string? Code { get; set; } = null!;
     [Required]
     [MaxLength(64)]

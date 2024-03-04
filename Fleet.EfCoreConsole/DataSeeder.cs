@@ -64,10 +64,10 @@ public class DataSeeder(FleetContext dbContext)
         {
             items.AddRange(new Client[]
             {
-                new() { Code = "TRA", Title = "Openbaar vervoer" },
-                new() { Code = "POL", Title = "Politie" },
-                new() { Code = "BWR", Title = "Brandweer" },
-                new() { Code = "AMB", Title = "Ambulance" }
+                new() { Code = "TRA", Title = "Openbaar vervoer", Guid = "11fc2d46df234aed8df1de9a7b0f114f" },
+                new() { Code = "POL", Title = "Politie", Guid = "232dfc2012b8491cb7d1aaee93007480" },
+                new() { Code = "BWR", Title = "Brandweer", Guid = "1b615c0096c04eb2975ef84463aa8257" },
+                new() { Code = "AMB", Title = "Ambulance", Guid = "f64a75e938b64dfaae5eab03fe541972" }
             });
             dbContext.Clients.AddRange(items);
             await dbContext.SaveChangesAsync();

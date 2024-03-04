@@ -21,7 +21,7 @@ public class AccountController(JwtTokenHelper _tokenHelper, FleetUserManager _us
 {
     [AllowAnonymous]
     [HttpPost]
-    public async Task<IActionResult> Authenticate([FromBody] AuthenticateInputDto model, [FromQuery] string clientId, [FromHeader] string clientApp)
+    public async Task<IActionResult> Authenticate([FromBody] AuthenticateInputDto model, [FromQuery] string clientId, [FromQuery] string clientApp)
     {
         bool? isLockedOut = null;
         DateTimeOffset? lockedOutEnd = null;

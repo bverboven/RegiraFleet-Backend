@@ -4,6 +4,7 @@ namespace Regira.Fleet.Entities.Vehicles.VehicleTypes;
 
 public class VehicleTypeInputDto
 {
+    public int Id { get; set; }
     [MaxLength(8)]
     public string? Code { get; set; }
     [Required]

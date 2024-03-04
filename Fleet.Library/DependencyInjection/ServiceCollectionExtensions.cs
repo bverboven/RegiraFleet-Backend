@@ -14,6 +14,7 @@ using Regira.Fleet.Core.Models;
 using Regira.Fleet.Data;
 using Regira.Fleet.Entities;
 using Regira.Fleet.Entities.Clients;
+using Regira.Fleet.Entities.Countries;
 using Regira.Fleet.Entities.InterventionOperators.Normalizers;
 using Regira.Fleet.Entities.InterventionOperators.Operators;
 using Regira.Fleet.Entities.Interventions.Actions;
@@ -73,6 +74,8 @@ public static class ServiceCollectionExtensions
         // Entity context
         .UseEntities<FleetContext>(c => c.ProfileAssemblies.Add(typeof(FleetProfile).Assembly))
         // Entity Items
+        // Country
+        .For<Country, string, CountryRepository>(e => e.AddMapping<CountryDto, CountryDto>())
         .For<InterventionAction, InterventionActionRepository, InterventionActionSearchObject, EntitySortBy, InterventionActionIncludes>(e =>
         {
             e.HasRepository<InterventionActionRepository>();
