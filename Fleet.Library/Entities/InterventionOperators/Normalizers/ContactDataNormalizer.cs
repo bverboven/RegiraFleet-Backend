@@ -10,7 +10,7 @@ public class ContactDataNormalizer(INormalizer defaultNormalizer, PhoneNumberFor
 
     public void HandleNormalize(object? instance, bool recursive = true)
     {
-        if (instance is InterventionOperatorContactData data)
+        if (instance is OperatorContactData data)
         {
             data.NormalizedValue = Normalize(data);
         }
@@ -42,6 +42,6 @@ public class ContactDataNormalizer(INormalizer defaultNormalizer, PhoneNumberFor
                 return defaultNormalizer.Normalize(input);
         }
     }
-    public string? Normalize(InterventionOperatorContactData data)
+    public string? Normalize(OperatorContactData data)
         => Normalize(data.Value, data.DataType);
 }

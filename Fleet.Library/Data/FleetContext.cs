@@ -1,10 +1,10 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Regira.DAL.EFcore.Extensions;
 using Regira.Entities.Attachments.Models;
+using Regira.Fleet.Entities.Addresses;
 using Regira.Fleet.Entities.Clients;
-using Regira.Fleet.Entities.InterventionOperators.Addresses;
 using Regira.Fleet.Entities.InterventionOperators.Operators;
-using Regira.Fleet.Entities.Interventions.Actions;
+using Regira.Fleet.Entities.Interventions;
 using Regira.Fleet.Entities.InterventionTypes;
 using Regira.Fleet.Entities.Vehicles;
 using Regira.Fleet.Entities.Vehicles.Brands;
@@ -19,11 +19,11 @@ public class FleetContext(DbContextOptions<FleetContext> options) : DbContext(op
     public DbSet<Brand> Brands { get; set; } = null!;
     public DbSet<Client> Clients { get; set; } = null!;
     public DbSet<ClientUserClaim> ClientUserClaims { get; set; } = null!;
-    public DbSet<InterventionAction> InterventionActions { get; set; } = null!;
-    public DbSet<InterventionActionAttachment> InterventionActionAttachments { get; set; } = null!;
+    public DbSet<Intervention> Maintenances { get; set; } = null!;
+    public DbSet<InterventionAttachment> MaintenanceAttachments { get; set; } = null!;
     public DbSet<InterventionType> InterventionTypes { get; set; } = null!;
-    public DbSet<InterventionOperator> InterventionOperators { get; set; } = null!;
-    public DbSet<InterventionOperatorAttachment> InterventionOperatorAttachments { get; set; } = null!;
+    public DbSet<Operator> InterventionOperators { get; set; } = null!;
+    public DbSet<OperatorAttachment> InterventionOperatorAttachments { get; set; } = null!;
     public DbSet<Vehicle> Vehicles { get; set; } = null!;
     public DbSet<VehicleAttachment> VehicleAttachments { get; set; } = null!;
     public DbSet<VehicleType> VehicleTypes { get; set; } = null!;
@@ -57,22 +57,21 @@ public class FleetContext(DbContextOptions<FleetContext> options) : DbContext(op
                 .IsUnique();
             entity.HasIndex(e => e.NormalizedTitle);
         });
-        modelBuilder.Entity<InterventionAction>(entity =>
+        modelBuilder.Entity<Intervention>(entity =>
         {
             entity.HasIndex(e => e.ClientId);
 
             // Invoice
             entity.OwnsMany(e => e.Invoices, e =>
             {
-                e.ToTable("intervention_action_invoices");
+                e.ToTable("intervention_invoices");
                 e.HasIndex(i => i.InvoiceNumber);
                 e.HasIndex(i => i.InvoiceDate);
             });
 
             // Intervention Types
-            entity.HasMany(e => e.InterventionTypes)
-                .WithMany()
-                .UsingEntity("intervention_action_intervention_types");
+            //entity.HasMany(e => e.InterventionTypes)
+            //    .WithOne();
 
             // Attachments
             entity.HasMany(e => e.Attachments)
@@ -80,44 +79,43 @@ public class FleetContext(DbContextOptions<FleetContext> options) : DbContext(op
                 .HasForeignKey(e => e.ObjectId)
                 .HasPrincipalKey(e => e.Id);
         });
+        //modelBuilder.Entity<InterventionInterventionType>(entity =>
+        //{
+        //    entity.HasKey(e => new { e.InterventionId, e.InterventionTypeId });
+        //    //entity.HasOne(e => e.InterventionType)
+        //    //    .WithMany();
+        //});
         modelBuilder.Entity<Address>(entity =>
         {
             entity
                 .ToTable("intervention_operator_addresses")
                 .HasIndex(cd => cd.NormalizedContent);
         });
-        modelBuilder.Entity<InterventionOperator>(entity =>
+        modelBuilder.Entity<Operator>(entity =>
         {
+            entity.ToTable("intervention_operator");
             entity.HasIndex(e => e.ClientId);
             entity.HasIndex(e => new { e.ClientId, e.Code })
                 .IsUnique();
             entity.HasIndex(e => e.NormalizedTitle);
+
             // Intervention Types
-            entity.HasMany(e => e.InterventionTypes)
-                .WithMany()
-                .UsingEntity("intervention_operator_intervention_types");
+            //entity.HasMany(e => e.InterventionTypes)
+            //    .WithMany()
+            //    .UsingEntity("intervention_operator_intervention_types")
+            //    .HasKey(nameof(OperatorInterventionType.OperatorId), nameof(OperatorInterventionType.InterventionTypeId));
+
             // Addresses
             entity
                 .HasMany(e => e.Addresses)
                 .WithOne()
                 .HasPrincipalKey(e => e.Id);
 
-            //entity.OwnsMany(e => e.Addresses, e =>
-            //{
-            //    e.ToTable("intervention_operator_addresses");
-            //    e.HasIndex(cd => cd.NormalizedContent);
-            //});
-
             // ContactData
             entity
                 .HasMany(e => e.ContactData)
                 .WithOne()
                 .HasPrincipalKey(e => e.Id);
-            //entity.OwnsMany(e => e.ContactData, e =>
-            //{
-            //    e.HasIndex(cd => cd.DataType);
-            //    e.HasIndex(cd => cd.NormalizedValue);
-            //});
 
             // Attachments
             entity.HasMany(e => e.Attachments)
@@ -125,6 +123,13 @@ public class FleetContext(DbContextOptions<FleetContext> options) : DbContext(op
                 .HasForeignKey(e => e.ObjectId)
                 .HasPrincipalKey(e => e.Id);
         });
+        //modelBuilder.Entity<OperatorInterventionType>(entity =>
+        //{
+        //    entity.HasKey(e => new { e.OperatorId, e.InterventionTypeId });
+        //    //entity.HasOne(e => e.InterventionType)
+        //    //    .WithMany();
+        //});
+
         // Vehicles
         modelBuilder.Entity<Brand>(entity =>
         {

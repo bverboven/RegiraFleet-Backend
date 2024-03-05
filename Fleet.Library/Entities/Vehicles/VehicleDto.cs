@@ -11,7 +11,7 @@ public class VehicleDto
     public int ClientId { get; set; }
     public int? BrandId { get; set; }
     public int? VehicleTypeId { get; set; }
-    public string? Code { get; set; }
+    public string Code { get; set; } = null!;
     public string? Model { get; set; }
     public string? Notes { get; set; }
     public DateTime Created { get; set; }

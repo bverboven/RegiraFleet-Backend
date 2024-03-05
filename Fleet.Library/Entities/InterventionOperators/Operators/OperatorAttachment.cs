@@ -2,4 +2,4 @@
 
 namespace Regira.Fleet.Entities.InterventionOperators.Operators;
 
-public class InterventionOperatorAttachment : EntityAttachment;
+public class OperatorAttachment : EntityAttachment;

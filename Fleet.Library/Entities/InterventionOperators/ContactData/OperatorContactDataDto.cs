@@ -1,6 +1,6 @@
 ﻿namespace Regira.Fleet.Entities.InterventionOperators.ContactData;
 
-public class InterventionOperatorContactDataDto
+public class OperatorContactDataDto
 {
     public int Id { get; set; }
     public string? Title { get; set; }

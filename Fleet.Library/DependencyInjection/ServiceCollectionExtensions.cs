@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNetCore.Mvc.Infrastructure;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Regira.DAL.EFcore.Normalizing;
 using Regira.Entities.DependencyInjection;
@@ -17,7 +16,7 @@ using Regira.Fleet.Entities.Clients;
 using Regira.Fleet.Entities.Countries;
 using Regira.Fleet.Entities.InterventionOperators.Normalizers;
 using Regira.Fleet.Entities.InterventionOperators.Operators;
-using Regira.Fleet.Entities.Interventions.Actions;
+using Regira.Fleet.Entities.Interventions;
 using Regira.Fleet.Entities.Interventions.Normalizers;
 using Regira.Fleet.Entities.InterventionTypes;
 using Regira.Fleet.Entities.Vehicles;
@@ -31,6 +30,7 @@ using Regira.IO.Storage.Abstractions;
 using Regira.Normalizing;
 using Regira.Normalizing.Abstractions;
 using Regira.Normalizing.Models;
+
 
 namespace Regira.Fleet.DependencyInjection;
 
@@ -61,7 +61,6 @@ public static class ServiceCollectionExtensions
         // Identity helpers
         services
             .AddHttpContextAccessor()
-            .AddTransient<IActionContextAccessor, ActionContextAccessor>()
             .AddTransient<IClientUserClaimsService, IdentityClientUserClaimsService>();
 
         // Entities
@@ -76,23 +75,23 @@ public static class ServiceCollectionExtensions
         // Entity Items
         // Country
         .For<Country, string, CountryRepository>(e => e.AddMapping<CountryDto, CountryDto>())
-        .For<InterventionAction, InterventionActionRepository, InterventionActionSearchObject, EntitySortBy, InterventionActionIncludes>(e =>
+        .For<Intervention, InterventionRepository, InterventionSearchObject, EntitySortBy, InterventionIncludes>(e =>
         {
-            e.HasRepository<InterventionActionRepository>();
-            e.HasAttachments<FleetContext, InterventionAction, InterventionActionAttachment>();
+            e.HasRepository<InterventionRepository>();
+            e.HasAttachments<FleetContext, Intervention, InterventionAttachment>();
         })
         .For<Brand, BrandRepository, BrandSearchObject, EntitySortBy, EntityIncludes>()
-        .For<Vehicle, VehicleRepository, VehicleSearchObject, EntitySortBy, EntityIncludes>(e =>
+        .For<Vehicle, VehicleRepository, VehicleSearchObject, EntitySortBy, VehicleIncludes>(e =>
         {
             e.HasRepository<VehicleRepository>();
             e.HasAttachments<FleetContext, Vehicle, VehicleAttachment>();
         })
         .For<VehicleType, VehicleTypeRepository, VehicleTypeSearchObject, EntitySortBy, EntityIncludes>()
         .For<InterventionType, InterventionTypeRepository, InterventionTypeSearchObject, EntitySortBy, EntityIncludes>()
-        .For<InterventionOperator, InterventionOperatorRepository, InterventionOperatorSearchObject, EntitySortBy, InterventionOperatorIncludes>(e =>
+        .For<Operator, OperatorRepository, OperatorSearchObject, EntitySortBy, OperatorIncludes>(e =>
         {
-            e.HasRepository<InterventionOperatorRepository>();
-            e.HasAttachments<FleetContext, InterventionOperator, InterventionOperatorAttachment>();
+            e.HasRepository<OperatorRepository>();
+            e.HasAttachments<FleetContext, Operator, OperatorAttachment>();
         })
         // Attachments
         .AddAttachmentServices(options.FileServiceFactory ?? throw new InvalidOperationException($"No implementation for {nameof(IFileService)} configured"))
@@ -105,12 +104,12 @@ public static class ServiceCollectionExtensions
     {
         return services
             .ConfigureAttachmentService(configure)
-            .ConfigureTypedAttachmentService(db => new[]
+            .ConfigureTypedAttachmentService(db => (new[]
             {
-                db.InterventionActionAttachments.ToDescriptor<InterventionAction>(),
-                db.InterventionOperatorAttachments.ToDescriptor<InterventionOperator>(),
+                db.MaintenanceAttachments.ToDescriptor<Intervention>(),
+                db.InterventionOperatorAttachments.ToDescriptor<Operator>(),
                 db.VehicleAttachments.ToDescriptor<Vehicle>(),
-            });
+            }));
     }
     static IServiceCollection AddNormalizers(this IServiceCollection services)
     {
@@ -123,8 +122,8 @@ public static class ServiceCollectionExtensions
                 .AddTransient(p => new PhoneNumberFormatter(p.GetRequiredService<ICultureContext>().Culture))
                 .AddTransient<ContactDataNormalizer>()
                 .AddTransient<IdentificationNumberNormalizer>()
-                .AddTransient<IFleetEntityNormalizer<InterventionAction>, InterventionActionNormalizer>()
-                .AddTransient<IFleetEntityNormalizer<InterventionOperator>, InterventionOperatorNormalizer>()
+                .AddTransient<IFleetEntityNormalizer<Intervention>, ActionNormalizer>()
+                .AddTransient<IFleetEntityNormalizer<Operator>, OperatorNormalizer>()
                 // finally (put last)
                 .AddObjectNormalizingContainer((_, c) => c.ExtractFromServiceCollection(services));
     }

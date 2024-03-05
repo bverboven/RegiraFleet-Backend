@@ -1,12 +1,12 @@
 ﻿using Regira.Entities.Web.Attachments.Models;
+using Regira.Fleet.Entities.InterventionOperators.Operators;
 using Regira.Fleet.Entities.Interventions.Invoices;
 using Regira.Fleet.Entities.InterventionTypes;
 using Regira.Fleet.Entities.Vehicles;
-using Regira.Fleet.Entities.InterventionOperators.Operators;
 
-namespace Regira.Fleet.Entities.Interventions.Actions;
+namespace Regira.Fleet.Entities.Interventions;
 
-public class InterventionActionDto
+public class InterventionDto
 {
     public int Id { get; set; }
     public string Guid { get; set; } = null!;
@@ -17,13 +17,14 @@ public class InterventionActionDto
     public string? Description { get; set; }
     public string? Notes { get; set; }
 
+    public DateTime? InterventionDate { get; set; }
 
     public DateTime Created { get; set; }
     public DateTime? LastModified { get; set; }
 
 
     public VehicleDto? Vehicle { get; set; }
-    public InterventionOperatorDto? Operator { get; set; }
+    public OperatorDto? Operator { get; set; }
     public ICollection<InvoiceDto>? Invoices { get; set; }
     public ICollection<InterventionTypeDto>? InterventionTypes { get; set; }
     public ICollection<EntityAttachmentDto>? Attachments { get; set; }

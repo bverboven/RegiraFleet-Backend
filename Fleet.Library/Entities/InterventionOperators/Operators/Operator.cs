@@ -1,16 +1,15 @@
 ﻿using Regira.Entities.Attachments.Abstractions;
 using Regira.Entities.Models.Abstractions;
-using Regira.Fleet.Entities.InterventionTypes;
+using Regira.Fleet.Abstractions;
 using Regira.Fleet.Entities.InterventionOperators.Addresses;
 using Regira.Fleet.Entities.InterventionOperators.ContactData;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using Regira.Fleet.Abstractions;
 
 namespace Regira.Fleet.Entities.InterventionOperators.Operators;
 
 // InterventionOperator ??
-public class InterventionOperator : IFleetEntity, IEntityWithSerial, IHasCode, IHasNormalizedTitle, IHasDescription, IHasNormalizedContent, IArchivable, IHasAttachments<InterventionOperatorAttachment>, IHasAttachments
+public class Operator : IFleetEntity, IEntityWithSerial, IHasCode, IHasNormalizedTitle, IHasDescription, IHasNormalizedContent, IArchivable, IHasAttachments<OperatorAttachment>, IHasAttachments
 {
     public int Id { get; set; }
     [StringLength(32)]
@@ -33,17 +32,17 @@ public class InterventionOperator : IFleetEntity, IEntityWithSerial, IHasCode, I
     public DateTime? LastModified { get; set; }
     public bool IsArchived { get; set; }
 
-    public ICollection<InterventionType>? InterventionTypes { get; set; }
-    public ICollection<Address>? Addresses { get; set; }
-    public ICollection<InterventionOperatorContactData>? ContactData { get; set; }
+    public ICollection<OperatorInterventionType>? InterventionTypes { get; set; }
+    public ICollection<OperatorAddress>? Addresses { get; set; }
+    public ICollection<OperatorContactData>? ContactData { get; set; }
 
     [NotMapped]
     public bool? HasAttachment { get; set; }
-    public ICollection<InterventionOperatorAttachment>? Attachments { get; set; }
+    public ICollection<OperatorAttachment>? Attachments { get; set; }
     ICollection<IEntityAttachment>? IHasAttachments.Attachments
     {
         get => Attachments?.Cast<IEntityAttachment>().ToList();
-        set => Attachments = value?.Cast<InterventionOperatorAttachment>().ToList();
+        set => Attachments = value?.Cast<OperatorAttachment>().ToList();
     }
 
 

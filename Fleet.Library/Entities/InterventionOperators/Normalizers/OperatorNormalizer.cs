@@ -5,11 +5,11 @@ using Regira.Normalizing.Abstractions;
 
 namespace Regira.Fleet.Entities.InterventionOperators.Normalizers;
 
-public class InterventionOperatorNormalizer(INormalizer defaultNormalizer, IdentificationNumberNormalizer idNumberNormalizer,
+public class OperatorNormalizer(INormalizer defaultNormalizer, IdentificationNumberNormalizer idNumberNormalizer,
     ContactDataNormalizer contactDataNormalizer, AddressNormalizer addressNormalizer, ICultureContext cultureContext)
-    : FleetEntityNormalizerBase<InterventionOperator>(defaultNormalizer)
+    : FleetEntityNormalizerBase<Operator>(defaultNormalizer)
 {
-    public override void HandleNormalize(InterventionOperator? item)
+    public override void HandleNormalize(Operator? item)
     {
         if (item == null)
         {
@@ -45,7 +45,7 @@ public class InterventionOperatorNormalizer(INormalizer defaultNormalizer, Ident
         SetNormalizedContent(item);
     }
 
-    public override void SetNormalizedContent(InterventionOperator item)
+    public override void SetNormalizedContent(Operator item)
     {
         var contentEntries = GetDefaultNormalizedContentEntries(item);
         contentEntries.AddRange(new[]

@@ -1,11 +1,11 @@
 ﻿using Regira.Entities.Web.Attachments.Models;
 using Regira.Fleet.Entities.InterventionTypes;
-using Regira.Fleet.Entities.InterventionOperators.Addresses;
 using Regira.Fleet.Entities.InterventionOperators.ContactData;
+using Regira.Fleet.Entities.Addresses;
 
 namespace Regira.Fleet.Entities.InterventionOperators.Operators;
 
-public class InterventionOperatorDto
+public class OperatorDto
 {
     public int Id { get; set; }
     public string Guid { get; set; } = null!;
@@ -22,7 +22,7 @@ public class InterventionOperatorDto
     public bool IsArchived { get; set; }
 
     public ICollection<AddressDto>? Addresses { get; set; }
-    public ICollection<InterventionOperatorContactDataDto>? ContactData { get; set; }
+    public ICollection<OperatorContactDataDto>? ContactData { get; set; }
     public ICollection<InterventionTypeDto>? InterventionTypes { get; set; }
     public ICollection<EntityAttachmentDto>? Attachments { get; set; }
 }

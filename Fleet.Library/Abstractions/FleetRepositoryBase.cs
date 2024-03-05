@@ -50,7 +50,14 @@ public abstract class FleetRepositoryBase<TEntity, TSearchObject, TSortBy, TIncl
         DbContext.ApplyNormalizers();
         await DbContext.ApplyPrimers();
 
-        return await base.SaveChanges(token);
+        try
+        {
+            return await base.SaveChanges(token);
+        }
+        catch (Exception ex)
+        {
+            throw;
+        }
     }
 
     public override void PrepareItem(TEntity item)

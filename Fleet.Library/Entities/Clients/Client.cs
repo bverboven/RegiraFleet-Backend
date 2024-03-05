@@ -1,6 +1,6 @@
 ﻿using Regira.Entities.Models.Abstractions;
 using Regira.Fleet.Entities.InterventionOperators.Operators;
-using Regira.Fleet.Entities.Interventions.Actions;
+using Regira.Fleet.Entities.Interventions;
 using Regira.Fleet.Entities.InterventionTypes;
 using Regira.Fleet.Entities.Vehicles;
 using Regira.Fleet.Entities.Vehicles.Brands;
@@ -25,9 +25,9 @@ public class Client : IEntityWithSerial, IHasTitle
 
     public ICollection<ClientUserClaim>? UserClaims { get; set; }
     public ICollection<Brand>? Brands { get; set; }
-    public ICollection<InterventionAction>? Interventions { get; set; }
+    public ICollection<Intervention>? Interventions { get; set; }
     public ICollection<InterventionType>? InterventionTypes { get; set; }
-    public ICollection<InterventionOperator>? InterventionOperators { get; set; }
+    public ICollection<Operator>? InterventionOperators { get; set; }
     public ICollection<Vehicle>? Vehicles { get; set; }
     public ICollection<VehicleType>? VehicleTypes { get; set; }
 }

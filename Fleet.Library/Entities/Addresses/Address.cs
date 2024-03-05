@@ -1,7 +1,7 @@
 ﻿using Regira.Entities.Models.Abstractions;
 using System.ComponentModel.DataAnnotations;
 
-namespace Regira.Fleet.Entities.InterventionOperators.Addresses;
+namespace Regira.Fleet.Entities.Addresses;
 
 public class Address : IEntityWithSerial, IHasTitle, IHasNormalizedContent, ISortable
 {

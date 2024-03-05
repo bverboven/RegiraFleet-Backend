@@ -1,7 +1,7 @@
 ﻿namespace Regira.Fleet.Entities.InterventionOperators.Operators;
 
 [Flags]
-public enum InterventionOperatorIncludes
+public enum OperatorIncludes
 {
     None = 0,
     Addresses = 1 << 0,

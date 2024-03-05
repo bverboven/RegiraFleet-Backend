@@ -1,4 +1,5 @@
-﻿using Regira.Entities.EFcore.Extensions;
+﻿using Microsoft.EntityFrameworkCore;
+using Regira.Entities.EFcore.Extensions;
 using Regira.Entities.Models;
 using Regira.Fleet.Abstractions;
 using Regira.Fleet.Core.Abstractions;
@@ -6,7 +7,7 @@ using Regira.Fleet.Data;
 
 namespace Regira.Fleet.Entities.Vehicles;
 
-public class VehicleRepository(FleetContext dbContext, IFleetAppContext appContext) : FleetRepositoryBase<Vehicle, VehicleSearchObject>(dbContext, appContext)
+public class VehicleRepository(FleetContext dbContext, IFleetAppContext appContext) : FleetRepositoryBase<Vehicle, VehicleSearchObject, EntitySortBy, VehicleIncludes>(dbContext, appContext)
 {
     public override IQueryable<Vehicle> Filter(IQueryable<Vehicle> query, VehicleSearchObject? so)
     {
@@ -43,5 +44,26 @@ public class VehicleRepository(FleetContext dbContext, IFleetAppContext appConte
     public override IQueryable<Vehicle> SortBy(IQueryable<Vehicle> query, EntitySortBy? sortBy = null)
     {
         return query.OrderBy(x => x.Code);
+    }
+
+    public override IQueryable<Vehicle> AddIncludes(IQueryable<Vehicle> query, VehicleIncludes? includes)
+    {
+        query = base.AddIncludes(query, includes);
+
+        if (includes.HasValue)
+        {
+            // Brand
+            if (includes.Value.HasFlag(VehicleIncludes.Brand))
+            {
+                query = query.Include(x => x.Brand);
+            }
+            // VehicleType
+            if (includes.Value.HasFlag(VehicleIncludes.VehicleType))
+            {
+                query = query.Include(x => x.VehicleType);
+            }
+        }
+
+        return query;
     }
 }

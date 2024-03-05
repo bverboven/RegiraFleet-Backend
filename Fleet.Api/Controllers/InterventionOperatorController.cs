@@ -9,12 +9,12 @@ namespace Regira.Fleet.Api.Controllers;
 
 [ApiController]
 [Route("intervention-operators")]
-public class InterventionOperatorController : EntityControllerBase<InterventionOperator, InterventionOperatorSearchObject, EntitySortBy, InterventionOperatorIncludes, InterventionOperatorDto, InterventionOperatorInputDto>
+public class InterventionOperatorController : EntityControllerBase<Operator, OperatorSearchObject, EntitySortBy, OperatorIncludes, OperatorDto, OperatorInputDto>
 {
 }
 
 [ApiController]
 [Route("intervention-operators")]
-public class InterventionOperatorAttachmentController : EntityAttachmentControllerBase<InterventionOperatorAttachment, EntityAttachmentDto, EntityAttachmentInputDto>
+public class InterventionOperatorAttachmentController : EntityAttachmentControllerBase<OperatorAttachment, EntityAttachmentDto, EntityAttachmentInputDto>
 {
 }

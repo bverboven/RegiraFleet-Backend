@@ -3,14 +3,13 @@ using Regira.Entities.Models.Abstractions;
 using Regira.Fleet.Abstractions;
 using Regira.Fleet.Entities.InterventionOperators.Operators;
 using Regira.Fleet.Entities.Interventions.Invoices;
-using Regira.Fleet.Entities.InterventionTypes;
 using Regira.Fleet.Entities.Vehicles;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace Regira.Fleet.Entities.Interventions.Actions;
+namespace Regira.Fleet.Entities.Interventions;
 
-public class InterventionAction : IFleetEntity, IEntityWithSerial, IHasDescription, IHasNormalizedContent, IHasAttachments, IHasAttachments<InterventionActionAttachment>
+public class Intervention : IFleetEntity, IEntityWithSerial, IHasDescription, IHasNormalizedContent, IHasAttachments, IHasAttachments<InterventionAttachment>
 {
     public int Id { get; set; }
     [StringLength(32)]
@@ -30,17 +29,17 @@ public class InterventionAction : IFleetEntity, IEntityWithSerial, IHasDescripti
 
 
     public Vehicle? Vehicle { get; set; }
-    public InterventionOperator? Operator { get; set; }
+    public Operator? Operator { get; set; }
     public ICollection<Invoice>? Invoices { get; set; }
-    public ICollection<InterventionType>? InterventionTypes { get; set; }
+    public ICollection<InterventionInterventionType>? InterventionTypes { get; set; }
 
     [NotMapped]
     public bool? HasAttachment { get; set; }
-    public ICollection<InterventionActionAttachment>? Attachments { get; set; }
+    public ICollection<InterventionAttachment>? Attachments { get; set; }
     ICollection<IEntityAttachment>? IHasAttachments.Attachments
     {
         get => Attachments?.Cast<IEntityAttachment>().ToList();
-        set => Attachments = value?.Cast<InterventionActionAttachment>().ToList();
+        set => Attachments = value?.Cast<InterventionAttachment>().ToList();
     }
 
 
