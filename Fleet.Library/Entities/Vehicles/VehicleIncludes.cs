@@ -6,5 +6,6 @@ public enum VehicleIncludes
     None = 0,
     Brand = 1 << 0,
     VehicleType = 1 << 1,
-    All = Brand | VehicleType
+    Attachments = 1 << 2,
+    All = Brand | VehicleType | Attachments
 }

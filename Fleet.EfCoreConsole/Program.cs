@@ -4,8 +4,10 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Regira.Fleet.Data;
+using Regira.Fleet.DependencyInjection;
 using Regira.Fleet.Identity.Data;
 using Regira.Fleet.Identity.DependencyInjection;
+using Regira.IO.Storage.FileSystem;
 using Regira.Security.Abstractions;
 using Regira.Security.Encryption;
 
@@ -58,11 +60,22 @@ static void ConfigureServices(HostBuilderContext context, IServiceCollection ser
     services
         // IdentityContext
         .AddDbContext<AccountsContext>(db => db.UseNpgsql(config["ConnectionStrings:FleetAccounts"], o => o.MigrationsAssembly(typeof(AccountsContext).Assembly.GetName().Name)));
-    services
-        // Fleet Data
-        .AddDbContext<FleetContext>(db => db.UseNpgsql(config["ConnectionStrings:FleetData"], o => o.MigrationsAssembly(typeof(FleetContext).Assembly.GetName().Name)));
+    //services
+    //    // Fleet Data
+    //    .AddDbContext<FleetContext>(db => db.UseNpgsql(config["ConnectionStrings:FleetData"], o => o.MigrationsAssembly(typeof(FleetContext).Assembly.GetName().Name)));
 
     services.AddAuthentication();
     services.AddFleetAuthentication();
+
+    services.AddFleet(c =>
+            {
+                var dataDirectory = config["Data:Directory"];
+                c.ConnectionString = config["ConnectionStrings:FleetData"];
+                var fsConfig = new BinaryFileService.FileServiceOptions
+                {
+                    RootFolder = dataDirectory!
+                };
+                c.ConfigureStorageService(_ => new BinaryFileService(fsConfig));
+            });
 }
 #endregion

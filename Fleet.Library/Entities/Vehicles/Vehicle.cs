@@ -8,13 +8,14 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Regira.Fleet.Entities.Vehicles;
 
-public class Vehicle : IFleetEntity, IEntityWithSerial, IHasCode, IArchivable, IHasAttachments<VehicleAttachment>, IHasAttachments
+public class Vehicle : IFleetEntity, IEntityWithSerial, IHasCode, IArchivable, IHasAttachments<VehicleAttachment>, IHasAttachments, IHasNormalizedTitle, IHasNormalizedContent
 {
     public int Id { get; set; }
     public string Guid { get; set; } = System.Guid.NewGuid().ToString("N");
     public int ClientId { get; set; }
     public int? BrandId { get; set; }
     public int? VehicleTypeId { get; set; }
+    [Required]
     [MaxLength(8)]
     public string? Code { get; set; }
     [MaxLength(64)]
@@ -37,6 +38,10 @@ public class Vehicle : IFleetEntity, IEntityWithSerial, IHasCode, IArchivable, I
         set => Attachments = value?.Cast<VehicleAttachment>().ToList();
     }
 
+    public string? Title => Model;
+    [MaxLength(256)]
+    public string? NormalizedTitle { get; set; }
     [MaxLength(2048)]
     public string? NormalizedContent { get; set; }
+
 }

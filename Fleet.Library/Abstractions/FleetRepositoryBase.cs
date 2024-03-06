@@ -33,7 +33,24 @@ public abstract class FleetRepositoryBase<TEntity, TSearchObject, TSortBy, TIncl
     }
     public override IQueryable<TEntity> Filter(IQueryable<TEntity> query, TSearchObject? so)
     {
-        query = base.Filter(query, so);
+        if (so != null)
+        {
+            query = query.FilterId(so.Id);
+            query = query.FilterIds(so.Ids);
+
+            if (TypeUtility.ImplementsInterface<IHasCreated>(typeof(TEntity)))
+            {
+                query = query.Cast<IHasCreated>().FilterCreated(so.MinCreated, so.MaxCreated).Cast<TEntity>();
+            }
+            if (TypeUtility.ImplementsInterface<IHasLastModified>(typeof(TEntity)))
+            {
+                query = query.Cast<IHasLastModified>().FilterLastModified(so.MinLastModified, so.MaxLastModified).Cast<TEntity>();
+            }
+            if (TypeUtility.ImplementsInterface<IArchivable>(typeof(TEntity)))
+            {
+                query = query.Cast<IArchivable>().FilterArchivable(so.IsArchived).Cast<TEntity>();
+            }
+        }
 
         // make sure only allowed clientId items are loaded
         if (TypeUtility.ImplementsInterface<IHasClientId>(typeof(TEntity)))

@@ -41,7 +41,10 @@ public class OperatorRepository(FleetContext dbContext, IFleetAppContext appCont
 
         return query;
     }
-
+    public override IQueryable<Operator> SortBy(IQueryable<Operator> query, EntitySortBy? sortBy = null)
+    {
+        return query.OrderBy(x => x.NormalizedTitle);
+    }
     public override IQueryable<Operator> AddIncludes(IQueryable<Operator> query, OperatorIncludes? includes)
     {
         query = base.AddIncludes(query, includes);
@@ -64,10 +67,11 @@ public class OperatorRepository(FleetContext dbContext, IFleetAppContext appCont
                     .Include(x => x.InterventionTypes!)
                     .ThenInclude(x => x.InterventionType);
             }
+            // Attachments
             if (includes.Value.HasFlag(OperatorIncludes.Attachments))
             {
-                query = query
-                    .Include(x => x.Attachments!.OrderBy(a => a.SortOrder));
+                query = query.Include(x => x.Attachments!)
+                    .ThenInclude(a => a.Attachment);
             }
         }
 

@@ -50,7 +50,22 @@ public static class ServiceCollectionExtensions
         // DbContext
         services
             //.AddDbContext<FleetContext>(db => db.UseMySql(options.ConnectionString, ServerVersion.AutoDetect(options.ConnectionString)));
-            .AddDbContext<FleetContext>(db => db.UseNpgsql(options.ConnectionString, o => o.MigrationsAssembly(typeof(FleetContext).Assembly.GetName().Name)));
+            .AddDbContext<FleetContext>(db =>
+            {
+                db
+                    .UseNpgsql(options.ConnectionString, o =>
+                    {
+                        o
+                            .MigrationsAssembly(typeof(FleetContext).Assembly.GetName().Name)
+                            .UseQuerySplittingBehavior(QuerySplittingBehavior.SplitQuery);
+                    })
+                    //.UseQueryTrackingBehavior(QueryTrackingBehavior.NoTrackingWithIdentityResolution)
+#if DEBUG
+                    .EnableDetailedErrors()
+                    .EnableSensitiveDataLogging()
+#endif
+                    ;
+            });
 
         // Contexts
         services
@@ -106,7 +121,7 @@ public static class ServiceCollectionExtensions
             .ConfigureAttachmentService(configure)
             .ConfigureTypedAttachmentService(db => (new[]
             {
-                db.MaintenanceAttachments.ToDescriptor<Intervention>(),
+                db.InterventionAttachments.ToDescriptor<Intervention>(),
                 db.InterventionOperatorAttachments.ToDescriptor<Operator>(),
                 db.VehicleAttachments.ToDescriptor<Vehicle>(),
             }));
@@ -114,18 +129,17 @@ public static class ServiceCollectionExtensions
     static IServiceCollection AddNormalizers(this IServiceCollection services)
     {
         return services
-                .AddTransient<INormalizer>(_ =>
-                    new DefaultNormalizer(new NormalizeOptions { Transform = TextTransform.ToUpperCase }))
-                .AddTransient<IObjectNormalizer>(
-                    p => new FleetEntityNormalizer(p.GetRequiredService<INormalizer>()))
-                .AddTransient<AddressNormalizer>()
-                .AddTransient(p => new PhoneNumberFormatter(p.GetRequiredService<ICultureContext>().Culture))
-                .AddTransient<ContactDataNormalizer>()
-                .AddTransient<IdentificationNumberNormalizer>()
-                .AddTransient<IFleetEntityNormalizer<Intervention>, ActionNormalizer>()
-                .AddTransient<IFleetEntityNormalizer<Operator>, OperatorNormalizer>()
-                // finally (put last)
-                .AddObjectNormalizingContainer((_, c) => c.ExtractFromServiceCollection(services));
+            .AddTransient<INormalizer>(_ => new DefaultNormalizer(new NormalizeOptions { Transform = TextTransform.ToUpperCase }))
+            .AddTransient<IObjectNormalizer>(p => new FleetEntityNormalizer(p.GetRequiredService<INormalizer>()))
+            .AddTransient<AddressNormalizer>()
+            .AddTransient(p => new PhoneNumberFormatter(p.GetRequiredService<ICultureContext>().Culture))
+            .AddTransient<ContactDataNormalizer>()
+            .AddTransient<IdentificationNumberNormalizer>()
+            .AddTransient<IFleetEntityNormalizer<Intervention>, InterventionNormalizer>()
+            .AddTransient<IFleetEntityNormalizer<Operator>, OperatorNormalizer>()
+            .AddTransient<IFleetEntityNormalizer<Vehicle>, VehicleNormalizer>()
+            // finally (put last)
+            .AddObjectNormalizingContainer((_, c) => c.ExtractFromServiceCollection(services));
     }
     static IServiceCollection AddPrimers(this IServiceCollection services)
     {

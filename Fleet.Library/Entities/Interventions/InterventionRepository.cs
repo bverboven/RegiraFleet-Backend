@@ -13,9 +13,9 @@ public class InterventionRepository(FleetContext dbContext, IFleetAppContext app
     {
         query = base.Filter(query, so);
 
-        if (so?.CarId?.Any() == true)
+        if (so?.VehicleId?.Any() == true)
         {
-            query = query.Where(x => so.CarId.Contains(x.VehicleId));
+            query = query.Where(x => so.VehicleId.Contains(x.VehicleId));
         }
         if (so?.OperatorId?.Any() == true)
         {
@@ -68,10 +68,11 @@ public class InterventionRepository(FleetContext dbContext, IFleetAppContext app
                     .Include(x => x.InterventionTypes!)
                     .ThenInclude(x => x.InterventionType);
             }
+            // Attachments
             if (includes.Value.HasFlag(InterventionIncludes.Attachments))
             {
-                query = query
-                    .Include(x => x.Attachments);
+                query = query.Include(x => x.Attachments!)
+                    .ThenInclude(a => a.Attachment);
             }
         }
 

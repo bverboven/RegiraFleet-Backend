@@ -1,8 +1,9 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Regira.DAL.EFcore.Extensions;
 using Regira.Entities.Attachments.Models;
-using Regira.Fleet.Entities.Addresses;
 using Regira.Fleet.Entities.Clients;
+using Regira.Fleet.Entities.InterventionOperators.Addresses;
+using Regira.Fleet.Entities.InterventionOperators.ContactData;
 using Regira.Fleet.Entities.InterventionOperators.Operators;
 using Regira.Fleet.Entities.Interventions;
 using Regira.Fleet.Entities.InterventionTypes;
@@ -19,8 +20,8 @@ public class FleetContext(DbContextOptions<FleetContext> options) : DbContext(op
     public DbSet<Brand> Brands { get; set; } = null!;
     public DbSet<Client> Clients { get; set; } = null!;
     public DbSet<ClientUserClaim> ClientUserClaims { get; set; } = null!;
-    public DbSet<Intervention> Maintenances { get; set; } = null!;
-    public DbSet<InterventionAttachment> MaintenanceAttachments { get; set; } = null!;
+    public DbSet<Intervention> Interventions { get; set; } = null!;
+    public DbSet<InterventionAttachment> InterventionAttachments { get; set; } = null!;
     public DbSet<InterventionType> InterventionTypes { get; set; } = null!;
     public DbSet<Operator> InterventionOperators { get; set; } = null!;
     public DbSet<OperatorAttachment> InterventionOperatorAttachments { get; set; } = null!;
@@ -79,21 +80,28 @@ public class FleetContext(DbContextOptions<FleetContext> options) : DbContext(op
                 .HasForeignKey(e => e.ObjectId)
                 .HasPrincipalKey(e => e.Id);
         });
-        //modelBuilder.Entity<InterventionInterventionType>(entity =>
-        //{
-        //    entity.HasKey(e => new { e.InterventionId, e.InterventionTypeId });
-        //    //entity.HasOne(e => e.InterventionType)
-        //    //    .WithMany();
-        //});
-        modelBuilder.Entity<Address>(entity =>
+        modelBuilder.Entity<InterventionInterventionType>(entity =>
+        {
+            entity.ToTable("intervention_intervention_type");
+            //entity.HasKey(e => new { e.InterventionId, e.InterventionTypeId });
+            //entity.HasOne(e => e.InterventionType)
+            //    .WithMany();
+        });
+        modelBuilder.Entity<OperatorAddress>(entity =>
         {
             entity
                 .ToTable("intervention_operator_addresses")
                 .HasIndex(cd => cd.NormalizedContent);
         });
+        modelBuilder.Entity<OperatorContactData>(entity =>
+        {
+            entity
+                .ToTable("intervention_operator_contactdata")
+                .HasIndex(cd => cd.NormalizedValue);
+        });
         modelBuilder.Entity<Operator>(entity =>
         {
-            entity.ToTable("intervention_operator");
+            //entity.ToTable("intervention_operators");
             entity.HasIndex(e => e.ClientId);
             entity.HasIndex(e => new { e.ClientId, e.Code })
                 .IsUnique();
@@ -123,12 +131,13 @@ public class FleetContext(DbContextOptions<FleetContext> options) : DbContext(op
                 .HasForeignKey(e => e.ObjectId)
                 .HasPrincipalKey(e => e.Id);
         });
-        //modelBuilder.Entity<OperatorInterventionType>(entity =>
-        //{
-        //    entity.HasKey(e => new { e.OperatorId, e.InterventionTypeId });
-        //    //entity.HasOne(e => e.InterventionType)
-        //    //    .WithMany();
-        //});
+        modelBuilder.Entity<OperatorInterventionType>(entity =>
+        {
+            entity.ToTable("intervention_operator_intervention_types");
+            //    entity.HasKey(e => new { e.OperatorId, e.InterventionTypeId });
+            //    //entity.HasOne(e => e.InterventionType)
+            //    //    .WithMany();
+        });
 
         // Vehicles
         modelBuilder.Entity<Brand>(entity =>
@@ -146,8 +155,7 @@ public class FleetContext(DbContextOptions<FleetContext> options) : DbContext(op
             entity.HasIndex(e => e.ClientId);
             entity.HasIndex(e => new { e.ClientId, e.Code })
                 .IsUnique();
-            entity.HasIndex(e => new { e.ClientId, e.BrandId, e.Model })
-                .IsUnique();
+            entity.HasIndex(cd => cd.NormalizedTitle);
 
             // Attachments
             entity.HasMany(e => e.Attachments)
