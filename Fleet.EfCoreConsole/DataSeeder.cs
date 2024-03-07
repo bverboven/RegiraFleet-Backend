@@ -221,7 +221,7 @@ public class DataSeeder(FleetContext dbContext, IEntityService<Brand> brandServi
             .ToArrayAsync();
 
         var addressRule = new Faker<OperatorAddress>("nl_BE")
-            .RuleFor(x => x.CountryCode, f => f.Address.CountryCode())
+            .RuleFor(x => x.CountryCode, _ => "BE")
             .RuleFor(x => x.PostalCode, (f, x) => f.Address.ZipCode())
             .RuleFor(x => x.City, (f, x) => f.Address.City())
             .RuleFor(x => x.Street, (f, x) => f.Address.StreetAddress())

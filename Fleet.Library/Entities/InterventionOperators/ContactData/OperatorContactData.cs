@@ -1,5 +1,4 @@
 ﻿using Regira.Entities.Models.Abstractions;
-using Regira.Normalizing;
 using System.ComponentModel.DataAnnotations;
 
 namespace Regira.Fleet.Entities.InterventionOperators.ContactData;
@@ -11,7 +10,6 @@ public class OperatorContactData : IEntityWithSerial, ISortable
     public string? Title { get; set; }
     [MaxLength(256)]
     public string Value { get; set; } = null!;
-    [Normalized(SourceProperty = nameof(Value))]
     [MaxLength(256)]
     public string? NormalizedValue { get; set; }
     public ContactDataTypes DataType { get; set; }

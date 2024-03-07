@@ -1,10 +1,10 @@
 ﻿using Regira.Fleet.Data;
-using Regira.Fleet.Normalizing.Abstractions;
+using Regira.Fleet.Normalizing;
 using Regira.Normalizing.Abstractions;
 
 namespace Regira.Fleet.Entities.Interventions.Normalizers;
 
-public class InterventionNormalizer(INormalizer normalizer, FleetContext dbContext) : FleetEntityNormalizerBase<Intervention>(normalizer)
+public class InterventionNormalizer(INormalizer normalizer, FleetContext dbContext) : FleetEntityNormalizer<Intervention>(normalizer)
 {
     public override void SetNormalizedContent(Intervention item)
     {

@@ -26,7 +26,7 @@ public class InterventionTypeRepository(FleetContext dbContext, IFleetAppContext
                 var kw = qHelper.Parse(so.Q);
                 foreach (var q in kw)
                 {
-                    query = query.Where(x => EF.Functions.Like(x.Code, q.QW) || EF.Functions.Like(x.Title, q.QW));
+                    query = query.Where(x => EF.Functions.ILike(x.Code!, q.QW!) || EF.Functions.ILike(x.NormalizedTitle!, q.QW!));
                 }
             }
 

@@ -43,5 +43,13 @@ public class ContactDataNormalizer(INormalizer defaultNormalizer, PhoneNumberFor
         }
     }
     public string? Normalize(OperatorContactData data)
-        => Normalize(data.Value, data.DataType);
+    {
+        if (data == null)
+        {
+            return null;
+        }
+
+        data.NormalizedValue = Normalize(data.Value, data.DataType);
+        return data.NormalizedValue;
+    }
 }

@@ -6,11 +6,13 @@ using Regira.Entities.Models;
 using Regira.Fleet.Abstractions;
 using Regira.Fleet.Core.Abstractions;
 using Regira.Fleet.Data;
+using Regira.Fleet.Entities.InterventionOperators.ContactData;
+using Regira.Fleet.Entities.InterventionOperators.Normalizers;
 using Regira.Fleet.Extensions;
 
 namespace Regira.Fleet.Entities.InterventionOperators.Operators;
 
-public class OperatorRepository(FleetContext dbContext, IFleetAppContext appContext) : FleetRepositoryBase<Operator, OperatorSearchObject, EntitySortBy, OperatorIncludes>(dbContext, appContext)
+public class OperatorRepository(FleetContext dbContext, IFleetAppContext appContext, ContactDataNormalizer contactDataNormalizer) : FleetRepositoryBase<Operator, OperatorSearchObject, EntitySortBy, OperatorIncludes>(dbContext, appContext)
 {
     public override IQueryable<Operator> Filter(IQueryable<Operator> query, OperatorSearchObject? so)
     {
@@ -21,7 +23,8 @@ public class OperatorRepository(FleetContext dbContext, IFleetAppContext appCont
 
             query = query.FilterArchivable(so.IsArchived);
             query = query.FilterCode(so.Code);
-            query = query.FilterTitle(qHelper.Parse(so.Title));
+            query = query.FilterTitle(qHelper.Parse(so.Title?.ToUpper()));
+            query = query.FilterQ(qHelper.Parse(so.Q?.ToUpper()));
 
             if (!string.IsNullOrWhiteSpace(so.IdentificationNumber))
             {
@@ -30,7 +33,22 @@ public class OperatorRepository(FleetContext dbContext, IFleetAppContext appCont
 
             if (!string.IsNullOrWhiteSpace(so.Phone))
             {
-                query = query.Where(x => x.ContactData!.Any(cd => cd.Value == so.Phone));
+                var q = contactDataNormalizer.Normalize(so.Phone, ContactDataTypes.Phone);
+                query = query.Where(x => x.ContactData!.Any(cd => cd.DataType == ContactDataTypes.Phone && EF.Functions.ILike(cd.NormalizedValue!, $"%{q}%")));
+            }
+            if (!string.IsNullOrWhiteSpace(so.Email))
+            {
+                var q = contactDataNormalizer.Normalize(so.Email, ContactDataTypes.Email);
+                query = query.Where(x => x.ContactData!.Any(cd => cd.DataType == ContactDataTypes.Email && EF.Functions.ILike(cd.NormalizedValue!, $"%{q}%")));
+            }
+
+            if (!string.IsNullOrWhiteSpace(so.Address))
+            {
+                var keywords = qHelper.Parse(so.Address);
+                foreach (var kw in keywords)
+                {
+                    query = query.Where(x => x.Addresses!.Any(a => EF.Functions.ILike(a.NormalizedContent!, kw.QW!)));
+                }
             }
 
             if (so.InterventionTypeId?.Any() == true)

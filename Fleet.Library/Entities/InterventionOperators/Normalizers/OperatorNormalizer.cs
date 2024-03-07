@@ -1,13 +1,13 @@
 ﻿using Regira.Fleet.Core.Abstractions;
 using Regira.Fleet.Entities.InterventionOperators.Operators;
-using Regira.Fleet.Normalizing.Abstractions;
+using Regira.Fleet.Normalizing;
 using Regira.Normalizing.Abstractions;
 
 namespace Regira.Fleet.Entities.InterventionOperators.Normalizers;
 
 public class OperatorNormalizer(INormalizer defaultNormalizer, IdentificationNumberNormalizer idNumberNormalizer,
     ContactDataNormalizer contactDataNormalizer, AddressNormalizer addressNormalizer, ICultureContext cultureContext)
-    : FleetEntityNormalizerBase<Operator>(defaultNormalizer)
+    : FleetEntityNormalizer<Operator>(defaultNormalizer)
 {
     public override void HandleNormalize(Operator? item)
     {

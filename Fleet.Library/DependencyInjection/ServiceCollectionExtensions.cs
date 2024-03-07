@@ -131,10 +131,16 @@ public static class ServiceCollectionExtensions
         return services
             .AddTransient<INormalizer>(_ => new DefaultNormalizer(new NormalizeOptions { Transform = TextTransform.ToUpperCase }))
             .AddTransient<IObjectNormalizer>(p => new FleetEntityNormalizer(p.GetRequiredService<INormalizer>()))
+            // simple normalizers
+            .AddTransient<IFleetEntityNormalizer<Brand>, FleetEntityNormalizer<Brand>>()
+            .AddTransient<IFleetEntityNormalizer<InterventionType>, FleetEntityNormalizer<InterventionType>>()
+            .AddTransient<IFleetEntityNormalizer<VehicleType>, FleetEntityNormalizer<VehicleType>>()
+            // helpers
             .AddTransient<AddressNormalizer>()
             .AddTransient(p => new PhoneNumberFormatter(p.GetRequiredService<ICultureContext>().Culture))
             .AddTransient<ContactDataNormalizer>()
             .AddTransient<IdentificationNumberNormalizer>()
+            // custom normalizers
             .AddTransient<IFleetEntityNormalizer<Intervention>, InterventionNormalizer>()
             .AddTransient<IFleetEntityNormalizer<Operator>, OperatorNormalizer>()
             .AddTransient<IFleetEntityNormalizer<Vehicle>, VehicleNormalizer>()

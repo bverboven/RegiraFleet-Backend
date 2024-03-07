@@ -1,4 +1,6 @@
-﻿using Regira.DAL.EFcore.Normalizing;
+﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Infrastructure;
+using Regira.DAL.EFcore.Normalizing;
 using Regira.Entities.EFcore.Abstractions;
 using Regira.Entities.EFcore.Extensions;
 using Regira.Entities.Models;
@@ -62,8 +64,21 @@ public abstract class FleetRepositoryBase<TEntity, TSearchObject, TSortBy, TIncl
     }
 
 
+    public override Task Remove(TEntity item)
+    {
+        if (item is IArchivable archivableItem)
+        {
+            archivableItem.IsArchived = true;
+            DbContext.Entry(item).State = EntityState.Modified;
+            return Task.CompletedTask;
+        }
+
+        return base.Remove(item);
+    }
     public override async Task<int> SaveChanges(CancellationToken token = new())
     {
+        var normalizers = dbContext.GetService<ObjectNormalizerContainer>();
+
         DbContext.ApplyNormalizers();
         await DbContext.ApplyPrimers();
 

@@ -19,33 +19,44 @@ public class VehicleRepository(FleetContext dbContext, IFleetAppContext appConte
         {
             var qHelper = QKeywordHelper.Create();
 
-            query = query.FilterArchivable(so.IsArchived);
-            query = query.FilterCode(so.Code);
             query = query.FilterQ(qHelper.Parse(so.Q?.ToUpper()));
+
+            if (!string.IsNullOrWhiteSpace(so.Code))
+            {
+                var code = so.Code.PadLeft(3, '0');
+                query = query.Where(x => x.Code == code);
+            }
 
             if (!string.IsNullOrWhiteSpace(so.Model))
             {
                 query = query.Where(x => x.Model!.Equals(so.Model, StringComparison.InvariantCultureIgnoreCase));
             }
 
+            if (so.BrandId?.Any() == true)
+            {
+                query = query.Where(x => so.BrandId.Contains(x.BrandId!.Value));
+            }
+            if (so.VehicleTypeId?.Any() == true)
+            {
+                query = query.Where(x => so.VehicleTypeId.Contains(x.VehicleTypeId!.Value));
+            }
+
             if (!string.IsNullOrWhiteSpace(so.Brand))
             {
-                query = query.Where(x =>
-                    x.Brand!.Title!.Equals(so.Brand, StringComparison.InvariantCultureIgnoreCase) ||
-                    x.Brand.Code!.Equals(so.Brand, StringComparison.InvariantCultureIgnoreCase));
+                query = query.Where(x => EF.Functions.ILike(x.Brand!.Code!, so.Brand) ||
+                    EF.Functions.ILike(x.Brand!.Title!, so.Brand));
             }
 
             if (!string.IsNullOrWhiteSpace(so.VehicleType))
             {
-                query = query.Where(x =>
-                    x.VehicleType!.Code!.Equals(so.VehicleType, StringComparison.InvariantCultureIgnoreCase) ||
-                    x.VehicleType.Title!.Equals(so.VehicleType, StringComparison.InvariantCultureIgnoreCase));
+                query = query.Where(x => EF.Functions.ILike(x.VehicleType!.Code!, so.VehicleType) ||
+                    EF.Functions.ILike(x.VehicleType!.Title!, so.VehicleType));
             }
 
             if (!string.IsNullOrWhiteSpace(so.Title))
             {
                 var kw = qHelper.ParseKeyword(so.Title.ToUpper());
-                query = query.Where(x => EF.Functions.Like(x.NormalizedTitle, kw.QW));
+                query = query.Where(x => EF.Functions.ILike(x.NormalizedTitle!, kw.QW!));
             }
         }
 
