@@ -29,6 +29,11 @@ var clients = await dataSeeder.Seed();
 var accountSeeder = host.Services.GetRequiredService<AccountSeeder>();
 await accountSeeder.Seed();
 
+foreach(var sql in StatisticsViews.All)
+{
+    await fleetContext.Database.ExecuteSqlRawAsync(sql);
+}
+
 Console.WriteLine("Created Host");
 
 // used by EF Core to access the DbContext

@@ -7,6 +7,7 @@ using Regira.Fleet.Entities.InterventionOperators.Addresses;
 using Regira.Fleet.Entities.InterventionOperators.ContactData;
 using Regira.Fleet.Entities.InterventionOperators.Operators;
 using Regira.Fleet.Entities.Interventions;
+using Regira.Fleet.Entities.Interventions.Invoices;
 using Regira.Fleet.Entities.InterventionTypes;
 using Regira.Fleet.Entities.Vehicles;
 using Regira.Fleet.Entities.Vehicles.Brands;
@@ -301,6 +302,7 @@ public class DataSeeder(FleetContext dbContext, IEntityService<Brand> brandServi
             )
             .RuleFor(x => x.Mileage, (f) => (int)(Math.Floor((decimal)f.Random.Number(0, 999_999) / 1000) * 1000))
             .RuleFor(x => x.InterventionDate, f => f.Date.Between(DateTime.Today.AddYears(-5), DateTime.Today))
+            .RuleFor(x => x.Invoices, (f, x) => GenerateInvoices(x, f.Random.Number(0, 6) / 2).ToList())
             .Generate(vehicles.Length * 5);
 
         foreach (var item in items)
@@ -308,6 +310,18 @@ public class DataSeeder(FleetContext dbContext, IEntityService<Brand> brandServi
             await interventionService.Add(item);
         }
         await interventionService.SaveChanges();
+    }
+
+    IEnumerable<Invoice> GenerateInvoices(Intervention intervention, int count)
+    {
+        return new Faker<Invoice>()
+            .RuleFor(x => x.InvoiceNumber, f => $"INV{f.Commerce.Random.Number()}")
+            .RuleFor(x => x.InvoiceDate, f => f.Date.Between(intervention.InterventionDate!.Value, intervention.InterventionDate!.Value.AddDays(15)))
+            .RuleFor(x => x.PriceExcl, f => f.Random.Decimal(10, 99_999))
+            .RuleFor(x => x.PriceIncl, (f, x) => x.PriceExcl * 1.21m)
+            .RuleFor(x => x.TaxAmount, (f, x) => x.PriceExcl * .21m)
+            .RuleFor(x => x.TaxCategory, f => f.PickRandom(Enum.GetValues<TaxCategory>()))
+            .Generate(count);
     }
 
 

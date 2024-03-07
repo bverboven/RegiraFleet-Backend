@@ -82,7 +82,7 @@ public class FleetContext(DbContextOptions<FleetContext> options) : DbContext(op
         });
         modelBuilder.Entity<InterventionInterventionType>(entity =>
         {
-            entity.ToTable("intervention_intervention_type");
+            entity.ToTable("intervention_intervention_types");
             //entity.HasKey(e => new { e.InterventionId, e.InterventionTypeId });
             //entity.HasOne(e => e.InterventionType)
             //    .WithMany();

@@ -1,7 +1,8 @@
-﻿using System.Data;
-using System.Data.Common;
+﻿using Dapper;
 using Microsoft.EntityFrameworkCore;
 using Regira.Fleet.Data;
+using System.Data;
+using System.Data.Common;
 
 namespace Regira.Fleet.Statistics;
 
@@ -25,14 +26,14 @@ public class StatisticsService(FleetContext dbContext) : IDisposable
                 while (await reader.ReadAsync())
                 {
                     var month = reader.GetInt32("month");
-                    var carTypeCode = reader.GetString("cartype_code");
+                    var vehicleTypeCode = reader.GetString("vehicle_type_code");
                     var total = reader.GetDecimal("total");
-                    list.Add(new { month, carTypeCode, total });
+                    list.Add(new { month, vehicleTypeCode, total });
                 }
             }
         }
 
-        var carTypes = list.Select(x => (string)x.carTypeCode).Distinct().OrderBy(x => x).ToArray();
+        var vehicleTypes = list.Select(x => (string)x.vehicleTypeCode).Distinct().OrderBy(x => x).ToArray();
         var stats = list
             .GroupBy(x => (int)x.month)
             .OrderBy(x => x.Key)
@@ -41,13 +42,13 @@ public class StatisticsService(FleetContext dbContext) : IDisposable
                 var dic = new Dictionary<string, object?>();
                 dic.Add("Maand", FormatMonth(x.Key, year));
                 dic.Add("JaarTotaal", x.Sum(v => (decimal?)v.total ?? 0));
-                foreach (var carType in carTypes)
+                foreach (var vehicleType in vehicleTypes)
                 {
-                    dic.Add(carType, null);
+                    dic.Add(vehicleType, null);
                 }
                 foreach (var v in x)
                 {
-                    dic[(string)v.carTypeCode] = v.total;
+                    dic[(string)v.vehicleTypeCode] = v.total;
                 }
                 return (IDictionary<string, object?>)dic;
             })
@@ -57,7 +58,7 @@ public class StatisticsService(FleetContext dbContext) : IDisposable
 
         return stats;
     }
-    public async Task<IList<IDictionary<string, object?>>> Vehicles_Per_VehicleType_Per_Month(string carTypeCode, int year)
+    public async Task<IList<IDictionary<string, object?>>> Vehicles_Per_VehicleType_Per_Month(string vehicleTypeCode, int year)
     {
         var list = new List<dynamic>();
         await using (var cmd = _dbConnection.CreateCommand())
@@ -67,27 +68,27 @@ public class StatisticsService(FleetContext dbContext) : IDisposable
             yearParam.ParameterName = "year";
             yearParam.Value = year;
             cmd.Parameters.Add(yearParam);
-            var carTypeCodeParam = cmd.CreateParameter();
-            carTypeCodeParam.ParameterName = "car_type_code";
-            carTypeCodeParam.Value = carTypeCode;
-            cmd.Parameters.Add(carTypeCodeParam);
+            var vehicleTypeIdParam = cmd.CreateParameter();
+            vehicleTypeIdParam.ParameterName = nameof(vehicleTypeCode);
+            vehicleTypeIdParam.Value = vehicleTypeCode;
+            cmd.Parameters.Add(vehicleTypeIdParam);
             await _dbConnection.OpenAsync();
             await using (var reader = await cmd.ExecuteReaderAsync(CommandBehavior.CloseConnection))
             {
                 while (await reader.ReadAsync())
                 {
                     var month = reader.GetInt32("month");
-                    var brand = reader.IsDBNull("brand_code") ? string.Empty : reader.GetString("brand_code");
+                    var brand = reader.IsDBNull("vehicle_brand_code") ? string.Empty : reader.GetString("vehicle_brand_code");
                     var model = reader.IsDBNull("model") ? string.Empty : reader.GetString("model");
-                    var car = $"{reader.GetString("car_code")} {brand} {model}";
+                    var vehicle = $"{reader.GetString("vehicle_code")} {brand} {model}";
                     var total = reader.IsDBNull("total") ? 0m : reader.GetDecimal("total");
-                    list.Add(new { month, carTypeCode, car, total });
+                    list.Add(new { month, vehicleTypeCode, vehicle, total });
                 }
             }
         }
 
 
-        var cars = list.Select(x => (string)x.car).Distinct().OrderBy(x => x).ToArray();
+        var vehicles = list.Select(x => (string)x.vehicle).Distinct().OrderBy(x => x).ToArray();
         var stats = list
             .GroupBy(x => (int)x.month)
             .OrderBy(x => x.Key)
@@ -95,15 +96,15 @@ public class StatisticsService(FleetContext dbContext) : IDisposable
             {
                 var dic = new Dictionary<string, object?>();
                 dic.Add("Maand", FormatMonth(x.Key, year));
-                dic.Add("Wagentype", carTypeCode);
+                dic.Add("Wagentype", vehicleTypeCode);
                 dic.Add("JaarTotaal", x.Sum(v => (decimal?)v.total ?? 0));
-                foreach (var car in cars)
+                foreach (var vehicle in vehicles)
                 {
-                    dic.Add(car, null);
+                    dic.Add(vehicle, null);
                 }
                 foreach (var v in x)
                 {
-                    dic[(string)v.car] = v.total;
+                    dic[(string)v.vehicle] = v.total;
                 }
                 return (IDictionary<string, object?>)dic;
             })
@@ -129,19 +130,19 @@ public class StatisticsService(FleetContext dbContext) : IDisposable
                 while (await reader.ReadAsync())
                 {
                     var month = reader.GetInt32("month");
-                    var brand = reader.IsDBNull("brand_code") ? string.Empty : reader.GetString("brand_code");
+                    var brand = reader.IsDBNull("vehicle_brand_code") ? string.Empty : reader.GetString("vehicle_brand_code");
                     var model = reader.IsDBNull("model") ? string.Empty : reader.GetString("model");
-                    var car = $"{reader.GetString("car_code")} {brand} {model}";
+                    var vehicle = $"{reader.GetString("vehicle_code")} {brand} {model}";
                     var total = reader.IsDBNull("total") ? 0m : reader.GetDecimal("total");
-                    list.Add(new { month, car, total });
+                    list.Add(new { month, vehicle, total });
                 }
             }
         }
 
         var months = list.Select(x => (int)x.month).Distinct().OrderBy(x => x).ToArray();
         var stats = list
-            .OrderBy(x => x.car)
-            .GroupBy(x => x.car)
+            .OrderBy(x => x.vehicle)
+            .GroupBy(x => x.vehicle)
             .Select(x =>
             {
                 var dic = new Dictionary<string, object?>
@@ -216,25 +217,25 @@ public class StatisticsService(FleetContext dbContext) : IDisposable
                 {
                     var month = reader.GetInt32("month");
                     var intervention_operatorId = reader.GetInt32("intervention_operator_id");
-                    var intervention_operator = reader.GetString("intervention_operator");
+                    var supplier = reader.GetString("supplier");
                     var total = reader.GetDecimal("total");
-                    list.Add(new { month, intervention_operatorId, intervention_operator, total });
+                    list.Add(new { month, intervention_operatorId, supplier, total });
                 }
             }
         }
 
         var months = list.Select(x => (int)x.month).Distinct().OrderBy(x => x).ToArray();
-        var intervention_operators = list
+        var suppliers = list
             .GroupBy(x => x.intervention_operatorId)
-            .ToDictionary(x => x.Key, x => x.First().intervention_operator);
+            .ToDictionary(x => x.Key, x => x.First().supplier);
         var stats = list
-            .OrderBy(x => x.intervention_operator)
+            .OrderBy(x => x.supplier)
             .GroupBy(x => x.intervention_operatorId)
             .Select(x =>
             {
                 var dic = new Dictionary<string, object?>
                 {
-                    {"Leverancier", intervention_operators[x.Key]},
+                    {"Leverancier", suppliers[x.Key]},
                     {"JaarTotaal", x.Sum(v => (decimal?) v.total ?? 0)}
                 };
                 AddMonthTotals(dic, year, months, x);
@@ -263,16 +264,16 @@ public class StatisticsService(FleetContext dbContext) : IDisposable
                 {
                     var month = reader.GetInt32("month");
                     var interventionTypeCode = reader.GetString("interventiontype_code");
-                    var carTypeCode = reader.GetString("car_type");
+                    var vehicleTypeCode = reader.GetString("vehicle_type");
                     var total = reader.GetDecimal("total");
-                    list.Add(new { month, interventionTypeCode, carTypeCode, total });
+                    list.Add(new { month, interventionTypeCode, vehicleTypeCode, total });
                 }
             }
         }
 
         var months = list.Select(x => (int)x.month).Distinct().OrderBy(x => x).ToArray();
         var stats = list
-            .GroupBy(x => x.interventionTypeCode + "|" + x.carTypeCode)
+            .GroupBy(x => x.interventionTypeCode + "|" + x.vehicleTypeCode)
             .OrderBy(x => x.Key)
             .Select(x =>
             {
@@ -369,67 +370,25 @@ public class StatisticsService(FleetContext dbContext) : IDisposable
     }
 
     #region SQL
-    const string VEHICLETYPES_PER_MONTH = @"SELECT year, month, cartype_code, total
-FROM (
-	SELECT Year(b.invoice_date) year, Month(b.invoice_date) month, ct.code cartype_code, Sum(b.price_incl) total
-	FROM bookings b
-	INNER JOIN cars c ON b.car_id = c.id
-	LEFT JOIN car_types ct ON c.car_type_id = ct.id
-	GROUP BY 1, 2, 3
-) q
+    const string VEHICLETYPES_PER_MONTH = @"SELECT year, month, vehicle_type_code, total
+FROM stats_vehicletypes_per_month
+WHERE year = @year;";
+    const string VEHICLES_PER_VEHICLETYPES_PER_MONTH = @"SELECT year, month, vehicle_code, vehicle_brand_code, model, total
+FROM stats_vehicles_per_vehicletypes_per_month
 WHERE year = @year
-ORDER BY 1, 3, 2;";
-    const string VEHICLES_PER_VEHICLETYPES_PER_MONTH = @"SELECT year, month, car_code, brand_code, model, total
-FROM (
-	SELECT Year(b.invoice_date) year, Month(b.invoice_date) month, ct.code car_type_code, c.code car_code, cb.code brand_code, c.model, Sum(b.price_incl) total
-	FROM bookings b
-	INNER JOIN cars c ON b.car_id = c.id
-	LEFT JOIN car_types ct ON c.car_type_id = ct.id
-    LEFT JOIN brands cb ON c.brand_id = cb.id
-	GROUP BY 1, 2, 3, 4, 5, 6
-) q
-WHERE year = @year
-AND car_type_code = @car_type_code
-ORDER BY 1, 2, 3;";
-    const string VEHICLES_PER_MONTH = @"SELECT year, month, car_code, brand_code, model, total
-FROM (
-	SELECT Year(b.invoice_date) year, Month(b.invoice_date) month, c.code car_code, cb.code brand_code, c.model, Sum(b.price_incl) total
-	FROM bookings b
-	INNER JOIN cars c ON b.car_id = c.id
-    LEFT JOIN brands cb ON c.brand_id = cb.id
-	GROUP BY 1, 2, 3, 4, 5
-) q
-WHERE year = @year
-ORDER BY 1, 2, 3";
+AND vehicle_type_id = @vehicle_type_id;";
+    const string VEHICLES_PER_MONTH = @"SELECT year, month, vehicle_code, vehicle_brand_code, model, total
+FROM stats_vehicles_per_month
+WHERE year = @year;";
     const string INTERVENTION_TYPES_PER_MONTH = @"SELECT year, month, interventiontype_code, total
-FROM (
-	SELECT Year(b.invoice_date) year, Month(b.invoice_date) month, it.code interventiontype_code, Sum(b.price_incl) total
-	FROM bookings b
-    INNER JOIN intervention_types it ON b.intervention_type_id = it.id
-	GROUP BY 1, 2, 3
-) q
-WHERE year = @year
-ORDER BY 1, 3, 2;";
-    const string INTERVENTION_OPERATORS_PER_MONTH = @"SELECT year, month, intervention_operator_id, intervention_operator, total
-FROM (
-	SELECT Year(b.invoice_date) year, Month(b.invoice_date) month, s.id intervention_operator_id, s.name intervention_operator, Coalesce(Sum(b.price_incl),0) total
-	FROM bookings b
-    INNER JOIN intervention_operators s ON b.intervention_operator_id = s.id
-	GROUP BY 1, 2, 3, 4
-) q
-WHERE year = @year
-ORDER BY 1, 3;";
-    const string INTERVENTIONTYPES_AND_VEHICLETYPES_PER_MONTH = @"SELECT year, month, interventiontype_code, car_type, total
-FROM (
-	SELECT Year(b.invoice_date) year, Month(b.invoice_date) month, it.code interventiontype_code, ct.code car_type, Sum(b.price_incl) total
-	FROM bookings b
-    INNER JOIN intervention_types it ON b.intervention_type_id = it.id
-	INNER JOIN cars c ON b.car_id = c.id
-	LEFT JOIN car_types ct ON c.car_type_id = ct.id
-	GROUP BY 1, 2, 3, 4
-) q
-WHERE year = @year
-ORDER BY 1, 3, 2, 4;";
+FROM stats_interventiontypes_per_month
+WHERE year = @year;";
+    const string INTERVENTION_OPERATORS_PER_MONTH = @"SELECT year, month, intervention_operator_id, supplier, total
+FROM stats_interventionoperators_per_month
+WHERE year = @year;";
+    const string INTERVENTIONTYPES_AND_VEHICLETYPES_PER_MONTH = @"SELECT year, month, interventiontype_code, vehicle_type, total
+FROM stats_interventiontypes_and_vehicletypes_per_month
+WHERE year = @year;";
     #endregion
 
     public void Dispose()

@@ -9,7 +9,6 @@ public class Invoice : IEntityWithSerial
     [MaxLength(32)]
     public string? InvoiceNumber { get; set; }
     public DateTime? InvoiceDate { get; set; }
-    [MaxLength(1)]
     public TaxCategory? TaxCategory { get; set; }
     public decimal? TaxAmount { get; set; }
     public decimal? PriceExcl { get; set; }

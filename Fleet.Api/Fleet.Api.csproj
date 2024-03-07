@@ -20,11 +20,12 @@
     <ItemGroup>
         <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="8.0.2" />
         <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="8.0.2" />
+        <PackageReference Include="Regira.Office.Excel.EPPlus" Version="4.0.5" />
         <PackageReference Include="Swashbuckle.AspNetCore" Version="6.5.0" />
     </ItemGroup>
 
     <ItemGroup>
-        <PackageReference Include="Regira.Office.Excel.EPPlus" Version="2.2.1" />
+        <PackageReference Include="Regira.Office.Excel.NpoiMapper" Version="4.0.5" />
         <PackageReference Include="Regira.Serializing.Newtonsoft" Version="4.0.2" />
         <PackageReference Include="Regira.Web.Swagger" Version="4.0.0" />
     </ItemGroup>

@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Regira.Entities.EFcore.Attachments;
+using Regira.Entities.EFcore.Extensions;
 using Regira.Entities.Models;
 using Regira.Fleet.Abstractions;
 using Regira.Fleet.Core.Abstractions;
@@ -102,6 +103,8 @@ public class InterventionRepository(FleetContext dbContext, IFleetAppContext app
                 .Concat(itemsToAdd)
                 .ToList();
         }
+
+        DbContext.UpdateEntityChildCollection(original, item, x => x.Invoices, (x, collection) => x.Invoices = collection);
 
         if (item.Attachments != null)
         {

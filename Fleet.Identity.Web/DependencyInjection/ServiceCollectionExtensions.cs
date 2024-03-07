@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authentication;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Regira.Fleet.Core.Constants;
 using Regira.Fleet.Identity.Web.Filters;
 using Regira.Security.Authentication.Jwt.Extensions;
 using Regira.Security.Encryption;
@@ -22,9 +23,16 @@ public static class ServiceCollectionExtensions
             o.Filters.Add<CanWriteAuthorizationFilter>();
         });
 
+        // Authentication
         services
-            // authentication
             .AddFleetAuthentication(options);
+
+        // Authorization
+        services
+            .AddAuthorization(auth =>
+            {
+                auth.AddPolicy(FleetPolicies.CanReadPolicy, o => o.RequireClaim(FleetClaimTypes.Permission, ClientPermissions.CanRead));
+            });
 
         return services
             // jwt
