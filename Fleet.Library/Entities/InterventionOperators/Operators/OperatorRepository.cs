@@ -55,6 +55,11 @@ public class OperatorRepository(FleetContext dbContext, IFleetAppContext appCont
             {
                 query = query.Where(x => so.InterventionTypeId.All(id => x.InterventionTypes!.Any(ot => ot.InterventionTypeId == id)));
             }
+
+            if (so.HasIntervention.HasValue)
+            {
+                query = query.Where(x => DbContext.Interventions.Any(i => i.OperatorId == x.Id));
+            }
         }
 
         return query;

@@ -280,8 +280,9 @@ public class DataSeeder(FleetContext dbContext, IEntityService<Brand> brandServi
             .AsNoTracking()
             .ToArrayAsync();
         var suppliers = await dbContext.InterventionOperators
+            .Include(x => x.InterventionTypes)
             .Where(x => x.ClientId == clientId && x.InterventionTypes!.Any())
-            .AsNoTracking()
+            .AsNoTrackingWithIdentityResolution()
             .ToArrayAsync();
         var types = await dbContext.InterventionTypes
             .Where(x => x.ClientId == clientId)
@@ -315,13 +316,14 @@ public class DataSeeder(FleetContext dbContext, IEntityService<Brand> brandServi
     IEnumerable<Invoice> GenerateInvoices(Intervention intervention, int count)
     {
         return new Faker<Invoice>()
-            .RuleFor(x => x.InvoiceNumber, f => $"INV{f.Commerce.Random.Number()}")
+            .RuleFor(x => x.InvoiceNumber, f => $"INV{f.Commerce.Random.Number(1, 999999).ToString().PadLeft(8, '0')}")
             .RuleFor(x => x.InvoiceDate, f => f.Date.Between(intervention.InterventionDate!.Value, intervention.InterventionDate!.Value.AddDays(15)))
             .RuleFor(x => x.PriceExcl, f => f.Random.Decimal(10, 99_999))
             .RuleFor(x => x.PriceIncl, (f, x) => x.PriceExcl * 1.21m)
             .RuleFor(x => x.TaxAmount, (f, x) => x.PriceExcl * .21m)
             .RuleFor(x => x.TaxCategory, f => f.PickRandom(Enum.GetValues<TaxCategory>()))
-            .Generate(count);
+            .Generate(count)
+            .DistinctBy(x => x.InvoiceNumber);
     }
 
 

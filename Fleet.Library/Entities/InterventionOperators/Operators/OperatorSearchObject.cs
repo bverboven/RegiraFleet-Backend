@@ -12,4 +12,6 @@ public class OperatorSearchObject : FleetSearchObject
     public string? Email { get; set; }
 
     public ICollection<int>? InterventionTypeId { get; set; }
+
+    public bool? HasIntervention { get; set; }
 }

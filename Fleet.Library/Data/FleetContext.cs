@@ -6,6 +6,7 @@ using Regira.Fleet.Entities.InterventionOperators.Addresses;
 using Regira.Fleet.Entities.InterventionOperators.ContactData;
 using Regira.Fleet.Entities.InterventionOperators.Operators;
 using Regira.Fleet.Entities.Interventions;
+using Regira.Fleet.Entities.Interventions.Invoices;
 using Regira.Fleet.Entities.InterventionTypes;
 using Regira.Fleet.Entities.Vehicles;
 using Regira.Fleet.Entities.Vehicles.Brands;
@@ -63,12 +64,8 @@ public class FleetContext(DbContextOptions<FleetContext> options) : DbContext(op
             entity.HasIndex(e => e.ClientId);
 
             // Invoice
-            entity.OwnsMany(e => e.Invoices, e =>
-            {
-                e.ToTable("intervention_invoices");
-                e.HasIndex(i => i.InvoiceNumber);
-                e.HasIndex(i => i.InvoiceDate);
-            });
+            entity.HasMany(e => e.Invoices)
+                .WithOne();
 
             // Intervention Types
             //entity.HasMany(e => e.InterventionTypes)
@@ -79,6 +76,11 @@ public class FleetContext(DbContextOptions<FleetContext> options) : DbContext(op
                 .WithOne()
                 .HasForeignKey(e => e.ObjectId)
                 .HasPrincipalKey(e => e.Id);
+        });
+        modelBuilder.Entity<Invoice>(entity =>
+        {
+            entity.ToTable("intervention_invoices")
+                .HasIndex(e => e.InvoiceNumber);
         });
         modelBuilder.Entity<InterventionInterventionType>(entity =>
         {

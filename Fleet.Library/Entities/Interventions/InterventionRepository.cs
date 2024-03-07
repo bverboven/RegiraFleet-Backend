@@ -14,17 +14,36 @@ public class InterventionRepository(FleetContext dbContext, IFleetAppContext app
     {
         query = base.Filter(query, so);
 
-        if (so?.VehicleId?.Any() == true)
+        if (so != null)
         {
-            query = query.Where(x => so.VehicleId.Contains(x.VehicleId));
-        }
-        if (so?.OperatorId?.Any() == true)
-        {
-            query = query.Where(x => so.OperatorId.Contains(x.OperatorId));
-        }
-        if (so?.InterventionTypeId?.Any() == true)
-        {
-            query = query.Where(x => x.InterventionTypes!.Any(it => so.InterventionTypeId.Contains(it.InterventionTypeId)));
+            if (so.VehicleId?.Any() == true)
+            {
+                query = query.Where(x => so.VehicleId.Contains(x.VehicleId));
+            }
+            if (so.OperatorId?.Any() == true)
+            {
+                query = query.Where(x => so.OperatorId.Contains(x.OperatorId));
+            }
+            if (so.InterventionTypeId?.Any() == true)
+            {
+                query = query.Where(x => x.InterventionTypes!.Any(it => so.InterventionTypeId.Contains(it.InterventionTypeId)));
+            }
+            if (so.VehicleTypeId?.Any() == true)
+            {
+                query = query.Where(x => so.VehicleTypeId.Contains(x.Vehicle!.VehicleTypeId!.Value));
+            }
+            if (so.BrandId?.Any() == true)
+            {
+                query = query.Where(x => so.BrandId.Contains(x.Vehicle!.BrandId!.Value));
+            }
+            if (so.MinDate.HasValue)
+            {
+                query = query.Where(x => so.MinDate <= x.InterventionDate);
+            }
+            if (so.MaxDate.HasValue)
+            {
+                query = query.Where(x => so.MaxDate >= x.InterventionDate);
+            }
         }
 
         return query;
@@ -42,7 +61,7 @@ public class InterventionRepository(FleetContext dbContext, IFleetAppContext app
 
         if (includes.HasValue)
         {
-            if (includes.Value.HasFlag(InterventionIncludes.Invoice))
+            if (includes.Value.HasFlag(InterventionIncludes.Invoices))
             {
                 query = query
                     .Include(x => x.Invoices);

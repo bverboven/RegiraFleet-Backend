@@ -12,4 +12,6 @@ public class VehicleSearchObject : FleetSearchObject
     public string? VehicleType { get; set; }
 
     public string? Title { get; set; }
+
+    public bool? HasIntervention { get; set; }
 }

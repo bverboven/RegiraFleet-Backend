@@ -6,6 +6,7 @@ namespace Regira.Fleet.Entities.Interventions.Invoices;
 public class Invoice : IEntityWithSerial
 {
     public int Id { get; set; }
+    public int InterventionId { get; set; }
     [MaxLength(32)]
     public string? InvoiceNumber { get; set; }
     public DateTime? InvoiceDate { get; set; }

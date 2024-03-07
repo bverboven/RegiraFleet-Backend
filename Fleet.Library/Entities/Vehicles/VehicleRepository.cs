@@ -58,6 +58,11 @@ public class VehicleRepository(FleetContext dbContext, IFleetAppContext appConte
                 var kw = qHelper.ParseKeyword(so.Title.ToUpper());
                 query = query.Where(x => EF.Functions.ILike(x.NormalizedTitle!, kw.QW!));
             }
+
+            if (so.HasIntervention.HasValue)
+            {
+                query = query.Where(x => DbContext.Interventions.Any(i => i.VehicleId == x.Id));
+            }
         }
 
         return query;
