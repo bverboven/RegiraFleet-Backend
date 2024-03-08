@@ -16,7 +16,6 @@ public class OperatorDto
     public string? IdentificationNumber { get; set; }
 
     public string? Description { get; set; }
-    public string? Notes { get; set; }
     public DateTime Created { get; set; }
     public DateTime? LastModified { get; set; }
     public bool IsArchived { get; set; }

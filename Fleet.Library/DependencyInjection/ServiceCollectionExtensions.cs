@@ -90,7 +90,7 @@ public static class ServiceCollectionExtensions
         // Entity Items
         // Country
         .For<Country, string, CountryRepository>(e => e.AddMapping<CountryDto, CountryDto>())
-        .For<Intervention, InterventionRepository, InterventionSearchObject, EntitySortBy, InterventionIncludes>(e =>
+        .For<Intervention, InterventionRepository, InterventionSearchObject, InterventionSortBy, InterventionIncludes>(e =>
         {
             e.HasRepository<InterventionRepository>();
             e.HasAttachments<FleetContext, Intervention, InterventionAttachment>();

@@ -13,32 +13,42 @@ public class VehicleNormalizer(INormalizer normalizer, FleetContext dbContext) :
             return;
         }
 
+        base.HandleNormalize(item);
+
         // NormalizedTitle & NormalizedContent
         SetNormalizedContent(item!);
     }
     public override void SetNormalizedContent(Vehicle item)
     {
-        var titleEntries = new List<string?> { item.Code! };
-        var contentEntries = GetDefaultNormalizedContentEntries(item);
-        contentEntries.Add(item.Model);
+        var brand = item.BrandId.HasValue
+            ? item.Brand ?? dbContext.Brands.Find(item.BrandId)
+            : null;
+        var type = item.VehicleTypeId.HasValue
+            ? item.VehicleType ?? dbContext.VehicleTypes.Find(item.VehicleTypeId)
+            : null;
 
-        if (item.BrandId.HasValue)
+        var titleEntries = new List<string?>
         {
-            var brand = item.Brand ?? dbContext.Brands.Find(item.BrandId);
-            contentEntries.Add(brand?.NormalizedTitle);
-            contentEntries.Add(brand?.Code);
-            titleEntries.Add(brand?.NormalizedTitle);
-        }
-        if (item.VehicleTypeId.HasValue)
+            item.Code!,
+            type?.Code,
+            type?.NormalizedTitle,
+            brand?.Code,
+            brand?.NormalizedTitle,
+            item.Model
+        };
+        item.NormalizedTitle = string.Join(' ', titleEntries.Where(x => !string.IsNullOrWhiteSpace(x)).Distinct());
+
+        var contentEntries = new List<string?>
         {
-            var type = item.VehicleType ?? dbContext.VehicleTypes.Find(item.VehicleTypeId);
-            contentEntries.Add(type?.NormalizedTitle);
-            contentEntries.Add(type?.Code);
-        }
-
-        titleEntries.Add(item.Model);
-
-        item.NormalizedTitle = string.Join(' ', titleEntries.Where(x => !string.IsNullOrWhiteSpace(x)));
-        item.NormalizedContent = string.Join(' ', contentEntries.Where(x => !string.IsNullOrWhiteSpace(x)));
+            item.Code!,
+            type?.NormalizedTitle,
+            type?.Code,
+            brand?.NormalizedTitle,
+            brand?.Code,
+            item.IdentificationNumber,
+            item.Model,
+            item.Description
+        };
+        item.NormalizedContent = string.Join(' ', contentEntries.Where(x => !string.IsNullOrWhiteSpace(x)).Distinct());
     }
 }

@@ -15,7 +15,6 @@ public class InterventionDto
     public int? OperatorId { get; set; }
     public int? Mileage { get; set; }
     public string? Description { get; set; }
-    public string? Notes { get; set; }
 
     public DateTime? InterventionDate { get; set; }
 

@@ -19,50 +19,52 @@ public class VehicleRepository(FleetContext dbContext, IFleetAppContext appConte
         {
             var qHelper = QKeywordHelper.Create();
 
-            query = query.FilterQ(qHelper.Parse(so.Q?.ToUpper()));
-
+            // Code
             if (!string.IsNullOrWhiteSpace(so.Code))
             {
                 var code = so.Code.PadLeft(3, '0');
                 query = query.Where(x => x.Code == code);
             }
-
+            // Model
             if (!string.IsNullOrWhiteSpace(so.Model))
             {
                 query = query.Where(x => x.Model!.Equals(so.Model, StringComparison.InvariantCultureIgnoreCase));
             }
-
+            // BrandId
             if (so.BrandId?.Any() == true)
             {
                 query = query.Where(x => so.BrandId.Contains(x.BrandId!.Value));
             }
-            if (so.VehicleTypeId?.Any() == true)
-            {
-                query = query.Where(x => so.VehicleTypeId.Contains(x.VehicleTypeId!.Value));
-            }
-
+            // Brand
             if (!string.IsNullOrWhiteSpace(so.Brand))
             {
                 query = query.Where(x => EF.Functions.ILike(x.Brand!.Code!, so.Brand) ||
                     EF.Functions.ILike(x.Brand!.Title!, so.Brand));
             }
-
+            // VehicleTypeId
+            if (so.VehicleTypeId?.Any() == true)
+            {
+                query = query.Where(x => so.VehicleTypeId.Contains(x.VehicleTypeId!.Value));
+            }
+            // VehicleType
             if (!string.IsNullOrWhiteSpace(so.VehicleType))
             {
                 query = query.Where(x => EF.Functions.ILike(x.VehicleType!.Code!, so.VehicleType) ||
                     EF.Functions.ILike(x.VehicleType!.Title!, so.VehicleType));
             }
-
+            // Title
             if (!string.IsNullOrWhiteSpace(so.Title))
             {
                 var kw = qHelper.ParseKeyword(so.Title.ToUpper());
-                query = query.Where(x => EF.Functions.ILike(x.NormalizedTitle!, kw.QW!));
+                query = query.Where(x => EF.Functions.ILike(x.NormalizedTitle!, kw.Q!));
             }
-
+            // HasIntervention
             if (so.HasIntervention.HasValue)
             {
                 query = query.Where(x => DbContext.Interventions.Any(i => i.VehicleId == x.Id));
             }
+            // Q
+            query = query.FilterQ(qHelper.Parse(so.Q?.ToUpper()));
         }
 
         return query;

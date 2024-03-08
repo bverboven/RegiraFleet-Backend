@@ -1,9 +1,9 @@
-﻿using Microsoft.EntityFrameworkCore;
-using Regira.Entities.EFcore.Extensions;
+﻿using Regira.Entities.EFcore.Extensions;
 using Regira.Entities.Keywords;
 using Regira.Fleet.Abstractions;
 using Regira.Fleet.Core.Abstractions;
 using Regira.Fleet.Data;
+using Regira.Fleet.Extensions;
 
 namespace Regira.Fleet.Entities.Vehicles.Brands;
 
@@ -16,17 +16,12 @@ public class BrandRepository(FleetContext dbContext, IFleetAppContext appContext
         {
             var qHelper = QKeywordHelper.Create();
 
-            query = query.FilterArchivable(so.IsArchived);
+            // Code
             query = query.FilterCode(so.Code);
-            query = query.FilterTitle(qHelper.Parse(so.Title));
-            if (!string.IsNullOrWhiteSpace(so.Q))
-            {
-                var kw = qHelper.Parse(so.Q);
-                foreach (var q in kw)
-                {
-                    query = query.Where(x => EF.Functions.ILike(x.Code!, q.QW!) || EF.Functions.ILike(x.NormalizedTitle!, q.QW!));
-                }
-            }
+            // Title
+            query = query.FilterILikeTitle(qHelper.Parse(so.Title));
+            // Q
+            query = query.FilterILikeTitleQ(qHelper.Parse(so.Q));
         }
         return query;
     }

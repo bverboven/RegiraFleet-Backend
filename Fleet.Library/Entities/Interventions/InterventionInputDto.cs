@@ -11,11 +11,9 @@ public class InterventionInputDto
     public int VehicleId { get; set; }
     [Required]
     public int OperatorId { get; set; }
-
     public int? Mileage { get; set; }
-    [MaxLength(256)]
-    public string? Comments { get; set; }
-    public string? Notes { get; set; }
+
+    public string? Description { get; set; }
 
     public DateTime? InterventionDate { get; set; }
 

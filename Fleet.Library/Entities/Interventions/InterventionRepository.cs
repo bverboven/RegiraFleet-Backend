@@ -1,14 +1,15 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Regira.Entities.EFcore.Attachments;
 using Regira.Entities.EFcore.Extensions;
-using Regira.Entities.Models;
+using Regira.Entities.Keywords;
 using Regira.Fleet.Abstractions;
 using Regira.Fleet.Core.Abstractions;
 using Regira.Fleet.Data;
+using Regira.Fleet.Extensions;
 
 namespace Regira.Fleet.Entities.Interventions;
 
-public class InterventionRepository(FleetContext dbContext, IFleetAppContext appContext) : FleetRepositoryBase<Intervention, InterventionSearchObject, EntitySortBy, InterventionIncludes>(dbContext, appContext)
+public class InterventionRepository(FleetContext dbContext, IFleetAppContext appContext) : FleetRepositoryBase<Intervention, InterventionSearchObject, InterventionSortBy, InterventionIncludes>(dbContext, appContext)
 {
     public override IQueryable<Intervention> Filter(IQueryable<Intervention> query, InterventionSearchObject? so)
     {
@@ -16,39 +17,50 @@ public class InterventionRepository(FleetContext dbContext, IFleetAppContext app
 
         if (so != null)
         {
-            if (so.VehicleId?.Any() == true)
-            {
-                query = query.Where(x => so.VehicleId.Contains(x.VehicleId));
-            }
+            var qHelper = QKeywordHelper.Create();
+
+            // OperatorId
             if (so.OperatorId?.Any() == true)
             {
                 query = query.Where(x => so.OperatorId.Contains(x.OperatorId));
             }
+            // InterventionTypeId
             if (so.InterventionTypeId?.Any() == true)
             {
                 query = query.Where(x => x.InterventionTypes!.Any(it => so.InterventionTypeId.Contains(it.InterventionTypeId)));
             }
+            // VehicleId
+            if (so.VehicleId?.Any() == true)
+            {
+                query = query.Where(x => so.VehicleId.Contains(x.VehicleId));
+            }
+            // VehicleTypeId
             if (so.VehicleTypeId?.Any() == true)
             {
                 query = query.Where(x => so.VehicleTypeId.Contains(x.Vehicle!.VehicleTypeId!.Value));
             }
+            // BrandId
             if (so.BrandId?.Any() == true)
             {
                 query = query.Where(x => so.BrandId.Contains(x.Vehicle!.BrandId!.Value));
             }
+            // MinDate
             if (so.MinDate.HasValue)
             {
                 query = query.Where(x => so.MinDate <= x.InterventionDate);
             }
+            // MaxDate
             if (so.MaxDate.HasValue)
             {
                 query = query.Where(x => so.MaxDate >= x.InterventionDate);
             }
+            // Q
+            query = query.FilterILikeQ(qHelper.Parse(so.Q));
         }
 
         return query;
     }
-    public override IQueryable<Intervention> SortBy(IQueryable<Intervention> query, EntitySortBy? sortBy = null)
+    public override IQueryable<Intervention> SortBy(IQueryable<Intervention> query, InterventionSortBy? sortBy = null)
     {
         return query
             .OrderByDescending(x => x.InterventionDate ?? x.Created)

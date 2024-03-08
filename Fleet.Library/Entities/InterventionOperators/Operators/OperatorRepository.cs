@@ -21,27 +21,36 @@ public class OperatorRepository(FleetContext dbContext, IFleetAppContext appCont
         {
             var qHelper = QKeywordHelper.Create();
 
-            query = query.FilterArchivable(so.IsArchived);
+            // Code
             query = query.FilterCode(so.Code);
-            query = query.FilterTitle(qHelper.Parse(so.Title?.ToUpper()));
-            query = query.FilterQ(qHelper.Parse(so.Q?.ToUpper()));
 
+            // IdentificationNumber
             if (!string.IsNullOrWhiteSpace(so.IdentificationNumber))
             {
                 query = query.Where(x => x.IdentificationNumber!.Equals(so.IdentificationNumber));
             }
-
+            // Title
+            if (!string.IsNullOrWhiteSpace(so.Title))
+            {
+                var keywords = qHelper.Parse(so.Title);
+                foreach (var kw in keywords)
+                {
+                    query = query.Where(x => x.Code == so.Title || EF.Functions.ILike(x.Title, kw.Q!));
+                }
+            }
+            // Phone
             if (!string.IsNullOrWhiteSpace(so.Phone))
             {
                 var q = contactDataNormalizer.Normalize(so.Phone, ContactDataTypes.Phone);
                 query = query.Where(x => x.ContactData!.Any(cd => cd.DataType == ContactDataTypes.Phone && EF.Functions.ILike(cd.NormalizedValue!, $"%{q}%")));
             }
+            // Email
             if (!string.IsNullOrWhiteSpace(so.Email))
             {
                 var q = contactDataNormalizer.Normalize(so.Email, ContactDataTypes.Email);
                 query = query.Where(x => x.ContactData!.Any(cd => cd.DataType == ContactDataTypes.Email && EF.Functions.ILike(cd.NormalizedValue!, $"%{q}%")));
             }
-
+            // Address
             if (!string.IsNullOrWhiteSpace(so.Address))
             {
                 var keywords = qHelper.Parse(so.Address);
@@ -50,16 +59,18 @@ public class OperatorRepository(FleetContext dbContext, IFleetAppContext appCont
                     query = query.Where(x => x.Addresses!.Any(a => EF.Functions.ILike(a.NormalizedContent!, kw.QW!)));
                 }
             }
-
+            // InterventionTypeId
             if (so.InterventionTypeId?.Any() == true)
             {
                 query = query.Where(x => so.InterventionTypeId.All(id => x.InterventionTypes!.Any(ot => ot.InterventionTypeId == id)));
             }
-
+            // HasIntervention
             if (so.HasIntervention.HasValue)
             {
                 query = query.Where(x => DbContext.Interventions.Any(i => i.OperatorId == x.Id));
             }
+            // Q
+            query = query.FilterILikeQ(qHelper.Parse(so.Q));
         }
 
         return query;

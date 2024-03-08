@@ -13,7 +13,8 @@ public class VehicleDto
     public int? VehicleTypeId { get; set; }
     public string Code { get; set; } = null!;
     public string? Model { get; set; }
-    public string? Notes { get; set; }
+    public string? IdentificationNumber { get; set; }
+    public string? Description { get; set; }
     public DateTime Created { get; set; }
     public DateTime? LastModified { get; set; }
     public bool IsArchived { get; set; }

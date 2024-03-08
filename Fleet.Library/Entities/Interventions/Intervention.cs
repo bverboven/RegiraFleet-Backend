@@ -18,9 +18,7 @@ public class Intervention : IFleetEntity, IEntityWithSerial, IHasDescription, IH
     public int VehicleId { get; set; }
     public int OperatorId { get; set; }
     public int? Mileage { get; set; }
-    [MaxLength(512)]
     public string? Description { get; set; }
-    public string? Notes { get; set; }
     public DateTime? InterventionDate { get; set; }
 
 

@@ -13,6 +13,9 @@ public class VehicleInputDto
     public string Code { get; set; } = null!;
     [MaxLength(64)]
     public string? Model { get; set; }
+    [MaxLength(64)]
+    public string? IdentificationNumber { get; set; }
+    public string? Description { get; set; }
     public bool IsArchived { get; set; }
     public ICollection<EntityAttachmentInputDto>? Attachments { get; set; }
 }

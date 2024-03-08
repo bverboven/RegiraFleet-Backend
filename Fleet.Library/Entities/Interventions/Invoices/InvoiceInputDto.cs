@@ -12,5 +12,5 @@ public class InvoiceInputDto
     public decimal? TaxAmount { get; set; }
     public decimal? PriceExcl { get; set; }
     public decimal? PriceIncl { get; set; }
-    public string? Notes { get; set; }
+    public string? Description { get; set; }
 }

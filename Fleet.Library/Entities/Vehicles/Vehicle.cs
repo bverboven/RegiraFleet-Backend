@@ -3,12 +3,13 @@ using Regira.Entities.Models.Abstractions;
 using Regira.Fleet.Abstractions;
 using Regira.Fleet.Entities.Vehicles.Brands;
 using Regira.Fleet.Entities.Vehicles.VehicleTypes;
+using Regira.Normalizing;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Regira.Fleet.Entities.Vehicles;
 
-public class Vehicle : IFleetEntity, IEntityWithSerial, IHasCode, IArchivable, IHasAttachments<VehicleAttachment>, IHasAttachments, IHasNormalizedTitle, IHasNormalizedContent
+public class Vehicle : IFleetEntity, IEntityWithSerial, IHasCode, IArchivable, IHasAttachments<VehicleAttachment>, IHasAttachments, IHasDescription, IHasNormalizedTitle, IHasNormalizedContent
 {
     public int Id { get; set; }
     public string Guid { get; set; } = System.Guid.NewGuid().ToString("N");
@@ -20,7 +21,14 @@ public class Vehicle : IFleetEntity, IEntityWithSerial, IHasCode, IArchivable, I
     public string? Code { get; set; }
     [MaxLength(64)]
     public string? Model { get; set; }
-    public string? Notes { get; set; }
+
+    [MaxLength(64)]
+    public string? IdentificationNumber { get; set; }
+    [MaxLength(64)]
+    [Normalized(SourceProperty = nameof(IdentificationNumber))]
+    public string? NormalizedIdentificationNumber { get; set; }
+
+    public string? Description { get; set; }
     public DateTime Created { get; set; } = DateTime.Now;
     public DateTime? LastModified { get; set; }
     public bool IsArchived { get; set; }

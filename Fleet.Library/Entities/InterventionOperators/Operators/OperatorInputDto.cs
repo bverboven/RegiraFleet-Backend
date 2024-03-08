@@ -16,9 +16,7 @@ public class OperatorInputDto
 
     [MaxLength(32)]
     public string? IdentificationNumber { get; set; }
-    [MaxLength(512)]
     public string? Description { get; set; }
-    public string? Notes { get; set; }
     public bool IsArchived { get; set; }
     public ICollection<AddressInputDto>? Addresses { get; set; }
     public ICollection<OperatorContactDataInputDto>? ContactData { get; set; }
