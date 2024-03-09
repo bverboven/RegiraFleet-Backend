@@ -18,8 +18,8 @@ public class Intervention : IFleetEntity, IEntityWithSerial, IHasDescription, IH
     public int VehicleId { get; set; }
     public int OperatorId { get; set; }
     public int? Mileage { get; set; }
-    public string? Description { get; set; }
     public DateTime? InterventionDate { get; set; }
+    public string? Description { get; set; }
 
 
     public DateTime Created { get; set; } = DateTime.Now;

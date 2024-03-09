@@ -7,6 +7,7 @@ public class InterventionTypeDto
     public int ClientId { get; set; }
     public string? Code { get; set; }
     public string? Title { get; set; }
+    public string? Description { get; set; }
     public DateTime Created { get; set; }
     public DateTime? LastModified { get; set; }
     public bool IsArchived { get; set; }

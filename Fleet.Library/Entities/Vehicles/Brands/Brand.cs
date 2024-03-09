@@ -5,7 +5,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Regira.Fleet.Entities.Vehicles.Brands;
 
-public class Brand : IFleetEntity, IEntityWithSerial, IHasCode, IHasNormalizedTitle, IArchivable
+public class Brand : IFleetEntity, IEntityWithSerial, IHasCode, IHasNormalizedTitle, IHasDescription, IArchivable
 {
     public int Id { get; set; }
     [StringLength(32)]
@@ -15,6 +15,8 @@ public class Brand : IFleetEntity, IEntityWithSerial, IHasCode, IHasNormalizedTi
     public string? Code { get; set; }
     [MaxLength(64)]
     public string Title { get; set; } = null!;
+    public string? Description { get; set; }
+
     public DateTime Created { get; set; } = DateTime.Now;
     public DateTime? LastModified { get; set; }
     public bool IsArchived { get; set; }

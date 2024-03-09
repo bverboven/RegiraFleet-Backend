@@ -5,7 +5,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Regira.Fleet.Entities.InterventionTypes;
 
-public class InterventionType : IFleetEntity, IEntityWithSerial, IHasCode, IHasNormalizedTitle, IArchivable
+public class InterventionType : IFleetEntity, IEntityWithSerial, IHasCode, IHasNormalizedTitle, IHasDescription, IArchivable
 {
     public int Id { get; set; }
     [StringLength(32)]
@@ -15,6 +15,8 @@ public class InterventionType : IFleetEntity, IEntityWithSerial, IHasCode, IHasN
     public string? Code { get; set; }
     [MaxLength(64)]
     public string Title { get; set; } = null!;
+    public string? Description { get; set; }
+
     public DateTime Created { get; set; } = DateTime.Now;
     public DateTime? LastModified { get; set; }
     public bool IsArchived { get; set; }
