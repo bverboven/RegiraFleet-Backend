@@ -10,5 +10,6 @@ public class BrandInputDto
     [Required]
     [MaxLength(64)]
     public string Title { get; set; } = null!;
+    public string? Description { get; set; }
     public bool IsArchived { get; set; }
 }

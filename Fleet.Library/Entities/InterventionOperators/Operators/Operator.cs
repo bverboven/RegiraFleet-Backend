@@ -22,8 +22,6 @@ public class Operator : IFleetEntity, IEntityWithSerial, IHasCode, IHasNormalize
 
     [MaxLength(64)]
     public string? IdentificationNumber { get; set; }
-    [MaxLength(64)]
-    public string? NormalizedIdentificationNumber { get; set; }
 
     public string? Description { get; set; }
 
@@ -47,6 +45,8 @@ public class Operator : IFleetEntity, IEntityWithSerial, IHasCode, IHasNormalize
 
     [MaxLength(256)]
     public string? NormalizedTitle { get; set; }
+    [MaxLength(64)]
+    public string? NormalizedIdentificationNumber { get; set; }
     [MaxLength(2048)]
     public string? NormalizedContent { get; set; }
 }
