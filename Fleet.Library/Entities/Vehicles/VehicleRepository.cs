@@ -89,6 +89,13 @@ public class VehicleRepository(FleetContext dbContext, IFleetAppContext appConte
             {
                 query = query.Include(x => x.VehicleType);
             }
+            // InterventionTypes
+            if (includes.Value.HasFlag(VehicleIncludes.InterventionTypes))
+            {
+                query = query
+                    .Include(x => x.InterventionTypes!)
+                    .ThenInclude(x => x.InterventionType);
+            }
             // Attachments
             if (includes.Value.HasFlag(VehicleIncludes.Attachments))
             {
@@ -103,6 +110,28 @@ public class VehicleRepository(FleetContext dbContext, IFleetAppContext appConte
     public override void Modify(Vehicle item, Vehicle original)
     {
         base.Modify(item, original);
+
+        if (item.InterventionTypes != null)
+        {
+            var itemsToRemove = original.InterventionTypes?
+                .Where(o => item.InterventionTypes.All(x => o.InterventionTypeId != x.InterventionTypeId))
+                .ToArray() ?? Array.Empty<VehicleInterventionType>();
+            var itemsToAdd = item.InterventionTypes
+                .Where(x => original.InterventionTypes == null || original.InterventionTypes.All(o => x.InterventionTypeId != o.InterventionTypeId))
+                .ToArray();
+            foreach (var itemToRemove in itemsToRemove)
+            {
+                DbContext.Entry(itemToRemove).State = EntityState.Deleted;
+            }
+            foreach (var itemToAdd in itemsToAdd)
+            {
+                DbContext.Entry(itemToAdd).State = EntityState.Added;
+            }
+            original.InterventionTypes = (original.InterventionTypes ?? Array.Empty<VehicleInterventionType>())
+                .Except(itemsToRemove)
+                .Concat(itemsToAdd)
+                .ToList();
+        }
 
         if (item.Attachments != null)
         {

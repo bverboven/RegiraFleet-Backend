@@ -16,8 +16,30 @@ public class FleetProfile : Profile
 {
     public FleetProfile()
     {
-        CreateMap<Vehicle, VehicleDto>();
-        CreateMap<VehicleInputDto, Vehicle>();
+        CreateMap<Vehicle, VehicleDto>()
+            .ForMember(e => e.InterventionTypes, e => e.Ignore())
+            .AfterMap((model, dto, ctx) =>
+            {
+                if (model.InterventionTypes != null)
+                {
+                    dto.InterventionTypes = ctx.Mapper.Map<List<InterventionTypeDto>>(model.InterventionTypes.Select(x => x.InterventionType));
+                }
+            });
+        CreateMap<VehicleInputDto, Vehicle>()
+            .ForMember(e => e.InterventionTypes, e => e.Ignore())
+            .AfterMap((dto, model) =>
+            {
+                if (dto.InterventionTypes != null)
+                {
+                    model.InterventionTypes = dto.InterventionTypes
+                        .Select(x => new VehicleInterventionType
+                        {
+                            VehicleId = model.Id,
+                            InterventionTypeId = x.Id
+                        })
+                        .ToList();
+                }
+            });
         CreateMap<VehicleType, VehicleTypeDto>();
         CreateMap<VehicleTypeInputDto, VehicleType>();
         CreateMap<Brand, BrandDto>();
@@ -52,28 +74,17 @@ public class FleetProfile : Profile
         CreateMap<OperatorContactData, OperatorContactDataDto>();
         CreateMap<OperatorContactDataInputDto, OperatorContactData>();
 
-        CreateMap<Intervention, InterventionDto>()
-            .ForMember(e => e.InterventionTypes, e => e.Ignore())
-            .AfterMap((model, dto, ctx) =>
-            {
-                if (model.InterventionTypes != null)
-                {
-                    dto.InterventionTypes = ctx.Mapper.Map<List<InterventionTypeDto>>(model.InterventionTypes!.Select(x => x.InterventionType));
-                }
-            });
+        CreateMap<Intervention, InterventionDto>();
         CreateMap<InterventionInputDto, Intervention>()
-            .ForMember(e => e.InterventionTypes, e => e.Ignore())
             .AfterMap((dto, model) =>
             {
-                if (dto.InterventionTypes != null)
+                if (string.IsNullOrWhiteSpace(dto.Invoice?.InvoiceNumber) && dto.Invoice?.PriceExcl == null)
                 {
-                    model.InterventionTypes = dto.InterventionTypes
-                        .Select(x => new InterventionInterventionType
-                        {
-                            InterventionId = model.Id,
-                            InterventionTypeId = x.Id
-                        })
-                        .ToList();
+                    model.Invoice = null;
+                }
+                if (model.Invoice != null)
+                {
+                    model.Invoice.InterventionId = model.Id;
                 }
             });
         CreateMap<Invoice, InvoiceDto>();

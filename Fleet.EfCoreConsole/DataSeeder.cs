@@ -150,14 +150,16 @@ public class DataSeeder(FleetContext dbContext, IEntityService<Brand> brandServi
                 new() { ClientId = Police.Id, Code = "MAIN", Title = "Onderhoud" },
                 new() { ClientId = Police.Id, Code = "TIRE", Title = "Banden" },
                 new() { ClientId = Police.Id, Code = "BRAKE", Title = "Remmen" },
-                new() { ClientId = Police.Id, Code = "BODY", Title = "Carrosserie" }
+                new() { ClientId = Police.Id, Code = "BODY", Title = "Carrosserie" },
+                new() { ClientId = Police.Id, Code = "ROT", Title = "Rotor" }
             });
             items.AddRange(new InterventionType[]
             {
                 new() { ClientId = FireBrigade.Id, Code = "MAIN", Title = "Onderhoud" },
                 new() { ClientId = FireBrigade.Id, Code = "TIRE", Title = "Banden" },
                 new() { ClientId = FireBrigade.Id, Code = "BRAKE", Title = "Remmen" },
-                new() { ClientId = FireBrigade.Id, Code = "BODY", Title = "Carrosserie" }
+                new() { ClientId = FireBrigade.Id, Code = "BODY", Title = "Carrosserie" },
+                new() { ClientId = FireBrigade.Id, Code = "ROT", Title = "Rotor" }
             });
             items.AddRange(new InterventionType[]
             {
@@ -293,17 +295,15 @@ public class DataSeeder(FleetContext dbContext, IEntityService<Brand> brandServi
             .RuleFor(x => x.ClientId, _ => clientId)
             .RuleFor(x => x.VehicleId, (f) => f.PickRandom(vehicles).Id)
             .RuleFor(x => x.OperatorId, (f) => f.PickRandom(suppliers).Id)
-            .RuleFor(x => x.InterventionTypes, (f, x) => (suppliers.FirstOrDefault(s => s.Id == x.OperatorId)
+            .RuleFor(x => x.InterventionTypeId, (f, x) => (suppliers.FirstOrDefault(s => s.Id == x.OperatorId)
                 ?.InterventionTypes
                 ?.Shuffle()
-                .Take(f.Random.Number(1, 3))
-                .Select(t => new InterventionInterventionType { InterventionTypeId = t.InterventionTypeId })
-                .ToList())
-                ?? new() { new InterventionInterventionType { InterventionTypeId = f.PickRandom(types).Id } }
+                .FirstOrDefault())?.InterventionTypeId
+                ?? f.PickRandom(types).Id
             )
             .RuleFor(x => x.Mileage, (f) => (int)(Math.Floor((decimal)f.Random.Number(0, 999_999) / 1000) * 1000))
             .RuleFor(x => x.InterventionDate, f => f.Date.Between(DateTime.Today.AddYears(-5), DateTime.Today))
-            .RuleFor(x => x.Invoices, (f, x) => GenerateInvoices(x, f.Random.Number(0, 6) / 2).ToList())
+            .RuleFor(x => x.Invoice, (f, x) => GenerateInvoice(x))
             .Generate(vehicles.Length * 5);
 
         foreach (var item in items)
@@ -313,7 +313,7 @@ public class DataSeeder(FleetContext dbContext, IEntityService<Brand> brandServi
         await interventionService.SaveChanges();
     }
 
-    IEnumerable<Invoice> GenerateInvoices(Intervention intervention, int count)
+    Invoice GenerateInvoice(Intervention intervention)
     {
         return new Faker<Invoice>()
             .RuleFor(x => x.InvoiceNumber, f => $"INV{f.Commerce.Random.Number(1, 999999).ToString().PadLeft(8, '0')}")
@@ -322,8 +322,7 @@ public class DataSeeder(FleetContext dbContext, IEntityService<Brand> brandServi
             .RuleFor(x => x.PriceIncl, (f, x) => x.PriceExcl * 1.21m)
             .RuleFor(x => x.TaxAmount, (f, x) => x.PriceExcl * .21m)
             .RuleFor(x => x.TaxCategory, f => f.PickRandom(Enum.GetValues<TaxCategory>()))
-            .Generate(count)
-            .DistinctBy(x => x.InvoiceNumber);
+            .Generate();
     }
 
 

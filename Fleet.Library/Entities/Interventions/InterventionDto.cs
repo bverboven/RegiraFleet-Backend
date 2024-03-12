@@ -12,11 +12,12 @@ public class InterventionDto
     public string Guid { get; set; } = null!;
     public int ClientId { get; set; }
     public int VehicleId { get; set; }
-    public int? OperatorId { get; set; }
+    public int OperatorId { get; set; }
+    public int? InvoiceId { get; set; }
+    public int? InterventionTypeId { get; set; }
+    public DateTime? InterventionDate { get; set; }
     public int? Mileage { get; set; }
     public string? Description { get; set; }
-
-    public DateTime? InterventionDate { get; set; }
 
     public DateTime Created { get; set; }
     public DateTime? LastModified { get; set; }
@@ -24,7 +25,7 @@ public class InterventionDto
 
     public VehicleDto? Vehicle { get; set; }
     public OperatorDto? Operator { get; set; }
-    public ICollection<InvoiceDto>? Invoices { get; set; }
-    public ICollection<InterventionTypeDto>? InterventionTypes { get; set; }
+    public InvoiceDto? Invoice { get; set; }
+    public InterventionTypeDto? InterventionType { get; set; }
     public ICollection<EntityAttachmentDto>? Attachments { get; set; }
 }

@@ -4,10 +4,10 @@
 public enum InterventionIncludes
 {
     None = 0,
-    Invoices = 1 << 0,
+    Invoice = 1 << 0,
     Vehicle = 1 << 1,
     Operator = 1 << 2,
-    InterventionTypes = 1 << 3,
+    InterventionType = 1 << 3,
     Attachments = 1 << 4,
-    All = Invoices | Vehicle | Operator | InterventionTypes | Attachments
+    All = Invoice | Vehicle | Operator | InterventionType | Attachments
 }

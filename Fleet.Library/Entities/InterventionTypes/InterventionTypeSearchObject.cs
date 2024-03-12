@@ -8,4 +8,5 @@ public class InterventionTypeSearchObject : FleetSearchObject
     public string? Title { get; set; }
 
     public ICollection<int>? OperatorId { get; set; }
+    public ICollection<int>? VehicleId { get; set; }
 }

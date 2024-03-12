@@ -1,6 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Regira.Entities.EFcore.Attachments;
-using Regira.Entities.EFcore.Extensions;
 using Regira.Entities.Keywords;
 using Regira.Fleet.Abstractions;
 using Regira.Fleet.Core.Abstractions;
@@ -27,7 +26,7 @@ public class InterventionRepository(FleetContext dbContext, IFleetAppContext app
             // InterventionTypeId
             if (so.InterventionTypeId?.Any() == true)
             {
-                query = query.Where(x => x.InterventionTypes!.Any(it => so.InterventionTypeId.Contains(it.InterventionTypeId)));
+                query = query.Where(x => so.InterventionTypeId.Contains(x.InterventionTypeId!.Value));
             }
             // VehicleId
             if (so.VehicleId?.Any() == true)
@@ -73,10 +72,10 @@ public class InterventionRepository(FleetContext dbContext, IFleetAppContext app
 
         if (includes.HasValue)
         {
-            if (includes.Value.HasFlag(InterventionIncludes.Invoices))
+            if (includes.Value.HasFlag(InterventionIncludes.Invoice))
             {
                 query = query
-                    .Include(x => x.Invoices);
+                    .Include(x => x.Invoice);
             }
             if (includes.Value.HasFlag(InterventionIncludes.Vehicle))
             {
@@ -94,11 +93,10 @@ public class InterventionRepository(FleetContext dbContext, IFleetAppContext app
                     .Include(x => x.Operator!)
                     .ThenInclude(s => s.Addresses);
             }
-            if (includes.Value.HasFlag(InterventionIncludes.InterventionTypes))
+            if (includes.Value.HasFlag(InterventionIncludes.InterventionType))
             {
                 query = query
-                    .Include(x => x.InterventionTypes!)
-                    .ThenInclude(x => x.InterventionType);
+                    .Include(x => x.InterventionType);
             }
             // Attachments
             if (includes.Value.HasFlag(InterventionIncludes.Attachments))
@@ -113,29 +111,15 @@ public class InterventionRepository(FleetContext dbContext, IFleetAppContext app
 
     public override void Modify(Intervention item, Intervention original)
     {
-        if (item.InterventionTypes != null)
+        if (item.Invoice != null)
         {
-            var itemsToRemove = original.InterventionTypes?
-                .Where(o => item.InterventionTypes.All(x => o.InterventionTypeId != x.InterventionTypeId))
-                .ToArray() ?? Array.Empty<InterventionInterventionType>();
-            var itemsToAdd = item.InterventionTypes
-                .Where(x => original.InterventionTypes == null || original.InterventionTypes.All(o => x.InterventionTypeId != o.InterventionTypeId))
-                .ToArray();
-            foreach (var itemToRemove in itemsToRemove)
-            {
-                DbContext.Entry(itemToRemove).State = EntityState.Deleted;
-            }
-            foreach (var itemToAdd in itemsToAdd)
-            {
-                DbContext.Entry(itemToAdd).State = EntityState.Added;
-            }
-            original.InterventionTypes = (original.InterventionTypes ?? Array.Empty<InterventionInterventionType>())
-                .Except(itemsToRemove)
-                .Concat(itemsToAdd)
-                .ToList();
+            original.Invoice = item.Invoice;
+            DbContext.Entry(item.Invoice).State = original.Invoice.Id > 0 ? EntityState.Modified : EntityState.Added;
         }
-
-        DbContext.UpdateEntityChildCollection(original, item, x => x.Invoices, (x, collection) => x.Invoices = collection);
+        if (original.Invoice != null && item.Invoice == null)
+        {
+            DbContext.Entry(original.Invoice).State = EntityState.Deleted;
+        }
 
         if (item.Attachments != null)
         {

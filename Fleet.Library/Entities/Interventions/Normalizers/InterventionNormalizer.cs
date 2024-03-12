@@ -14,11 +14,15 @@ public class InterventionNormalizer(INormalizer normalizer, FleetContext dbConte
         contentEntries.Add(vehicle?.NormalizedTitle);
         var supplier = item.Operator ?? dbContext.InterventionOperators.Find(item.OperatorId);
         contentEntries.Add(supplier?.NormalizedTitle);
-        var interventionTypeIds = item.InterventionTypes?.Select(x => x.InterventionTypeId);
-        if (interventionTypeIds?.Any() == true)
+        if (item.InterventionType != null || item.InterventionTypeId.HasValue)
         {
-            var interventionTypes = dbContext.InterventionTypes.Where(x => interventionTypeIds.Contains(x.Id));
-            contentEntries.AddRange(interventionTypes.Select(x => x.NormalizedTitle));
+            var interventionType = item.InterventionType ?? dbContext.InterventionTypes.Find(item.InterventionTypeId);
+            contentEntries.Add(interventionType?.NormalizedTitle);
+        }
+        if (item.Invoice != null)
+        {
+            contentEntries.Add(item.Invoice.InvoiceNumber);
+            contentEntries.Add(normalizer.Normalize(item.Invoice.Description));
         }
 
         item.NormalizedContent = string.Join(' ', contentEntries.Where(x => !string.IsNullOrWhiteSpace(x)));

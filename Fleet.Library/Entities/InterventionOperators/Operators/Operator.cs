@@ -31,9 +31,9 @@ public class Operator : IFleetEntity, IEntityWithSerial, IHasCode, IHasNormalize
     public DateTime? LastModified { get; set; }
     public bool IsArchived { get; set; }
 
-    public ICollection<OperatorInterventionType>? InterventionTypes { get; set; }
     public ICollection<OperatorAddress>? Addresses { get; set; }
     public ICollection<OperatorContactData>? ContactData { get; set; }
+    public ICollection<OperatorInterventionType>? InterventionTypes { get; set; }
 
     [NotMapped]
     public bool? HasAttachment { get; set; }

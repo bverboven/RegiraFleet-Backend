@@ -6,6 +6,7 @@ using Regira.Fleet.Entities.InterventionOperators.Addresses;
 using Regira.Fleet.Entities.InterventionOperators.ContactData;
 using Regira.Fleet.Entities.InterventionOperators.Operators;
 using Regira.Fleet.Entities.Interventions;
+using Regira.Fleet.Entities.Interventions.Action;
 using Regira.Fleet.Entities.Interventions.Invoices;
 using Regira.Fleet.Entities.InterventionTypes;
 using Regira.Fleet.Entities.Vehicles;
@@ -22,6 +23,7 @@ public class FleetContext(DbContextOptions<FleetContext> options) : DbContext(op
     public DbSet<Client> Clients { get; set; } = null!;
     public DbSet<ClientUserClaim> ClientUserClaims { get; set; } = null!;
     public DbSet<Intervention> Interventions { get; set; } = null!;
+    public DbSet<InterventionAction> InterventionActions { get; set; } = null!;
     public DbSet<InterventionAttachment> InterventionAttachments { get; set; } = null!;
     public DbSet<InterventionType> InterventionTypes { get; set; } = null!;
     public DbSet<Operator> InterventionOperators { get; set; } = null!;
@@ -63,14 +65,6 @@ public class FleetContext(DbContextOptions<FleetContext> options) : DbContext(op
         {
             entity.HasIndex(e => e.ClientId);
 
-            // Invoice
-            entity.HasMany(e => e.Invoices)
-                .WithOne();
-
-            // Intervention Types
-            //entity.HasMany(e => e.InterventionTypes)
-            //    .WithOne();
-
             // Attachments
             entity.HasMany(e => e.Attachments)
                 .WithOne()
@@ -82,12 +76,8 @@ public class FleetContext(DbContextOptions<FleetContext> options) : DbContext(op
             entity.ToTable("intervention_invoices")
                 .HasIndex(e => e.InvoiceNumber);
         });
-        modelBuilder.Entity<InterventionInterventionType>(entity =>
+        modelBuilder.Entity<InterventionAction>(entity =>
         {
-            entity.ToTable("intervention_intervention_types");
-            //entity.HasKey(e => new { e.InterventionId, e.InterventionTypeId });
-            //entity.HasOne(e => e.InterventionType)
-            //    .WithMany();
         });
         modelBuilder.Entity<OperatorAddress>(entity =>
         {
@@ -108,12 +98,6 @@ public class FleetContext(DbContextOptions<FleetContext> options) : DbContext(op
             entity.HasIndex(e => new { e.ClientId, e.Code })
                 .IsUnique();
             entity.HasIndex(e => e.NormalizedTitle);
-
-            // Intervention Types
-            //entity.HasMany(e => e.InterventionTypes)
-            //    .WithMany()
-            //    .UsingEntity("intervention_operator_intervention_types")
-            //    .HasKey(nameof(OperatorInterventionType.OperatorId), nameof(OperatorInterventionType.InterventionTypeId));
 
             // Addresses
             entity
@@ -136,9 +120,6 @@ public class FleetContext(DbContextOptions<FleetContext> options) : DbContext(op
         modelBuilder.Entity<OperatorInterventionType>(entity =>
         {
             entity.ToTable("intervention_operator_intervention_types");
-            //    entity.HasKey(e => new { e.OperatorId, e.InterventionTypeId });
-            //    //entity.HasOne(e => e.InterventionType)
-            //    //    .WithMany();
         });
 
         // Vehicles
@@ -173,6 +154,10 @@ public class FleetContext(DbContextOptions<FleetContext> options) : DbContext(op
             entity.HasIndex(e => new { e.ClientId, e.Title })
                 .IsUnique();
             entity.HasIndex(e => e.NormalizedTitle);
+        });
+        modelBuilder.Entity<VehicleInterventionType>(entity =>
+        {
+            entity.ToTable("vehicle_intervention_types");
         });
 
         // Decimals

@@ -13,7 +13,7 @@ public static class StatisticsViews
             ct.code AS vehicle_type_code,
             sum(ii.price_incl) AS total
            FROM interventions b
-             LEFT JOIN intervention_invoices ii ON b.id = ii.intervention_id
+             LEFT JOIN intervention_invoices ii ON b.invoice_id = ii.id
              JOIN vehicles c ON b.vehicle_id = c.id
              LEFT JOIN vehicle_types ct ON c.vehicle_type_id = ct.id
           GROUP BY (EXTRACT(year FROM ii.invoice_date)), (EXTRACT(month FROM ii.invoice_date)), ct.code) q
@@ -35,7 +35,7 @@ public static class StatisticsViews
             c.model,
             sum(ii.price_incl) AS total
            FROM interventions b
-             LEFT JOIN intervention_invoices ii ON b.id = ii.intervention_id
+             LEFT JOIN intervention_invoices ii ON b.invoice_id = ii.id
              JOIN vehicles c ON b.vehicle_id = c.id
              LEFT JOIN vehicle_types ct ON c.vehicle_type_id = ct.id
              LEFT JOIN vehicle_brands cb ON c.brand_id = cb.id
@@ -56,7 +56,7 @@ public static class StatisticsViews
             c.model,
             sum(ii.price_incl) AS total
            FROM interventions b
-             LEFT JOIN intervention_invoices ii ON b.id = ii.intervention_id
+             LEFT JOIN intervention_invoices ii ON b.invoice_id = ii.id
              JOIN vehicles c ON b.vehicle_id = c.id
              LEFT JOIN vehicle_brands cb ON c.brand_id = cb.id
           GROUP BY (EXTRACT(year FROM ii.invoice_date)), (EXTRACT(month FROM ii.invoice_date)), c.code, cb.code, c.model) q
@@ -72,9 +72,8 @@ public static class StatisticsViews
             it.code AS interventiontype_code,
             sum(ii.price_incl) AS total
            FROM interventions b
-             LEFT JOIN intervention_invoices ii ON b.id = ii.intervention_id
-             JOIN intervention_intervention_types iit ON b.id = iit.intervention_id
-             JOIN intervention_types it ON iit.intervention_type_id = it.id
+             LEFT JOIN intervention_invoices ii ON b.invoice_id = ii.id
+             JOIN intervention_types it ON b.intervention_type_id = it.id
           GROUP BY (EXTRACT(year FROM ii.invoice_date)), (EXTRACT(month FROM ii.invoice_date)), it.code) q
   ORDER BY q.year, q.interventiontype_code, q.month;";
     public const string INTERVENTIONOPERATORS_PER_MONTH = @"CREATE OR REPLACE VIEW stats_interventionoperators_per_month
@@ -90,7 +89,7 @@ public static class StatisticsViews
             s.title AS supplier,
             COALESCE(sum(ii.price_incl), 0::numeric) AS total
            FROM interventions b
-             LEFT JOIN intervention_invoices ii ON b.id = ii.intervention_id
+             LEFT JOIN intervention_invoices ii ON ii.id = b.invoice_id
              JOIN intervention_operators s ON b.operator_id = s.id
           GROUP BY (EXTRACT(year FROM ii.invoice_date)), (EXTRACT(month FROM ii.invoice_date)), s.id, s.title) q
   ORDER BY q.year, q.intervention_operator_id;";
@@ -108,8 +107,7 @@ public static class StatisticsViews
             sum(ii.price_incl) AS total
            FROM interventions b
              LEFT JOIN intervention_invoices ii ON b.id = ii.intervention_id
-             JOIN intervention_intervention_types iit ON b.id = iit.intervention_id
-             JOIN intervention_types it ON iit.intervention_type_id = it.id
+             JOIN intervention_types it ON b.intervention_type_id = it.id
              JOIN vehicles c ON b.vehicle_id = c.id
              LEFT JOIN vehicle_types ct ON c.vehicle_type_id = ct.id
           GROUP BY (EXTRACT(year FROM ii.invoice_date)), (EXTRACT(month FROM ii.invoice_date)), it.code, ct.code) q
@@ -121,9 +119,9 @@ public static class BaseViews
 {
     public const string INTERVENTIONS_ALL = @"CREATE OR REPLACE VIEW interventions_all
 AS
-SELECT i.id, iit.intervention_type_id, i.operator_id
+SELECT i.id, it.id, i.operator_id
 FROM interventions i
-LEFT JOIN intervention_intervention_types iit ON i.id = iit.intervention_id
+LEFT JOIN intervention_types it ON it.id = i.intervention_type_id
 LEFT JOIN intervention_operators o ON i.operator_id = o.id;";
     public const string VEHICLES_ALL = @"CREATE OR REPLACE VIEW vehicles_all
 AS

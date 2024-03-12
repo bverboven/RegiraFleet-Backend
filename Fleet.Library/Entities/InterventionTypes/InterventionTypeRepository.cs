@@ -32,6 +32,14 @@ public class InterventionTypeRepository(FleetContext dbContext, IFleetAppContext
                     .Any(o => o.InterventionTypes!.Any(ot => ot.InterventionTypeId == x.Id))
                 );
             }
+            // Vehicle
+            if (so.VehicleId?.Any() == true)
+            {
+                query = query.Where(x => DbContext.Vehicles
+                    .Where(o => so.VehicleId.Contains(o.Id))
+                    .Any(o => o.InterventionTypes!.Any(ot => ot.InterventionTypeId == x.Id))
+                );
+            }
         }
         return query;
     }

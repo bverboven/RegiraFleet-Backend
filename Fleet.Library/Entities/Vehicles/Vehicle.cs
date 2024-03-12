@@ -35,6 +35,7 @@ public class Vehicle : IFleetEntity, IEntityWithSerial, IHasCode, IArchivable, I
 
     public virtual Brand? Brand { get; set; }
     public virtual VehicleType? VehicleType { get; set; }
+    public ICollection<VehicleInterventionType>? InterventionTypes { get; set; }
 
 
     [NotMapped]
