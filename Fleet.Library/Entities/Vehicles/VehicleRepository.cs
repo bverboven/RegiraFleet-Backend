@@ -96,6 +96,12 @@ public class VehicleRepository(FleetContext dbContext, IFleetAppContext appConte
                     .Include(x => x.InterventionTypes!)
                     .ThenInclude(x => x.InterventionType);
             }
+            // Interventions
+            //if (includes.Value.HasFlag(VehicleIncludes.Interventions))
+            //{
+            //    query = query
+            //        .Include(x => x.Interventions!.OrderByDescending(i => i.InterventionDate).Take(10));
+            //}
             // Attachments
             if (includes.Value.HasFlag(VehicleIncludes.Attachments))
             {

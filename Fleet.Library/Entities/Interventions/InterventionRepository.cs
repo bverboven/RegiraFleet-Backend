@@ -128,4 +128,13 @@ public class InterventionRepository(FleetContext dbContext, IFleetAppContext app
 
         base.Modify(item, original);
     }
+    public override void PrepareItem(Intervention item)
+    {
+        base.PrepareItem(item);
+
+        if (item.Invoice != null)
+        {
+            item.Invoice.InterventionId = item.Id;
+        }
+    }
 }

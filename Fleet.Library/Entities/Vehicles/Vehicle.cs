@@ -1,6 +1,7 @@
 ﻿using Regira.Entities.Attachments.Abstractions;
 using Regira.Entities.Models.Abstractions;
 using Regira.Fleet.Abstractions;
+using Regira.Fleet.Entities.Interventions;
 using Regira.Fleet.Entities.Vehicles.Brands;
 using Regira.Fleet.Entities.Vehicles.VehicleTypes;
 using Regira.Normalizing;
@@ -36,6 +37,7 @@ public class Vehicle : IFleetEntity, IEntityWithSerial, IHasCode, IArchivable, I
     public virtual Brand? Brand { get; set; }
     public virtual VehicleType? VehicleType { get; set; }
     public ICollection<VehicleInterventionType>? InterventionTypes { get; set; }
+    //public ICollection<Intervention>? Interventions { get; set; }
 
 
     [NotMapped]

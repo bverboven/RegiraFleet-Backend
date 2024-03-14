@@ -13,7 +13,7 @@ public static class StatisticsViews
             ct.code AS vehicle_type_code,
             sum(ii.price_incl) AS total
            FROM interventions b
-             LEFT JOIN intervention_invoices ii ON b.invoice_id = ii.id
+             LEFT JOIN intervention_invoices ii ON ii.intervention_id = b.id
              JOIN vehicles c ON b.vehicle_id = c.id
              LEFT JOIN vehicle_types ct ON c.vehicle_type_id = ct.id
           GROUP BY (EXTRACT(year FROM ii.invoice_date)), (EXTRACT(month FROM ii.invoice_date)), ct.code) q
@@ -35,7 +35,7 @@ public static class StatisticsViews
             c.model,
             sum(ii.price_incl) AS total
            FROM interventions b
-             LEFT JOIN intervention_invoices ii ON b.invoice_id = ii.id
+             LEFT JOIN intervention_invoices ii ON ii.intervention_id = b.id
              JOIN vehicles c ON b.vehicle_id = c.id
              LEFT JOIN vehicle_types ct ON c.vehicle_type_id = ct.id
              LEFT JOIN vehicle_brands cb ON c.brand_id = cb.id
@@ -56,7 +56,7 @@ public static class StatisticsViews
             c.model,
             sum(ii.price_incl) AS total
            FROM interventions b
-             LEFT JOIN intervention_invoices ii ON b.invoice_id = ii.id
+             LEFT JOIN intervention_invoices ii ON ii.intervention_id = b.id
              JOIN vehicles c ON b.vehicle_id = c.id
              LEFT JOIN vehicle_brands cb ON c.brand_id = cb.id
           GROUP BY (EXTRACT(year FROM ii.invoice_date)), (EXTRACT(month FROM ii.invoice_date)), c.code, cb.code, c.model) q
@@ -72,7 +72,7 @@ public static class StatisticsViews
             it.code AS interventiontype_code,
             sum(ii.price_incl) AS total
            FROM interventions b
-             LEFT JOIN intervention_invoices ii ON b.invoice_id = ii.id
+             LEFT JOIN intervention_invoices ii ON ii.intervention_id = b.id
              JOIN intervention_types it ON b.intervention_type_id = it.id
           GROUP BY (EXTRACT(year FROM ii.invoice_date)), (EXTRACT(month FROM ii.invoice_date)), it.code) q
   ORDER BY q.year, q.interventiontype_code, q.month;";
@@ -89,7 +89,7 @@ public static class StatisticsViews
             s.title AS supplier,
             COALESCE(sum(ii.price_incl), 0::numeric) AS total
            FROM interventions b
-             LEFT JOIN intervention_invoices ii ON ii.id = b.invoice_id
+             LEFT JOIN intervention_invoices ii ON ii.intervention_id = b.id
              JOIN intervention_operators s ON b.operator_id = s.id
           GROUP BY (EXTRACT(year FROM ii.invoice_date)), (EXTRACT(month FROM ii.invoice_date)), s.id, s.title) q
   ORDER BY q.year, q.intervention_operator_id;";

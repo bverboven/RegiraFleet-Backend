@@ -8,5 +8,6 @@ public enum VehicleIncludes
     VehicleType = 1 << 1,
     InterventionTypes = 1 << 2,
     Attachments = 1 << 3,
-    All = Brand | VehicleType | InterventionTypes | Attachments
+    //Interventions = 1 << 4,
+    All = Brand | VehicleType | InterventionTypes | Attachments //| Interventions
 }
