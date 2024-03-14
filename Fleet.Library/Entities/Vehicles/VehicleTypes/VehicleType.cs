@@ -24,4 +24,6 @@ public class VehicleType : IFleetEntity, IEntityWithSerial, IHasCode, IHasNormal
     [MaxLength(256)]
     [Normalized(SourceProperties = new[] { nameof(Title), nameof(Code) })]
     public string? NormalizedTitle { get; set; }
+
+    public ICollection<VehicleTypeTranslation>? Translations { get; set; }
 }

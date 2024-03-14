@@ -24,4 +24,6 @@ public class InterventionType : IFleetEntity, IEntityWithSerial, IHasCode, IHasN
     [MaxLength(256)]
     [Normalized(SourceProperties = new[] { nameof(Title), nameof(Code) })]
     public string? NormalizedTitle { get; set; }
+
+    public ICollection<InterventionTypeTranslation>? Translations { get; set; }
 }

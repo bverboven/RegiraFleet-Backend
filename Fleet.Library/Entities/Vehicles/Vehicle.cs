@@ -1,7 +1,6 @@
 ﻿using Regira.Entities.Attachments.Abstractions;
 using Regira.Entities.Models.Abstractions;
 using Regira.Fleet.Abstractions;
-using Regira.Fleet.Entities.Interventions;
 using Regira.Fleet.Entities.Vehicles.Brands;
 using Regira.Fleet.Entities.Vehicles.VehicleTypes;
 using Regira.Normalizing;

@@ -61,6 +61,11 @@ public class FleetContext(DbContextOptions<FleetContext> options) : DbContext(op
                 .IsUnique();
             entity.HasIndex(e => e.NormalizedTitle);
         });
+        modelBuilder.Entity<InterventionTypeTranslation>(entity =>
+        {
+            entity.ToTable("intervention_type_translations");
+            entity.HasKey(e => new { e.InterventionTypeId, e.LangCode });
+        });
         modelBuilder.Entity<Intervention>(entity =>
         {
             entity.HasIndex(e => e.ClientId);
@@ -133,6 +138,11 @@ public class FleetContext(DbContextOptions<FleetContext> options) : DbContext(op
                 .IsUnique();
             entity.HasIndex(e => e.NormalizedTitle);
         });
+        modelBuilder.Entity<BrandTranslation>(entity =>
+        {
+            entity.ToTable("vehicle_brand_translations");
+            entity.HasKey(e => new { e.BrandId, e.LangCode });
+        });
         modelBuilder.Entity<Vehicle>(entity =>
         {
             entity.HasIndex(e => e.ClientId);
@@ -154,6 +164,11 @@ public class FleetContext(DbContextOptions<FleetContext> options) : DbContext(op
             entity.HasIndex(e => new { e.ClientId, e.Title })
                 .IsUnique();
             entity.HasIndex(e => e.NormalizedTitle);
+        });
+        modelBuilder.Entity<VehicleTypeTranslation>(entity =>
+        {
+            entity.ToTable("vehicle_type_translations");
+            entity.HasKey(e => new { e.VehicleTypeId, e.LangCode });
         });
         modelBuilder.Entity<VehicleInterventionType>(entity =>
         {
