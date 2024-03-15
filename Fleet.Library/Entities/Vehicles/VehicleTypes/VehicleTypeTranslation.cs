@@ -8,6 +8,7 @@ namespace Regira.Fleet.Entities.Vehicles.VehicleTypes;
 public class VehicleTypeTranslation : IEntity, IHasNormalizedTitle, IHasLangCode
 {
     public int VehicleTypeId { get; set; }
+    [StringLength(2)]
     public string LangCode { get; set; } = null!;
 
     [MaxLength(8)]

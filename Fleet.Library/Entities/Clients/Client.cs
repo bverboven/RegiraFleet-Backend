@@ -15,13 +15,15 @@ public class Client : IEntityWithSerial, IHasTitle
     public int Id { get; set; }
     [StringLength(32)]
     public string Guid { get; set; } = System.Guid.NewGuid().ToString("N");
-    [NotMapped]
-    public string? Code { get; set; }
     [MaxLength(64)]
     public string Title { get; set; } = null!;
+    [MaxLength(8)]
+    public string? DefaultCulture { get; set; }
     public DateTime Created { get; set; } = DateTime.Now;
     public DateTime? LastModified { get; set; }
 
+    [NotMapped]
+    public string? Code { get; set; }
 
     public ICollection<ClientUserClaim>? UserClaims { get; set; }
     public ICollection<Brand>? Brands { get; set; }
@@ -30,4 +32,5 @@ public class Client : IEntityWithSerial, IHasTitle
     public ICollection<Operator>? InterventionOperators { get; set; }
     public ICollection<Vehicle>? Vehicles { get; set; }
     public ICollection<VehicleType>? VehicleTypes { get; set; }
+    public ICollection<ClientLanguage>? Languages { get; set; }
 }

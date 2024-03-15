@@ -47,42 +47,52 @@ public static class ServiceCollectionExtensions
         var options = new FleetHostingOptions();
         configure.Invoke(options);
 
-        // DbContext
-        services
-            //.AddDbContext<FleetContext>(db => db.UseMySql(options.ConnectionString, ServerVersion.AutoDetect(options.ConnectionString)));
-            .AddDbContext<FleetContext>(db =>
-            {
-                db
-                    .UseNpgsql(options.ConnectionString, o =>
-                    {
-                        o
-                            .MigrationsAssembly(typeof(FleetContext).Assembly.GetName().Name)
-                            .UseQuerySplittingBehavior(QuerySplittingBehavior.SplitQuery);
-                    })
-                    //.UseQueryTrackingBehavior(QueryTrackingBehavior.NoTrackingWithIdentityResolution)
-#if DEBUG
-                    .EnableDetailedErrors()
-                    .EnableSensitiveDataLogging()
-#endif
-                    ;
-            });
-
-        // Contexts
-        services
-            .AddScoped<IClientContext, ClientContext>()
-            .AddScoped<ICultureContext, CultureContext>()
-            .AddScoped<IFleetAppContext, FleetAppContext>();
-
-        // Identity helpers
-        services
-            .AddHttpContextAccessor()
-            .AddTransient<IClientUserClaimsService, IdentityClientUserClaimsService>();
-
-        // Entities
-        return services.AddEntities(options);
+        return services
+            // Database context
+            .AddDbContext(options.ConnectionString!)
+            // Contexts
+            .AddContexts()
+            // Identity helpers
+            .AddIdentityHelpers()
+            // Entities
+            .AddEntities(options);
     }
 
-    static IServiceCollection AddEntities(this IServiceCollection services, FleetHostingOptions options)
+    public static IServiceCollection AddDbContext(this IServiceCollection services, string connectionString)
+    {
+        return services
+             //.AddDbContext<FleetContext>(db => db.UseMySql(options.ConnectionString, ServerVersion.AutoDetect(options.ConnectionString)));
+             .AddDbContext<FleetContext>(db =>
+             {
+                 db
+                     .UseNpgsql(connectionString, o =>
+                     {
+                         o
+                             .MigrationsAssembly(typeof(FleetContext).Assembly.GetName().Name)
+                             .UseQuerySplittingBehavior(QuerySplittingBehavior.SplitQuery);
+                     })
+                     //.UseQueryTrackingBehavior(QueryTrackingBehavior.NoTrackingWithIdentityResolution)
+#if DEBUG
+                     .EnableDetailedErrors()
+                     .EnableSensitiveDataLogging()
+#endif
+                     ;
+             });
+    }
+    public static IServiceCollection AddIdentityHelpers(this IServiceCollection services)
+    {
+        return services
+              .AddHttpContextAccessor()
+              .AddTransient<IClientUserClaimsService, IdentityClientUserClaimsService>();
+    }
+    public static IServiceCollection AddContexts(this IServiceCollection services)
+    {
+        return services
+              .AddScoped<IClientContext, ClientContext>()
+              .AddScoped<ICultureContext, CultureContext>()
+              .AddScoped<IFleetAppContext, FleetAppContext>();
+    }
+    public static IServiceCollection AddEntities(this IServiceCollection services, FleetHostingOptions options)
     {
         return services
         // Entity context
@@ -115,7 +125,7 @@ public static class ServiceCollectionExtensions
         // Primers
         .AddPrimers();
     }
-    static EntityServiceCollection<FleetContext> AddAttachmentServices(this EntityServiceCollection<FleetContext> services, Func<IServiceProvider, IFileService> configure)
+    public static EntityServiceCollection<FleetContext> AddAttachmentServices(this EntityServiceCollection<FleetContext> services, Func<IServiceProvider, IFileService> configure)
     {
         return services
             .ConfigureAttachmentService(configure)
@@ -126,7 +136,7 @@ public static class ServiceCollectionExtensions
                 db.VehicleAttachments.ToDescriptor<Vehicle>(),
             }));
     }
-    static IServiceCollection AddNormalizers(this IServiceCollection services)
+    public static IServiceCollection AddNormalizers(this IServiceCollection services)
     {
         return services
             .AddTransient<INormalizer>(_ => new DefaultNormalizer(new NormalizeOptions { Transform = TextTransform.ToUpperCase }))
@@ -147,7 +157,7 @@ public static class ServiceCollectionExtensions
             // finally (put last)
             .AddObjectNormalizingContainer((_, c) => c.ExtractFromServiceCollection(services));
     }
-    static IServiceCollection AddPrimers(this IServiceCollection services)
+    public static IServiceCollection AddPrimers(this IServiceCollection services)
     {
         return services
             .AddTransient<IEntityPrimer<IHasCreated>, HasCreatedDbPrimer>()

@@ -1,0 +1,6 @@
+@Fleet.Admin.Api_HostAddress = http://localhost:5239
+
+GET {{Fleet.Admin.Api_HostAddress}}/swagger/
+Accept: text/html
+
+###

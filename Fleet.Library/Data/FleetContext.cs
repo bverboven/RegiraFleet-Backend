@@ -21,6 +21,7 @@ public class FleetContext(DbContextOptions<FleetContext> options) : DbContext(op
     public DbSet<Attachment<int>> Attachments { get; set; } = null!;
     public DbSet<Brand> Brands { get; set; } = null!;
     public DbSet<Client> Clients { get; set; } = null!;
+    public DbSet<ClientSubscription> ClientSubscriptions { get; set; } = null!;
     public DbSet<ClientUserClaim> ClientUserClaims { get; set; } = null!;
     public DbSet<Intervention> Interventions { get; set; } = null!;
     public DbSet<InterventionAction> InterventionActions { get; set; } = null!;
@@ -43,6 +44,15 @@ public class FleetContext(DbContextOptions<FleetContext> options) : DbContext(op
         base.OnModelCreating(modelBuilder);
 
         // Client
+        modelBuilder.Entity<ClientLanguage>(entity =>
+        {
+            entity.ToTable("client_languages");
+            entity.HasKey(e => new { e.ClientId, e.LangCode });
+        });
+        modelBuilder.Entity<ClientSubscription>(entity =>
+        {
+            entity.ToTable("client_subscriptions");
+        });
         modelBuilder.Entity<ClientUserClaim>(entity =>
         {
             entity.HasIndex(e => e.ClientId);

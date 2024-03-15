@@ -8,6 +8,7 @@ namespace Regira.Fleet.Entities.Vehicles.Brands;
 public class BrandTranslation : IEntity, IHasNormalizedTitle, IHasLangCode
 {
     public int BrandId { get; set; }
+    [StringLength(2)]
     public string LangCode { get; set; } = null!;
 
     [MaxLength(8)]
