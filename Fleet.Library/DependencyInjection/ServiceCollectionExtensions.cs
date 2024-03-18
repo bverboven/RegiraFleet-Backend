@@ -1,7 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Regira.DAL.EFcore.Normalizing;
-using Regira.Entities.DependencyInjection;
 using Regira.Entities.DependencyInjection.Extensions;
 using Regira.Entities.EFcore.Abstractions;
 using Regira.Entities.EFcore.Attachments;
@@ -33,34 +32,66 @@ using Regira.Normalizing.Models;
 
 
 namespace Regira.Fleet.DependencyInjection;
-
-public class FleetHostingOptions
-{
-    public string? ConnectionString { get; set; }
-    internal Func<IServiceProvider, IFileService>? FileServiceFactory { get; private set; }
-    public void ConfigureStorageService(Func<IServiceProvider, IFileService> configure) => FileServiceFactory = configure;
-}
 public static class ServiceCollectionExtensions
 {
-    public static IServiceCollection AddFleet(this IServiceCollection services, Action<FleetHostingOptions> configure)
+    public static FleetServiceBuilder AddFleet(this IServiceCollection services, Action<FleetHostingOptions> configure)
     {
         var options = new FleetHostingOptions();
         configure.Invoke(options);
 
-        return services
+        var fleetBuilder = new FleetServiceBuilder(services, options)
             // Database context
             .AddDbContext(options.ConnectionString!)
             // Contexts
-            .AddContexts()
+            .AddAppContexts()
             // Identity helpers
             .AddIdentityHelpers()
             // Entities
-            .AddEntities(options);
+            .AddFleetEntities(options)
+            // Attachments
+            .AddAttachmentServices(options.FileServiceFactory ?? throw new InvalidOperationException($"No implementation for {nameof(IFileService)} configured"));
+
+        return fleetBuilder;
+    }
+    public static FleetServiceBuilder AddClientAdmin(this IServiceCollection services, Action<FleetHostingOptions> configure)
+    {
+        var options = new FleetHostingOptions();
+        configure.Invoke(options);
+
+        var builder = new FleetServiceBuilder(services, options)
+            // Database context
+            .AddDbContext(options.ConnectionString!)
+            // Contexts
+            .AddAppContexts()
+            // Identity helpers
+            .AddIdentityHelpers();
+
+        builder.Services
+            //Entity context
+            .UseEntities<FleetContext>(c => c.ProfileAssemblies.Add(typeof(FleetProfile).Assembly));
+
+        builder.Entities
+            // Entity context
+            .For<Client, ClientRepository, ClientSearchObject, EntitySortBy, EntityIncludes>(e =>
+            {
+                e.AddMapping<ClientDto, ClientInputDto>();
+            });
+
+        // Attachments
+        builder
+            .AddAttachmentServices(options.FileServiceFactory ?? throw new InvalidOperationException($"No implementation for {nameof(IFileService)} configured"));
+
+        builder
+            .AddNormalizers(o => o.AddTransient<IFleetEntityNormalizer<Client>, FleetEntityNormalizer<Client>>())
+            .AddPrimers();
+
+        return builder;
     }
 
-    public static IServiceCollection AddDbContext(this IServiceCollection services, string connectionString)
+
+    public static FleetServiceBuilder AddDbContext(this FleetServiceBuilder builder, string connectionString)
     {
-        return services
+        builder.Services
              //.AddDbContext<FleetContext>(db => db.UseMySql(options.ConnectionString, ServerVersion.AutoDetect(options.ConnectionString)));
              .AddDbContext<FleetContext>(db =>
              {
@@ -78,56 +109,82 @@ public static class ServiceCollectionExtensions
 #endif
                      ;
              });
+
+        return builder;
     }
-    public static IServiceCollection AddIdentityHelpers(this IServiceCollection services)
+    public static FleetServiceBuilder AddIdentityHelpers(this FleetServiceBuilder builder)
     {
-        return services
+        builder.Services
               .AddHttpContextAccessor()
               .AddTransient<IClientUserClaimsService, IdentityClientUserClaimsService>();
+
+        return builder;
     }
-    public static IServiceCollection AddContexts(this IServiceCollection services)
+    public static FleetServiceBuilder AddAppContexts(this FleetServiceBuilder builder)
     {
-        return services
+        builder.Services
               .AddScoped<IClientContext, ClientContext>()
               .AddScoped<ICultureContext, CultureContext>()
               .AddScoped<IFleetAppContext, FleetAppContext>();
+
+        return builder;
     }
-    public static IServiceCollection AddEntities(this IServiceCollection services, FleetHostingOptions options)
+    public static FleetServiceBuilder AddFleetEntities(this FleetServiceBuilder builder, FleetHostingOptions options)
     {
-        return services
-        // Entity context
-        .UseEntities<FleetContext>(c => c.ProfileAssemblies.Add(typeof(FleetProfile).Assembly))
+        builder.Services
+            //Entity context
+            .UseEntities<FleetContext>(c => c.ProfileAssemblies.Add(typeof(FleetProfile).Assembly));
+
         // Entity Items
-        // Country
-        .For<Country, string, CountryRepository>(e => e.AddMapping<CountryDto, CountryDto>())
-        .For<Intervention, InterventionRepository, InterventionSearchObject, InterventionSortBy, InterventionIncludes>(e =>
-        {
-            e.HasRepository<InterventionRepository>();
-            e.HasAttachments<FleetContext, Intervention, InterventionAttachment>();
-        })
-        .For<Brand, BrandRepository, BrandSearchObject, EntitySortBy, EntityIncludes>()
-        .For<Vehicle, VehicleRepository, VehicleSearchObject, EntitySortBy, VehicleIncludes>(e =>
-        {
-            e.HasRepository<VehicleRepository>();
-            e.HasAttachments<FleetContext, Vehicle, VehicleAttachment>();
-        })
-        .For<VehicleType, VehicleTypeRepository, VehicleTypeSearchObject, EntitySortBy, EntityIncludes>()
-        .For<InterventionType, InterventionTypeRepository, InterventionTypeSearchObject, EntitySortBy, EntityIncludes>()
-        .For<Operator, OperatorRepository, OperatorSearchObject, EntitySortBy, OperatorIncludes>(e =>
-        {
-            e.HasRepository<OperatorRepository>();
-            e.HasAttachments<FleetContext, Operator, OperatorAttachment>();
-        })
-        // Attachments
-        .AddAttachmentServices(options.FileServiceFactory ?? throw new InvalidOperationException($"No implementation for {nameof(IFileService)} configured"))
-        // Normalizers
-        .AddNormalizers()
-        // Primers
-        .AddPrimers();
+        builder.Entities
+           // Country
+           .For<Country, string, CountryRepository>(e => e.AddMapping<CountryDto, CountryDto>())
+           .For<Intervention, InterventionRepository, InterventionSearchObject, InterventionSortBy, InterventionIncludes>(e =>
+           {
+               e.HasRepository<InterventionRepository>();
+               e.HasAttachments<FleetContext, Intervention, InterventionAttachment>();
+           })
+           .For<Brand, BrandRepository, BrandSearchObject, EntitySortBy, EntityIncludes>()
+           .For<Vehicle, VehicleRepository, VehicleSearchObject, EntitySortBy, VehicleIncludes>(e =>
+           {
+               e.HasRepository<VehicleRepository>();
+               e.HasAttachments<FleetContext, Vehicle, VehicleAttachment>();
+           })
+           .For<VehicleType, VehicleTypeRepository, VehicleTypeSearchObject, EntitySortBy, EntityIncludes>()
+           .For<InterventionType, InterventionTypeRepository, InterventionTypeSearchObject, EntitySortBy, EntityIncludes>()
+           .For<Operator, OperatorRepository, OperatorSearchObject, EntitySortBy, OperatorIncludes>(e =>
+           {
+               e.HasRepository<OperatorRepository>();
+               e.HasAttachments<FleetContext, Operator, OperatorAttachment>();
+           });
+
+        builder
+           // Normalizers
+           .AddNormalizers(o =>
+           {
+               o
+                   // simple normalizers
+                   .AddTransient<IFleetEntityNormalizer<Brand>, FleetEntityNormalizer<Brand>>()
+                   .AddTransient<IFleetEntityNormalizer<InterventionType>, FleetEntityNormalizer<InterventionType>>()
+                   .AddTransient<IFleetEntityNormalizer<VehicleType>, FleetEntityNormalizer<VehicleType>>()
+                   // helpers
+                   .AddTransient<AddressNormalizer>()
+                   .AddTransient(p => new PhoneNumberFormatter(p.GetRequiredService<ICultureContext>().Culture))
+                   .AddTransient<ContactDataNormalizer>()
+                   .AddTransient<IdentificationNumberNormalizer>()
+                   // custom normalizers
+                   .AddTransient<IFleetEntityNormalizer<Intervention>, InterventionNormalizer>()
+                   .AddTransient<IFleetEntityNormalizer<Operator>, OperatorNormalizer>()
+                   .AddTransient<IFleetEntityNormalizer<Vehicle>, VehicleNormalizer>();
+           })
+           // Primers
+           .AddPrimers();
+
+        return builder;
     }
-    public static EntityServiceCollection<FleetContext> AddAttachmentServices(this EntityServiceCollection<FleetContext> services, Func<IServiceProvider, IFileService> configure)
+    public static FleetServiceBuilder AddAttachmentServices(this FleetServiceBuilder builder, Func<IServiceProvider, IFileService> configure)
     {
-        return services
+        builder.Entities
             .ConfigureAttachmentService(configure)
             .ConfigureTypedAttachmentService(db => (new[]
             {
@@ -135,33 +192,31 @@ public static class ServiceCollectionExtensions
                 db.InterventionOperatorAttachments.ToDescriptor<Operator>(),
                 db.VehicleAttachments.ToDescriptor<Vehicle>(),
             }));
+
+        return builder;
     }
-    public static IServiceCollection AddNormalizers(this IServiceCollection services)
+    public static FleetServiceBuilder AddNormalizers(this FleetServiceBuilder builder, Action<IServiceCollection> configure)
     {
-        return services
+        builder.Services
             .AddTransient<INormalizer>(_ => new DefaultNormalizer(new NormalizeOptions { Transform = TextTransform.ToUpperCase }))
-            .AddTransient<IObjectNormalizer>(p => new FleetEntityNormalizer(p.GetRequiredService<INormalizer>()))
-            // simple normalizers
-            .AddTransient<IFleetEntityNormalizer<Brand>, FleetEntityNormalizer<Brand>>()
-            .AddTransient<IFleetEntityNormalizer<InterventionType>, FleetEntityNormalizer<InterventionType>>()
-            .AddTransient<IFleetEntityNormalizer<VehicleType>, FleetEntityNormalizer<VehicleType>>()
-            // helpers
-            .AddTransient<AddressNormalizer>()
-            .AddTransient(p => new PhoneNumberFormatter(p.GetRequiredService<ICultureContext>().Culture))
-            .AddTransient<ContactDataNormalizer>()
-            .AddTransient<IdentificationNumberNormalizer>()
-            // custom normalizers
-            .AddTransient<IFleetEntityNormalizer<Intervention>, InterventionNormalizer>()
-            .AddTransient<IFleetEntityNormalizer<Operator>, OperatorNormalizer>()
-            .AddTransient<IFleetEntityNormalizer<Vehicle>, VehicleNormalizer>()
-            // finally (put last)
-            .AddObjectNormalizingContainer((_, c) => c.ExtractFromServiceCollection(services));
+            .AddTransient<IObjectNormalizer>(p => new FleetEntityNormalizer(p.GetRequiredService<INormalizer>()));
+
+        // configure entity normalizers
+        configure?.Invoke(builder.Services);
+
+        // finally (put last)
+        builder.Services
+                    .AddObjectNormalizingContainer((_, c) => c.ExtractFromServiceCollection(builder.Services));
+
+        return builder;
     }
-    public static IServiceCollection AddPrimers(this IServiceCollection services)
+    public static FleetServiceBuilder AddPrimers(this FleetServiceBuilder builder)
     {
-        return services
+        builder.Services
             .AddTransient<IEntityPrimer<IHasCreated>, HasCreatedDbPrimer>()
             .AddTransient<IEntityPrimer<IHasLastModified>, HasLastModifiedDbPrimer>()
             .RegisterPrimerContainer<FleetContext>();
+
+        return builder;
     }
 }

@@ -1,21 +1,22 @@
 ﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Regira.Fleet.Admin.Api.Models;
+using Regira.Fleet.Core.Constants;
+using Regira.Fleet.Data;
 using Regira.Fleet.Identity.Models;
 using Regira.Fleet.Identity.Services;
 using Regira.Fleet.Identity.Web.Extensions;
 using Regira.Fleet.Identity.Web.Models;
 using System.Security.Claims;
 
-namespace Regira.Fleet.Identity.Web.Controllers;
+namespace Regira.Fleet.Admin.Api.Controllers;
 
-[Authorize("IsAdmin")]
 [ApiController]
-[Route("accounts")]
-public class ClientUserController(FleetUserManager userManager) : ControllerBase
+[Route("users")]
+public class UserController(FleetContext dbContext, FleetUserManager userManager) : ControllerBase
 {
-    [HttpPost]
-    public async Task<IActionResult> CreateUser(UserInputDto input)
+    [HttpPost("create")]
+    public async Task<IActionResult> CreateUser([FromBody] UserInputDto input)
     {
         var user = new FleetUser
         {
@@ -52,5 +53,30 @@ public class ClientUserController(FleetUserManager userManager) : ControllerBase
         }
 
         return StatusCode(StatusCodes.Status500InternalServerError, "Unknown error");
+    }
+
+    [HttpPost("link")]
+    public async Task<IActionResult> AddUserToClient([FromBody] UserToClientInputDto input)
+    {
+        var user = await userManager.FindByIdAsync(input.UserId);
+        if (user == null)
+        {
+            return NotFound();
+        }
+
+        var client = await dbContext.Clients.FindAsync(input.ClientId);
+        if (client == null)
+        {
+            return NotFound();
+        }
+
+        var clientClaim = new Claim(ClientPermissions.CanRead, client.Guid);
+        var result = await userManager.AddClaimAsync(user, clientClaim);
+        if (result.Succeeded)
+        {
+            return Ok();
+        }
+
+        return BadRequest();
     }
 }

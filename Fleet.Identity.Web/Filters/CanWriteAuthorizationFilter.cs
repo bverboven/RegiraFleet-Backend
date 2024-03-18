@@ -9,7 +9,8 @@ public class CanWriteAuthorizationFilter : IAuthorizationFilter
 
     public void OnAuthorization(AuthorizationFilterContext context)
     {
-        if (context.HttpContext.User.Identity?.IsAuthenticated == true)
+        var isAuthenticated = context.HttpContext.User.Identity?.IsAuthenticated == true;
+        if (isAuthenticated)
         {
             var routeData = context.RouteData;
             var action = context.RouteData.Values["action"]?.ToString();

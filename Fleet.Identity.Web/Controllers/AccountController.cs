@@ -21,7 +21,8 @@ public class AccountController(JwtTokenHelper _tokenHelper, FleetUserManager _us
 {
     [AllowAnonymous]
     [HttpPost]
-    public async Task<IActionResult> Authenticate([FromBody] AuthenticateInputDto model, [FromQuery] string clientId, [FromQuery] string clientApp)
+    [Route("", Name = RouteNames.Authenticate)]
+    public async Task<IActionResult> Authenticate([FromBody] AuthenticateInputDto model, [FromQuery] string clientApp, [FromQuery] string? clientId = null)
     {
         bool? isLockedOut = null;
         DateTimeOffset? lockedOutEnd = null;
@@ -37,7 +38,7 @@ public class AccountController(JwtTokenHelper _tokenHelper, FleetUserManager _us
                 {
                     var principal = await _claimsFactory.CreateAsync(user);
                     // check if user is linked to correct client
-                    if (principal.HasClaim(FleetClaimTypes.ClientId, clientId))
+                    if (string.IsNullOrWhiteSpace(clientId) || principal.HasClaim(FleetClaimTypes.ClientId, clientId))
                     {
                         return Ok(CreateSuccessResponse(principal.Claims, clientApp));
                     }

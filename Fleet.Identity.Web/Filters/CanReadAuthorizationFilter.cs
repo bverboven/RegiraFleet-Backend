@@ -8,7 +8,11 @@ public class CanReadAuthorizationFilter : IAuthorizationFilter
 {
     public void OnAuthorization(AuthorizationFilterContext context)
     {
-        if (context.HttpContext.User.Identity?.IsAuthenticated == true)
+        var isAuthenticated = context.HttpContext.User.Identity?.IsAuthenticated == true;
+        var isAuthenticating = RouteNames.Authenticate.Equals(context.RouteData.Values["action"]?.ToString(), StringComparison.InvariantCultureIgnoreCase);
+        // user may still be authenticated with earlier (now invalid) token
+        // make sure he can start a new one when requested
+        if (isAuthenticated && !isAuthenticating)
         {
             var hasReadClaim = context.HttpContext.User.HasClaim(c => c.Type == ClientClaimTypes.Permission && c.Value == ClientPermissions.CanRead);
             if (!hasReadClaim)

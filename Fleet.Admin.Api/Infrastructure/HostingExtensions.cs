@@ -4,34 +4,40 @@ using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using Regira.CRM.Identity.Web.DependencyInjection;
+using Regira.Fleet.Core.Constants;
 using Regira.Fleet.DependencyInjection;
+using Regira.Fleet.Identity.Authorization;
 using Regira.Fleet.Identity.Data;
-using Regira.Fleet.Identity.Web.Filters;
 using Regira.Fleet.Identity.Web.Middleware;
-using Regira.Fleet.Statistics;
 using Regira.IO.Storage.FileSystem;
-using Regira.Office.Excel.Abstractions;
 using Regira.Security.Abstractions;
 using Regira.Security.Encryption;
 using Regira.Serializing.Abstractions;
 using Regira.Serializing.Newtonsoft.Json;
 using Regira.Web.Swagger.Security;
+using Serilog;
 using System.Text.Json.Serialization;
 using JsonSerializer = Regira.Serializing.Newtonsoft.Json.JsonSerializer;
 
-namespace Regira.Fleet.Api.Infrastructure;
+namespace Regira.Fleet.Admin.Api.Infrastructure;
 
 public static class HostingExtensions
 {
+    public static WebApplicationBuilder ConfigureSerilog(this WebApplicationBuilder builder)
+    {
+        builder.Host.UseSerilog((context, configuration) => configuration.ReadFrom.Configuration(context.Configuration));
+        return builder;
+    }
     public static IServiceCollection AddApi(this IServiceCollection services)
     {
-
         services
-            .AddControllers(o =>
+            .AddControllers(_ =>
             {
-                // Global filters for authorization
-                o.Filters.Add<CanReadAuthorizationFilter>();
-                o.Filters.Add<CanWriteAuthorizationFilter>();
+                //var routePrefix = "api";
+                //if (!string.IsNullOrWhiteSpace(routePrefix))
+                //{
+                //    o.UseCentralRoutePrefix(new RouteAttribute(routePrefix));
+                //}
             })
             .AddJsonOptions(o => o.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter()))
             .AddNewtonsoftJson(o =>
@@ -65,8 +71,8 @@ public static class HostingExtensions
                         .AllowAnyHeader()
                         .AllowAnyMethod()
                         .AllowAnyOrigin()
-                        //.AllowCredentials()
-                        //.WithMethods("GET", "PUT", "POST", "DELETE", "OPTIONS")
+                    //.AllowCredentials()
+                    //.WithMethods("GET", "PUT", "POST", "DELETE", "OPTIONS")
                     )
             )
             // Swagger (with auth)
@@ -83,7 +89,7 @@ public static class HostingExtensions
     public static IServiceCollection AddServices(this IServiceCollection services, IConfiguration config)
     {
         services
-            .AddFleet(c =>
+            .AddClientAdmin(c =>
             {
                 var dataDirectory = config["Data:Directory"];
                 c.ConnectionString = config["ConnectionStrings:FleetData"];
@@ -93,10 +99,6 @@ public static class HostingExtensions
                 };
                 c.ConfigureStorageService(_ => new BinaryFileService(fsConfig));
             });
-
-        services
-            .AddScoped<StatisticsService>()
-            .AddTransient<IExcelManager, AcaExcelManager>();
 
         return services;
     }
@@ -110,6 +112,8 @@ public static class HostingExtensions
                 o.SecretKey = options.SecretKey;
                 o.Audiences.AddRange(options.Audiences);
             });
+
+        services.AddSingleton<IAuthorizationHandler, SuperUserRequirementHandler>();
 
         return services;
     }
@@ -134,6 +138,7 @@ public static class HostingExtensions
         app
             .MapControllers()
             .RequireAuthorization(new AuthorizeAttribute { AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme })
+            .RequireAuthorization(FleetPolicies.SuperUserPolicy)
             ;
 
         return app;

@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Options;
 using Regira.Fleet.Core.Abstractions;
 using Regira.Fleet.Core.Constants;
@@ -20,6 +19,13 @@ public class FleetUserClaimsPrincipalFactory(FleetUserManager userManager, RoleM
         {
             identity.AddClaim(new Claim(FleetClaimTypes.Culture, user.Culture));
         }
+
+        var displayName = $"{identity.FindFirst(ClaimTypes.GivenName)?.Value} {identity.FindFirst(ClaimTypes.Surname)?.Value}".Trim();
+        if (!string.IsNullOrWhiteSpace(displayName))
+        {
+            identity.AddClaim(new Claim(FleetClaimTypes.DisplayName, $"{displayName}"));
+        }
+
         // ui_culture
         //if (!string.IsNullOrWhiteSpace(user.UICulture))
         //{

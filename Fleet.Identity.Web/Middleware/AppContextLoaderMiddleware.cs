@@ -11,10 +11,13 @@ public class AppContextLoaderMiddleware(RequestDelegate next)
         if (context.User.Identity?.IsAuthenticated == true)
         {
             // only 1 clientId claim should be present, unused clientId claims are removed in middleware IdentityClientUserClaimsService
-            var clientId = context.User.Claims.Single(c => c.Type == FleetClaimTypes.ClientId).Value;
+            var clientId = context.User.Claims.SingleOrDefault(c => c.Type == FleetClaimTypes.ClientId)?.Value;
             var culture = context.User.Claims.FirstOrDefault(c => c.Type == FleetClaimTypes.Culture)?.Value;
 
-            await appContext.Client.Load(clientId);
+            if (!string.IsNullOrWhiteSpace(clientId))
+            {
+                await appContext.Client.Load(clientId);
+            }
             appContext.Culture.Load(culture);
         }
 

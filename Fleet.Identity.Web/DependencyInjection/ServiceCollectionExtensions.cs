@@ -2,7 +2,7 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Regira.Fleet.Core.Constants;
-using Regira.Fleet.Identity.Web.Filters;
+using Regira.Fleet.Identity.Authorization;
 using Regira.Security.Authentication.Jwt.Extensions;
 using Regira.Security.Encryption;
 using static Regira.Fleet.Identity.DependencyInjection.ServiceCollectionExtensions;
@@ -17,12 +17,6 @@ public static class ServiceCollectionExtensions
         var options = new FleetIdentityOptions();
         configure.Invoke(options);
 
-        services.AddControllers(o =>
-        {
-            o.Filters.Add<CanReadAuthorizationFilter>();
-            o.Filters.Add<CanWriteAuthorizationFilter>();
-        });
-
         // Authentication
         services
             .AddFleetAuthentication(options);
@@ -32,6 +26,11 @@ public static class ServiceCollectionExtensions
             .AddAuthorization(auth =>
             {
                 auth.AddPolicy(FleetPolicies.CanReadPolicy, o => o.RequireClaim(FleetClaimTypes.Permission, ClientPermissions.CanRead));
+                auth.AddPolicy(FleetPolicies.AdminPolicy, o => o.RequireClaim(FleetClaimTypes.Permission, ClientPermissions.Administrator));
+                auth.AddPolicy(FleetPolicies.SuperUserPolicy, o =>
+                {
+                    o.Requirements.Add(new SuperUserRequirement());
+                });
             });
 
         return services
