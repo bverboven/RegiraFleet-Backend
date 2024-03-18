@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Regira.Fleet.Admin.Api.Models;
 using Regira.Fleet.Core.Constants;
 using Regira.Fleet.Data;
@@ -10,6 +11,7 @@ using System.Security.Claims;
 
 namespace Fleet.Admin.Api.Controllers;
 
+[Authorize("IsSuperUser")]
 [ApiController]
 [Route("admin/clients")]
 public class ClientAdminController(FleetContext dbContext, ClientContext clientContext, FleetUserManager userManager) : ControllerBase

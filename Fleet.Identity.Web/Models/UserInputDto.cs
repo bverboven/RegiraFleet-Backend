@@ -8,5 +8,7 @@ public class UserInputDto
     public string Username { get; set; } = null!;
     [Required]
     public string Password { get; set; } = null!;
+    public string? GivenName { get; set; }
+    public string? Surname { get; set; }
     public string? Culture { get; set; }
 }
