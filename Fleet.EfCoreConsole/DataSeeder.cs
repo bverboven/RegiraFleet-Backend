@@ -337,13 +337,13 @@ public class DataSeeder(FleetContext dbContext, IEntityService<Brand> brandServi
         {
             case ContactDataTypes.Email:
                 var provider = $"{UriUtility.Slugify(supplier.Title)}.{f.Internet.DomainSuffix()}";
-                cd.Value = f.Internet.Email(provider: provider ?? f.Internet.DomainName()).ToLowerInvariant();
+                cd.Value = f.Internet.Email(provider: provider ?? f.Internet.DomainName()).ToLowerInvariant().ToLower();
                 break;
             case ContactDataTypes.Phone:
                 cd.Value = f.Phone.PhoneNumber("0## ## ## ##");
                 break;
             case ContactDataTypes.Website:
-                cd.Value = $"{f.PickRandom(new[] { "www.", "services.", "business", "sales", "" })}{UriUtility.Slugify(supplier.Title!)}.{f.Internet.DomainSuffix()}";
+                cd.Value = $"{f.PickRandom(new[] { "www.", "services.", "business", "sales", "" })}{UriUtility.Slugify(supplier.Title!)}.{f.Internet.DomainSuffix()}".ToLower();
                 break;
         }
 

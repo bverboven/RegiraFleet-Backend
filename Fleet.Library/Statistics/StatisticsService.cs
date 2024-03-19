@@ -1,5 +1,4 @@
-﻿using Dapper;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using Regira.Fleet.Data;
 using System.Data;
 using System.Data.Common;
@@ -58,8 +57,9 @@ public class StatisticsService(FleetContext dbContext) : IDisposable
 
         return stats;
     }
-    public async Task<IList<IDictionary<string, object?>>> Vehicles_Per_VehicleType_Per_Month(string vehicleTypeCode, int year)
+    public async Task<IList<IDictionary<string, object?>>> Vehicles_Per_VehicleType_Per_Month(int vehicleTypeId, int year)
     {
+        var vehicleType = (await dbContext.VehicleTypes.FindAsync(vehicleTypeId))?.Code;
         var list = new List<dynamic>();
         await using (var cmd = _dbConnection.CreateCommand())
         {
@@ -69,8 +69,8 @@ public class StatisticsService(FleetContext dbContext) : IDisposable
             yearParam.Value = year;
             cmd.Parameters.Add(yearParam);
             var vehicleTypeIdParam = cmd.CreateParameter();
-            vehicleTypeIdParam.ParameterName = nameof(vehicleTypeCode);
-            vehicleTypeIdParam.Value = vehicleTypeCode;
+            vehicleTypeIdParam.ParameterName = nameof(vehicleTypeId);
+            vehicleTypeIdParam.Value = vehicleTypeId;
             cmd.Parameters.Add(vehicleTypeIdParam);
             await _dbConnection.OpenAsync();
             await using (var reader = await cmd.ExecuteReaderAsync(CommandBehavior.CloseConnection))
@@ -82,7 +82,7 @@ public class StatisticsService(FleetContext dbContext) : IDisposable
                     var model = reader.IsDBNull("model") ? string.Empty : reader.GetString("model");
                     var vehicle = $"{reader.GetString("vehicle_code")} {brand} {model}";
                     var total = reader.IsDBNull("total") ? 0m : reader.GetDecimal("total");
-                    list.Add(new { month, vehicleTypeCode, vehicle, total });
+                    list.Add(new { month, vehicleType, vehicle, total });
                 }
             }
         }
@@ -96,7 +96,7 @@ public class StatisticsService(FleetContext dbContext) : IDisposable
             {
                 var dic = new Dictionary<string, object?>();
                 dic.Add("Maand", FormatMonth(x.Key, year));
-                dic.Add("Wagentype", vehicleTypeCode);
+                dic.Add("Wagentype", vehicleType);
                 dic.Add("JaarTotaal", x.Sum(v => (decimal?)v.total ?? 0));
                 foreach (var vehicle in vehicles)
                 {
@@ -376,7 +376,7 @@ WHERE year = @year;";
     const string VEHICLES_PER_VEHICLETYPES_PER_MONTH = @"SELECT year, month, vehicle_code, vehicle_brand_code, model, total
 FROM stats_vehicles_per_vehicletypes_per_month
 WHERE year = @year
-AND vehicle_type_id = @vehicle_type_id;";
+AND vehicle_type_id = @vehicleTypeId;";
     const string VEHICLES_PER_MONTH = @"SELECT year, month, vehicle_code, vehicle_brand_code, model, total
 FROM stats_vehicles_per_month
 WHERE year = @year;";
