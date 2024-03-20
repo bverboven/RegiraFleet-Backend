@@ -3,7 +3,7 @@ using Regira.Entities.Models;
 using Regira.Entities.Web.Controllers.Abstractions;
 using Regira.Fleet.Entities.Countries;
 
-namespace Regira.Fleet.Api.Controllers;
+namespace Regira.Fleet.Admin.Api.Controllers;
 
 [ApiController]
 [Route("countries")]

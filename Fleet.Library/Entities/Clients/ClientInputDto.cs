@@ -5,6 +5,8 @@ namespace Regira.Fleet.Entities.Clients;
 public class ClientInputDto
 {
     public int Id { get; set; }
+    [MaxLength(8)]
+    public string? Code { get; set; }
     [MaxLength(64)]
     public string Title { get; set; } = null!;
     [MaxLength(8)]

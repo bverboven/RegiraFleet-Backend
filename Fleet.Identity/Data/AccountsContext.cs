@@ -32,6 +32,10 @@ public class AccountsContext : IdentityDbContext<FleetUser, IdentityRole, string
             entity.Property(e => e.PasswordHash).HasMaxLength(2048);
             entity.Property(e => e.SecurityStamp).HasMaxLength(255);
             entity.Property(e => e.ConcurrencyStamp).HasMaxLength(255);
+
+            entity.HasMany(e => e.UserClaims)
+                .WithOne()
+                .HasForeignKey(e => e.UserId);
         });
 
         builder.Entity<IdentityRole>(entity =>

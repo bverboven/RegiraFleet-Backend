@@ -73,15 +73,16 @@ public static class ServiceCollectionExtensions
             .UseEntities<FleetContext>(c => c.ProfileAssemblies.Add(typeof(ClientProfile).Assembly));
 
         builder.Entities
-            // Entity context
-            .For<Client, ClientRepository, ClientSearchObject, EntitySortBy, ClientIncludes>(e =>
-            {
-                e.HasRepository<ClientRepository>();
-            })
-            .For<ClientSubscription, ClientSubscriptionRepository, ClientSubscriptionSearchObject, EntitySortBy, EntityIncludes>(e =>
-            {
-                e.HasRepository<ClientSubscriptionRepository>();
-            });
+           // Entity context
+           .For<Country, string, CountryRepository>(e => e.AddMapping<CountryDto, CountryDto>())
+           .For<Client, ClientRepository, ClientSearchObject, EntitySortBy, ClientIncludes>(e =>
+           {
+               e.HasRepository<ClientRepository>();
+           })
+          .For<ClientSubscription, ClientSubscriptionRepository, ClientSubscriptionSearchObject, EntitySortBy, EntityIncludes>(e =>
+           {
+               e.HasRepository<ClientSubscriptionRepository>();
+           });
 
         // Attachments
         builder

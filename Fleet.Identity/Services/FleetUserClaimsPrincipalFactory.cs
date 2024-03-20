@@ -20,7 +20,7 @@ public class FleetUserClaimsPrincipalFactory(FleetUserManager userManager, RoleM
             identity.AddClaim(new Claim(FleetClaimTypes.Culture, user.Culture));
         }
 
-        var displayName = $"{identity.FindFirst(ClaimTypes.GivenName)?.Value} {identity.FindFirst(ClaimTypes.Surname)?.Value}".Trim();
+        var displayName = $"{identity.FindFirst(FleetClaimTypes.GivenName)?.Value} {identity.FindFirst(FleetClaimTypes.LastName)?.Value}".Trim();
         if (!string.IsNullOrWhiteSpace(displayName))
         {
             identity.AddClaim(new Claim(FleetClaimTypes.DisplayName, $"{displayName}"));

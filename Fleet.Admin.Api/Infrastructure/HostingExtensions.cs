@@ -8,6 +8,7 @@ using Regira.Fleet.Core.Constants;
 using Regira.Fleet.DependencyInjection;
 using Regira.Fleet.Identity.Authorization;
 using Regira.Fleet.Identity.Data;
+using Regira.Fleet.Identity.Models;
 using Regira.Fleet.Identity.Web.Middleware;
 using Regira.IO.Storage.FileSystem;
 using Regira.Security.Abstractions;
@@ -60,6 +61,8 @@ public static class HostingExtensions
         //services.AddGlobalExceptionHandling();
 
         services.AddTransient<ISerializer, JsonSerializer>();
+
+        services.AddAutoMapper(typeof(IdentityProfile).Assembly);
 
         services
             // Api routing

@@ -9,6 +9,7 @@
     </PropertyGroup>
 
     <ItemGroup>
+        <PackageReference Include="AutoMapper" Version="13.0.1" />
         <PackageReference Include="EFCore.NamingConventions" Version="8.0.3" />
         <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="8.0.2" />
         <PackageReference Include="Microsoft.Extensions.Identity.Core" Version="8.0.2" />
@@ -22,7 +23,7 @@
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\Fleet.Core\Fleet.Core.csproj" />
+        <ProjectReference Include="..\Fleet.Core\Fleet.Core.csproj" />
     </ItemGroup>
 
 </Project>
