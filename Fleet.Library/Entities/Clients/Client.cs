@@ -1,4 +1,6 @@
 ﻿using Regira.Entities.Models.Abstractions;
+using Regira.Fleet.Entities.Clients.Subscriptions;
+using Regira.Fleet.Entities.Clients.Users;
 using Regira.Fleet.Entities.InterventionOperators.Operators;
 using Regira.Fleet.Entities.Interventions;
 using Regira.Fleet.Entities.InterventionTypes;
@@ -29,6 +31,10 @@ public class Client : IEntityWithSerial, IHasTitle
     public string? NormalizedTitle { get; set; }
 
 
+    public ICollection<ClientLanguage>? Languages { get; set; }
+    public ICollection<ClientSubscription>? Subscriptions { get; set; }
+
+
     public ICollection<ClientUserClaim>? UserClaims { get; set; }
     public ICollection<Brand>? Brands { get; set; }
     public ICollection<Intervention>? Interventions { get; set; }
@@ -36,5 +42,4 @@ public class Client : IEntityWithSerial, IHasTitle
     public ICollection<Operator>? InterventionOperators { get; set; }
     public ICollection<Vehicle>? Vehicles { get; set; }
     public ICollection<VehicleType>? VehicleTypes { get; set; }
-    public ICollection<ClientLanguage>? Languages { get; set; }
 }

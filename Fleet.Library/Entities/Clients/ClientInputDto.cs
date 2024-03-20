@@ -9,4 +9,7 @@ public class ClientInputDto
     public string Title { get; set; } = null!;
     [MaxLength(8)]
     public string? DefaultCulture { get; set; }
+
+
+    public ICollection<string>? Languages { get; set; }
 }

@@ -1,5 +1,7 @@
 ﻿using AutoMapper;
 using Regira.Fleet.Entities.Addresses;
+using Regira.Fleet.Entities.Clients;
+using Regira.Fleet.Entities.Clients.Subscriptions;
 using Regira.Fleet.Entities.InterventionOperators.Addresses;
 using Regira.Fleet.Entities.InterventionOperators.ContactData;
 using Regira.Fleet.Entities.InterventionOperators.Operators;
@@ -16,6 +18,7 @@ public class FleetProfile : Profile
 {
     public FleetProfile()
     {
+
         CreateMap<Vehicle, VehicleDto>()
             .ForMember(e => e.InterventionTypes, e => e.Ignore())
             .AfterMap((model, dto, ctx) =>
@@ -91,5 +94,25 @@ public class FleetProfile : Profile
         CreateMap<InvoiceInputDto, Invoice>();
         CreateMap<InterventionType, InterventionTypeDto>();
         CreateMap<InterventionTypeInputDto, InterventionType>();
+    }
+}
+public class ClientProfile : Profile
+{
+    public ClientProfile()
+    {
+        CreateMap<Client, ClientDto>()
+            .ForMember(e => e.Languages, e => e.Ignore())
+            .AfterMap((model, dto) =>
+            {
+                dto.Languages = model.Languages?.Select(l => l.LangCode).ToList();
+            });
+        CreateMap<ClientInputDto, Client>()
+            .ForMember(e => e.Languages, e => e.Ignore())
+            .AfterMap((dto, model) =>
+            {
+                model.Languages = dto.Languages?.Select(l => new ClientLanguage { ClientId = model.Id, LangCode = l }).ToList();
+            });
+        CreateMap<ClientSubscription, ClientSubscriptionDto>();
+        CreateMap<ClientSubscriptionInputDto, ClientSubscription>();
     }
 }

@@ -2,6 +2,8 @@
 using Regira.DAL.EFcore.Extensions;
 using Regira.Entities.Attachments.Models;
 using Regira.Fleet.Entities.Clients;
+using Regira.Fleet.Entities.Clients.Subscriptions;
+using Regira.Fleet.Entities.Clients.Users;
 using Regira.Fleet.Entities.InterventionOperators.Addresses;
 using Regira.Fleet.Entities.InterventionOperators.ContactData;
 using Regira.Fleet.Entities.InterventionOperators.Operators;

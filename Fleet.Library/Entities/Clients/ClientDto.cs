@@ -1,4 +1,6 @@
-﻿namespace Regira.Fleet.Entities.Clients;
+﻿using Regira.Fleet.Entities.Clients.Subscriptions;
+
+namespace Regira.Fleet.Entities.Clients;
 
 public class ClientDto
 {
@@ -8,4 +10,7 @@ public class ClientDto
     public string? DefaultCulture { get; set; }
     public DateTime Created { get; set; } = DateTime.Now;
     public DateTime? LastModified { get; set; }
+
+    public ICollection<string>? Languages { get; set; }
+    public ICollection<ClientSubscription>? Subscriptions { get; set; }
 }

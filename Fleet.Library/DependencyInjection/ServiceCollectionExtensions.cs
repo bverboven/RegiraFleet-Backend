@@ -12,6 +12,8 @@ using Regira.Fleet.Core.Models;
 using Regira.Fleet.Data;
 using Regira.Fleet.Entities;
 using Regira.Fleet.Entities.Clients;
+using Regira.Fleet.Entities.Clients.Subscriptions;
+using Regira.Fleet.Entities.Clients.Users;
 using Regira.Fleet.Entities.Countries;
 using Regira.Fleet.Entities.InterventionOperators.Normalizers;
 using Regira.Fleet.Entities.InterventionOperators.Operators;
@@ -68,13 +70,17 @@ public static class ServiceCollectionExtensions
 
         builder.Services
             //Entity context
-            .UseEntities<FleetContext>(c => c.ProfileAssemblies.Add(typeof(FleetProfile).Assembly));
+            .UseEntities<FleetContext>(c => c.ProfileAssemblies.Add(typeof(ClientProfile).Assembly));
 
         builder.Entities
             // Entity context
-            .For<Client, ClientRepository, ClientSearchObject, EntitySortBy, EntityIncludes>(e =>
+            .For<Client, ClientRepository, ClientSearchObject, EntitySortBy, ClientIncludes>(e =>
             {
-                e.AddMapping<ClientDto, ClientInputDto>();
+                e.HasRepository<ClientRepository>();
+            })
+            .For<ClientSubscription, ClientSubscriptionRepository, ClientSubscriptionSearchObject, EntitySortBy, EntityIncludes>(e =>
+            {
+                e.HasRepository<ClientSubscriptionRepository>();
             });
 
         // Attachments

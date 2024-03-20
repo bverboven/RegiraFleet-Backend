@@ -2,7 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using Regira.Fleet.Core.Constants;
 using Regira.Fleet.Data;
-using Regira.Fleet.Entities.Clients;
+using Regira.Fleet.Entities.Clients.Users;
 using Regira.Fleet.Identity.Models;
 using Regira.Fleet.Identity.Services;
 using Regira.Utilities;

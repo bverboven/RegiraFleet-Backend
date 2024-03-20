@@ -1,7 +1,7 @@
 ﻿using Regira.Entities.Models.Abstractions;
 using System.ComponentModel.DataAnnotations;
 
-namespace Regira.Fleet.Entities.Clients;
+namespace Regira.Fleet.Entities.Clients.Users;
 
 public class ClientUserClaim : IEntityWithSerial, IHasCreated
 {

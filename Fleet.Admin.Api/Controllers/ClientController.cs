@@ -6,7 +6,7 @@ using Regira.Fleet.Entities.Clients;
 namespace Fleet.Admin.Api.Controllers;
 
 [ApiController]
-[Route("admin/clients")]
-public class ClientController() : EntityControllerBase<Client, ClientSearchObject, EntitySortBy, EntityIncludes, ClientDto, ClientInputDto>
+[Route("clients")]
+public class ClientController() : EntityControllerBase<Client, ClientSearchObject, EntitySortBy, ClientIncludes, ClientDto, ClientInputDto>
 {
 }

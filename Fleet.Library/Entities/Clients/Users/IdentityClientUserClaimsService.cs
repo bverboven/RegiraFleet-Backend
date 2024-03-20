@@ -5,7 +5,7 @@ using Regira.Fleet.Core.Constants;
 using Regira.Fleet.Data;
 using System.Security.Claims;
 
-namespace Regira.Fleet.Entities.Clients;
+namespace Regira.Fleet.Entities.Clients.Users;
 
 /// <summary>
 /// Add ClientUserClaims (corresponding to selected client) to the identity claims.

@@ -26,6 +26,12 @@ public class FleetUserClaimsPrincipalFactory(FleetUserManager userManager, RoleM
             identity.AddClaim(new Claim(FleetClaimTypes.DisplayName, $"{displayName}"));
         }
 
+        var isSuperUser = identity.HasClaim(c => c.Type == identity.RoleClaimType && c.Value == FleetClaimTypes.SuperUser);
+        if (isSuperUser)
+        {
+            identity.AddClaim(new Claim(FleetClaimTypes.Permission, FleetClaimTypes.SuperUser));
+        }
+
         // ui_culture
         //if (!string.IsNullOrWhiteSpace(user.UICulture))
         //{

@@ -2,7 +2,7 @@
 using Regira.Fleet.Abstractions;
 using System.ComponentModel.DataAnnotations;
 
-namespace Regira.Fleet.Entities.Clients;
+namespace Regira.Fleet.Entities.Clients.Subscriptions;
 
 public class ClientSubscription : IEntityWithSerial, IHasClientId, IHasDescription, IHasStartEndDate
 {

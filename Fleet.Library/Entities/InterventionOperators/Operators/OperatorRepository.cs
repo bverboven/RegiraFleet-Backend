@@ -87,13 +87,11 @@ public class OperatorRepository(FleetContext dbContext, IFleetAppContext appCont
         {
             if (includes.Value.HasFlag(OperatorIncludes.ContactData))
             {
-                query = query
-                    .Include(x => x.ContactData!.OrderBy(a => a.SortOrder));
+                query = query.Include(x => x.ContactData!.OrderBy(a => a.SortOrder));
             }
             if (includes.Value.HasFlag(OperatorIncludes.Addresses))
             {
-                query = query
-                    .Include(x => x.Addresses!.OrderBy(a => a.SortOrder));
+                query = query.Include(x => x.Addresses!.OrderBy(a => a.SortOrder));
             }
             if (includes.Value.HasFlag(OperatorIncludes.InterventionTypes))
             {
@@ -104,7 +102,8 @@ public class OperatorRepository(FleetContext dbContext, IFleetAppContext appCont
             // Attachments
             if (includes.Value.HasFlag(OperatorIncludes.Attachments))
             {
-                query = query.Include(x => x.Attachments!)
+                query = query
+                    .Include(x => x.Attachments!)
                     .ThenInclude(a => a.Attachment);
             }
         }
