@@ -10,7 +10,7 @@ public class VehicleDto
 {
     public int Id { get; set; }
     public string Guid { get; set; } = null!;
-    public int ClientId { get; set; }
+    public string ClientId { get; set; } = null!;
     public int? BrandId { get; set; }
     public int? VehicleTypeId { get; set; }
     public string Code { get; set; } = null!;

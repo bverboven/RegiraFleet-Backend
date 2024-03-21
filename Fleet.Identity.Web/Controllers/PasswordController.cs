@@ -11,7 +11,7 @@ namespace Regira.Fleet.Identity.Web.Controllers;
 
 [ApiController]
 [Route("auth/password")]
-public class PasswordController(FleetUserManager userManager, ISerializer serializer) : ControllerBase
+public class PasswordController(FleetUserIdentityManager userManager, ISerializer serializer) : ControllerBase
 {
     [HttpPost]
     public async Task<IActionResult> UpdatePassword([FromBody] ChangePasswordInput model)

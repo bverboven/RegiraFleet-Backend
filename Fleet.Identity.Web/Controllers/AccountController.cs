@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Regira.Fleet.Core.Constants;
-using Regira.Fleet.Identity.Models;
+using Regira.Fleet.Identity.Entities.Users;
 using Regira.Fleet.Identity.Services;
 using Regira.Fleet.Identity.Web.Models;
 using Regira.Security.Authentication.Jwt.Extensions;
@@ -17,7 +17,7 @@ namespace Regira.CRM.Identity.Web.Controllers;
 
 [ApiController]
 [Route("auth")]
-public class AccountController(JwtTokenHelper _tokenHelper, FleetUserManager _userManager, IUserClaimsPrincipalFactory<FleetUser> _claimsFactory, ILogger<AccountController> _logger) : ControllerBase
+public class AccountController(JwtTokenHelper _tokenHelper, FleetUserIdentityManager _userManager, IUserClaimsPrincipalFactory<FleetUser> _claimsFactory, ILogger<AccountController> _logger) : ControllerBase
 {
     [AllowAnonymous]
     [HttpPost]

@@ -22,7 +22,7 @@
 
     <ItemGroup>
         <PackageReference Include="Regira.Office.Excel.NpoiMapper" Version="4.0.5" />
-        <PackageReference Include="Regira.Serializing.Newtonsoft" Version="4.0.2" />
+        <PackageReference Include="Regira.Serializing.Newtonsoft" Version="4.0.3" />
         <PackageReference Include="Regira.Web.Swagger" Version="4.0.0" />
     </ItemGroup>
 

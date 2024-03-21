@@ -1,0 +1,17 @@
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace Regira.Fleet.Identity.Entities.Clients;
+
+public class ClientInputDto
+{
+    public string? Id { get; set; }
+    [MaxLength(8)]
+    public string? Code { get; set; }
+    [MaxLength(64)]
+    public string Title { get; set; } = null!;
+    [MaxLength(8)]
+    public string? DefaultCulture { get; set; }
+
+
+    public ICollection<string>? Languages { get; set; }
+}

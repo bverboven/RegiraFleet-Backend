@@ -14,7 +14,8 @@ public class Operator : IFleetEntity, IEntityWithSerial, IHasCode, IHasNormalize
     public int Id { get; set; }
     [StringLength(32)]
     public string Guid { get; set; } = System.Guid.NewGuid().ToString("N");
-    public int ClientId { get; set; }
+    [StringLength(32)]
+    public string ClientId { get; set; } = null!;
     [MaxLength(8)]
     public string? Code { get; set; }
     [MaxLength(128)]

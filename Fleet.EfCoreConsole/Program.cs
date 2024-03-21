@@ -20,16 +20,18 @@ var host = CreateHostBuilder(args)
 var accountContext = host.Services.GetRequiredService<AccountsContext>();
 await accountContext.Database.EnsureDeletedAsync();
 await accountContext.Database.EnsureCreatedAsync();
+
+var accountSeeder = host.Services.GetRequiredService<AccountSeeder>();
+var clients = await accountSeeder.Seed();
+
 var fleetContext = host.Services.GetRequiredService<FleetContext>();
 await fleetContext.Database.EnsureDeletedAsync();
 await fleetContext.Database.EnsureCreatedAsync();
 
 var dataSeeder = host.Services.GetRequiredService<DataSeeder>();
-var clients = await dataSeeder.Seed();
-var accountSeeder = host.Services.GetRequiredService<AccountSeeder>();
-await accountSeeder.Seed();
+await dataSeeder.Seed(clients);
 
-foreach(var sql in StatisticsViews.All)
+foreach (var sql in StatisticsViews.All)
 {
     await fleetContext.Database.ExecuteSqlRawAsync(sql);
 }

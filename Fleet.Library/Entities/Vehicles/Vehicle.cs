@@ -12,8 +12,10 @@ namespace Regira.Fleet.Entities.Vehicles;
 public class Vehicle : IFleetEntity, IEntityWithSerial, IHasCode, IArchivable, IHasAttachments<VehicleAttachment>, IHasAttachments, IHasDescription, IHasNormalizedTitle, IHasNormalizedContent
 {
     public int Id { get; set; }
+    [StringLength(32)]
     public string Guid { get; set; } = System.Guid.NewGuid().ToString("N");
-    public int ClientId { get; set; }
+    [StringLength(32)]
+    public string ClientId { get; set; } = null!;
     public int? BrandId { get; set; }
     public int? VehicleTypeId { get; set; }
     [Required]

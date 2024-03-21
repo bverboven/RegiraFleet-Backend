@@ -2,12 +2,12 @@
 using Microsoft.Extensions.Options;
 using Regira.Fleet.Core.Abstractions;
 using Regira.Fleet.Core.Constants;
-using Regira.Fleet.Identity.Models;
+using Regira.Fleet.Identity.Entities.Users;
 using System.Security.Claims;
 
 namespace Regira.Fleet.Identity.Services;
 
-public class FleetUserClaimsPrincipalFactory(FleetUserManager userManager, RoleManager<IdentityRole> roleManager, IOptions<IdentityOptions> options, IEnumerable<IClientUserClaimsService> clientUserClaimsService)
+public class FleetUserClaimsPrincipalFactory(FleetUserIdentityManager userManager, RoleManager<IdentityRole> roleManager, IOptions<IdentityOptions> options, IEnumerable<IClientUserClaimsService> clientUserClaimsService)
     : UserClaimsPrincipalFactory<FleetUser, IdentityRole>(userManager, roleManager, options)
 {
     protected override async Task<ClaimsIdentity> GenerateClaimsAsync(FleetUser user)

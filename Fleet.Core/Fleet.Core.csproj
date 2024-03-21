@@ -8,4 +8,8 @@
         <AssemblyName>Regira.Fleet.Core</AssemblyName>
     </PropertyGroup>
 
+    <ItemGroup>
+        <PackageReference Include="Regira.Entities.DependencyInjection" Version="4.0.5" />
+    </ItemGroup>
+
 </Project>

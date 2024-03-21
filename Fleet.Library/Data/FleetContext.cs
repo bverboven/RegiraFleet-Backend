@@ -1,9 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Regira.DAL.EFcore.Extensions;
 using Regira.Entities.Attachments.Models;
-using Regira.Fleet.Entities.Clients;
-using Regira.Fleet.Entities.Clients.Subscriptions;
-using Regira.Fleet.Entities.Clients.Users;
 using Regira.Fleet.Entities.InterventionOperators.Addresses;
 using Regira.Fleet.Entities.InterventionOperators.ContactData;
 using Regira.Fleet.Entities.InterventionOperators.Operators;
@@ -22,9 +19,6 @@ public class FleetContext(DbContextOptions<FleetContext> options) : DbContext(op
     // Attachments
     public DbSet<Attachment<int>> Attachments { get; set; } = null!;
     public DbSet<Brand> Brands { get; set; } = null!;
-    public DbSet<Client> Clients { get; set; } = null!;
-    public DbSet<ClientSubscription> ClientSubscriptions { get; set; } = null!;
-    public DbSet<ClientUserClaim> ClientUserClaims { get; set; } = null!;
     public DbSet<Intervention> Interventions { get; set; } = null!;
     public DbSet<InterventionAction> InterventionActions { get; set; } = null!;
     public DbSet<InterventionAttachment> InterventionAttachments { get; set; } = null!;
@@ -44,24 +38,6 @@ public class FleetContext(DbContextOptions<FleetContext> options) : DbContext(op
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
-
-        // Client
-        modelBuilder.Entity<ClientLanguage>(entity =>
-        {
-            entity.ToTable("client_languages");
-            entity.HasKey(e => new { e.ClientId, e.LangCode });
-        });
-        modelBuilder.Entity<ClientSubscription>(entity =>
-        {
-            entity.ToTable("client_subscriptions");
-        });
-        modelBuilder.Entity<ClientUserClaim>(entity =>
-        {
-            entity.HasIndex(e => e.ClientId);
-            entity.HasIndex(e => e.UserId);
-            entity.HasIndex(e => new { e.ClientId, e.UserId, e.ClaimType, e.ClaimValue })
-                .IsUnique();
-        });
 
         // Interventions
         modelBuilder.Entity<InterventionType>(entity =>

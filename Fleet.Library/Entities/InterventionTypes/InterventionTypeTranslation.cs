@@ -1,5 +1,5 @@
 ﻿using Regira.Entities.Models.Abstractions;
-using Regira.Fleet.Abstractions;
+using Regira.Fleet.Core.Abstractions;
 using Regira.Normalizing;
 using System.ComponentModel.DataAnnotations;
 

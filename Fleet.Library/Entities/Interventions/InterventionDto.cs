@@ -10,7 +10,7 @@ public class InterventionDto
 {
     public int Id { get; set; }
     public string Guid { get; set; } = null!;
-    public int ClientId { get; set; }
+    public string ClientId { get; set; } = null!;
     public int VehicleId { get; set; }
     public int OperatorId { get; set; }
     public int? InvoiceId { get; set; }

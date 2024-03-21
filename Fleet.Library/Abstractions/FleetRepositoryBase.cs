@@ -95,9 +95,9 @@ public abstract class FleetRepositoryBase<TEntity, TSearchObject, TSortBy, TIncl
     public override void PrepareItem(TEntity item)
     {
         base.PrepareItem(item);
-        if (item is IHasClientId itemWithClientId && itemWithClientId.ClientId <= 0)
+        if (item is IHasClientId itemWithClientId && string.IsNullOrWhiteSpace(itemWithClientId.ClientId))
         {
-            itemWithClientId.ClientId = appContext.Client.ClientId;
+            itemWithClientId.ClientId = appContext.Client.ClientId!;
         }
     }
 }

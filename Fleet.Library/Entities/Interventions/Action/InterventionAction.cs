@@ -13,7 +13,8 @@ public class InterventionAction : IFleetEntity, IEntityWithSerial, IHasDescripti
     public int Id { get; set; }
     [StringLength(32)]
     public string Guid { get; set; } = System.Guid.NewGuid().ToString("N");
-    public int ClientId { get; set; }
+    [StringLength(32)]
+    public string ClientId { get; set; } = null!;
     public int VehicleId { get; set; }
     public int OperatorId { get; set; }
     public int InvoiceId { get; set; }

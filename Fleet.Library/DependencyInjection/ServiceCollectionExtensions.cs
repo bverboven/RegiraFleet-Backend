@@ -7,13 +7,14 @@ using Regira.Entities.EFcore.Attachments;
 using Regira.Entities.EFcore.Services;
 using Regira.Entities.Models;
 using Regira.Entities.Models.Abstractions;
+using Regira.Fleet.Clients;
 using Regira.Fleet.Core.Abstractions;
 using Regira.Fleet.Core.Models;
+using Regira.Fleet.Core.Normalizing;
+using Regira.Fleet.Core.Normalizing.Abstractions;
+using Regira.Fleet.Core.Primers;
 using Regira.Fleet.Data;
 using Regira.Fleet.Entities;
-using Regira.Fleet.Entities.Clients;
-using Regira.Fleet.Entities.Clients.Subscriptions;
-using Regira.Fleet.Entities.Clients.Users;
 using Regira.Fleet.Entities.Countries;
 using Regira.Fleet.Entities.InterventionOperators.Normalizers;
 using Regira.Fleet.Entities.InterventionOperators.Operators;
@@ -23,9 +24,6 @@ using Regira.Fleet.Entities.InterventionTypes;
 using Regira.Fleet.Entities.Vehicles;
 using Regira.Fleet.Entities.Vehicles.Brands;
 using Regira.Fleet.Entities.Vehicles.VehicleTypes;
-using Regira.Fleet.Normalizing;
-using Regira.Fleet.Normalizing.Abstractions;
-using Regira.Fleet.Primers;
 using Regira.Globalization.LibPhoneNumber;
 using Regira.IO.Storage.Abstractions;
 using Regira.Normalizing;
@@ -54,45 +52,6 @@ public static class ServiceCollectionExtensions
             .AddAttachmentServices(options.FileServiceFactory ?? throw new InvalidOperationException($"No implementation for {nameof(IFileService)} configured"));
 
         return fleetBuilder;
-    }
-    public static FleetServiceBuilder AddClientAdmin(this IServiceCollection services, Action<FleetHostingOptions> configure)
-    {
-        var options = new FleetHostingOptions();
-        configure.Invoke(options);
-
-        var builder = new FleetServiceBuilder(services, options)
-            // Database context
-            .AddDbContext(options.ConnectionString!)
-            // Contexts
-            .AddAppContexts()
-            // Identity helpers
-            .AddIdentityHelpers();
-
-        builder.Services
-            //Entity context
-            .UseEntities<FleetContext>(c => c.ProfileAssemblies.Add(typeof(ClientProfile).Assembly));
-
-        builder.Entities
-           // Entity context
-           .For<Country, string, CountryRepository>(e => e.AddMapping<CountryDto, CountryDto>())
-           .For<Client, ClientRepository, ClientSearchObject, EntitySortBy, ClientIncludes>(e =>
-           {
-               e.HasRepository<ClientRepository>();
-           })
-          .For<ClientSubscription, ClientSubscriptionRepository, ClientSubscriptionSearchObject, EntitySortBy, EntityIncludes>(e =>
-           {
-               e.HasRepository<ClientSubscriptionRepository>();
-           });
-
-        // Attachments
-        builder
-            .AddAttachmentServices(options.FileServiceFactory ?? throw new InvalidOperationException($"No implementation for {nameof(IFileService)} configured"));
-
-        builder
-            .AddNormalizers(o => o.AddTransient<IFleetEntityNormalizer<Client>, FleetEntityNormalizer<Client>>())
-            .AddPrimers();
-
-        return builder;
     }
 
 
@@ -123,7 +82,8 @@ public static class ServiceCollectionExtensions
     {
         builder.Services
               .AddHttpContextAccessor()
-              .AddTransient<IClientUserClaimsService, IdentityClientUserClaimsService>();
+              //.AddTransient<IClientUserClaimsService, IdentityClientUserClaimsService>()
+              ;
 
         return builder;
     }

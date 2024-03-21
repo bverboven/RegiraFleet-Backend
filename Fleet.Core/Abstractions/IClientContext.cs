@@ -2,7 +2,5 @@
 
 public interface IClientContext
 {
-    int ClientId { get; }
-
-    Task Load(string clientId);
+    string? ClientId { get; }
 }

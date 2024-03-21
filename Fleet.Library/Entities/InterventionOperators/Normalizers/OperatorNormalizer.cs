@@ -1,6 +1,6 @@
 ﻿using Regira.Fleet.Core.Abstractions;
+using Regira.Fleet.Core.Normalizing;
 using Regira.Fleet.Entities.InterventionOperators.Operators;
-using Regira.Fleet.Normalizing;
 using Regira.Normalizing.Abstractions;
 
 namespace Regira.Fleet.Entities.InterventionOperators.Normalizers;

@@ -2,7 +2,6 @@
 using Microsoft.EntityFrameworkCore;
 using Regira.Entities.Abstractions;
 using Regira.Fleet.Data;
-using Regira.Fleet.Entities.Clients;
 using Regira.Fleet.Entities.InterventionOperators.Addresses;
 using Regira.Fleet.Entities.InterventionOperators.ContactData;
 using Regira.Fleet.Entities.InterventionOperators.Operators;
@@ -12,6 +11,7 @@ using Regira.Fleet.Entities.InterventionTypes;
 using Regira.Fleet.Entities.Vehicles;
 using Regira.Fleet.Entities.Vehicles.Brands;
 using Regira.Fleet.Entities.Vehicles.VehicleTypes;
+using Regira.Fleet.Identity.Entities.Clients;
 using Regira.Utilities;
 using Regira.Web.Utilities;
 
@@ -59,9 +59,9 @@ public class DataSeeder(FleetContext dbContext, IEntityService<Brand> brandServi
     private Client Ambulance => _clients.Single(x => x.Code == "AMB");
 
 
-    public async Task<IList<Client>> Seed()
+    public async Task Seed(IList<Client> clients)
     {
-        _clients = await SeedClients();
+        _clients = clients;
         await SeedBrands();
         await SeedInterventionTypes();
         await SeedVehicleTypes();
@@ -71,28 +71,8 @@ public class DataSeeder(FleetContext dbContext, IEntityService<Brand> brandServi
             await SeedVehicles(client.Id);
             await SeedInterventions(client.Id);
         }
-
-        return _clients;
     }
 
-    public async Task<IList<Client>> SeedClients()
-    {
-        var items = await dbContext.Clients.ToListAsync();
-        if (!items.Any())
-        {
-            items.AddRange(new Client[]
-            {
-                new() { Code = "TRA", Title = "Openbaar vervoer", Guid = "11fc2d46df234aed8df1de9a7b0f114f" },
-                new() { Code = "POL", Title = "Politie", Guid = "232dfc2012b8491cb7d1aaee93007480" },
-                new() { Code = "BWR", Title = "Brandweer", Guid = "1b615c0096c04eb2975ef84463aa8257" },
-                new() { Code = "AMB", Title = "Ambulance", Guid = "f64a75e938b64dfaae5eab03fe541972" }
-            });
-            dbContext.Clients.AddRange(items);
-            await dbContext.SaveChangesAsync();
-        }
-
-        return items;
-    }
     public async Task SeedBrands()
     {
         var items = await dbContext.Brands.ToListAsync();
@@ -216,7 +196,7 @@ public class DataSeeder(FleetContext dbContext, IEntityService<Brand> brandServi
             await vehicleTypeService.SaveChanges();
         }
     }
-    public async Task SeedOperators(int clientId)
+    public async Task SeedOperators(string clientId)
     {
         var interventionTypes = await dbContext.InterventionTypes
             .Where(x => x.ClientId == clientId)
@@ -248,7 +228,7 @@ public class DataSeeder(FleetContext dbContext, IEntityService<Brand> brandServi
         }
         await operatorService.SaveChanges();
     }
-    public async Task SeedVehicles(int clientId)
+    public async Task SeedVehicles(string clientId)
     {
         var brands = await dbContext.Brands
             .Where(x => x.ClientId == clientId)
@@ -275,7 +255,7 @@ public class DataSeeder(FleetContext dbContext, IEntityService<Brand> brandServi
         }
         await vehicleService.SaveChanges();
     }
-    public async Task SeedInterventions(int clientId)
+    public async Task SeedInterventions(string clientId)
     {
         var vehicles = await dbContext.Vehicles
             .Where(x => x.ClientId == clientId)

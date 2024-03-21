@@ -1,5 +1,5 @@
-﻿using Regira.Fleet.Data;
-using Regira.Fleet.Normalizing;
+﻿using Regira.Fleet.Core.Normalizing;
+using Regira.Fleet.Data;
 using Regira.Normalizing.Abstractions;
 
 namespace Regira.Fleet.Entities.Vehicles;

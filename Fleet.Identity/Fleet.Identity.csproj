@@ -17,13 +17,18 @@
     </ItemGroup>
 
     <ItemGroup>
-        <PackageReference Include="Regira.Common" Version="4.0.2" />
-        <PackageReference Include="Regira.Office" Version="4.0.4" />
-        <PackageReference Include="Regira.Security.Authentication" Version="4.0.4" />
+        <PackageReference Include="Regira.Common" Version="4.0.3" />
+        <PackageReference Include="Regira.Office" Version="4.0.5" />
+        <PackageReference Include="Regira.Entities.DependencyInjection" Version="4.0.5" />
+        <PackageReference Include="Regira.Security.Authentication" Version="4.0.5" />
     </ItemGroup>
 
     <ItemGroup>
         <ProjectReference Include="..\Fleet.Core\Fleet.Core.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Folder Include="Migrations\" />
     </ItemGroup>
 
 </Project>

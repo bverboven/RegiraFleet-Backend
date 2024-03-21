@@ -5,11 +5,10 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using Regira.CRM.Identity.Web.DependencyInjection;
 using Regira.Fleet.Core.Constants;
-using Regira.Fleet.DependencyInjection;
 using Regira.Fleet.Identity.Authorization;
 using Regira.Fleet.Identity.Data;
-using Regira.Fleet.Identity.Models;
-using Regira.Fleet.Identity.Web.Middleware;
+using Regira.Fleet.Identity.DependencyInjection;
+using Regira.Fleet.Identity.Entities;
 using Regira.IO.Storage.FileSystem;
 using Regira.Security.Abstractions;
 using Regira.Security.Encryption;
@@ -95,7 +94,7 @@ public static class HostingExtensions
             .AddClientAdmin(c =>
             {
                 var dataDirectory = config["Data:Directory"];
-                c.ConnectionString = config["ConnectionStrings:FleetData"];
+                c.ConnectionString = config["ConnectionStrings:FleetAccounts"];
                 var fsConfig = new BinaryFileService.FileServiceOptions
                 {
                     RootFolder = dataDirectory!
@@ -133,7 +132,6 @@ public static class HostingExtensions
 
         app.UseAuthentication();
         app.UseAuthorization();
-        app.UseAppContextLoader();
 
         // global exception handling
         //app.UseGlobalExceptionHandling();

@@ -22,13 +22,12 @@
     </ItemGroup>
 
     <ItemGroup>
-        <PackageReference Include="Regira.Serializing.Newtonsoft" Version="4.0.2" />
+        <PackageReference Include="Regira.Serializing.Newtonsoft" Version="4.0.3" />
         <PackageReference Include="Regira.Web.Swagger" Version="4.0.0" />
     </ItemGroup>
 
     <ItemGroup>
         <ProjectReference Include="..\Fleet.Identity.Web\Fleet.Identity.Web.csproj" />
-        <ProjectReference Include="..\Fleet.Library\Fleet.Library.csproj" />
     </ItemGroup>
 
 </Project>

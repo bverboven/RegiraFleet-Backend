@@ -3,5 +3,5 @@
 public class UserToClientInputDto
 {
     public string UserId { get; set; } = null!;
-    public int ClientId { get; set; }
+    public string ClientId { get; set; } = null!;
 }
