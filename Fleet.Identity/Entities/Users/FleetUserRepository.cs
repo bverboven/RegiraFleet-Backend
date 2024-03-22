@@ -1,13 +1,15 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using Regira.DAL.Paging;
 using Regira.Entities.Abstractions;
 using Regira.Entities.Models;
 using Regira.Fleet.Core.Constants;
 using Regira.Fleet.Identity.Data;
 using Regira.Utilities;
+using System.Security.Claims;
 
 namespace Regira.Fleet.Identity.Entities.Users;
-internal class FleetUserRepository(AccountsContext dbContext) : IEntityRepository<FleetUser, string, FleetUserSearchObject, EntitySortBy, EntityIncludes>
+internal class FleetUserRepository(AccountsContext dbContext, UserManager<FleetUser> userManager) : IEntityRepository<FleetUser, string, FleetUserSearchObject, EntitySortBy, FleetUserIncludes>
 {
     public async Task<FleetUser?> Details(string id)
     {
@@ -17,9 +19,9 @@ internal class FleetUserRepository(AccountsContext dbContext) : IEntityRepositor
             .FirstOrDefaultAsync(x => x.Id == id);
         return item;
     }
-    public async Task<IList<FleetUser>> List(IList<FleetUserSearchObject?> searchObjects, IList<EntitySortBy> sortBy, EntityIncludes? includes = null, PagingInfo? pagingInfo = null)
+    public async Task<IList<FleetUser>> List(IList<FleetUserSearchObject?> searchObjects, IList<EntitySortBy> sortBy, FleetUserIncludes? includes = null, PagingInfo? pagingInfo = null)
     {
-        IQueryable<FleetUser> query = Query(dbContext.Users, searchObjects, pagingInfo);
+        IQueryable<FleetUser> query = Query(dbContext.Users, searchObjects, includes, pagingInfo);
         var items = await query
             .AsNoTrackingWithIdentityResolution()
             .ToListAsync();
@@ -48,32 +50,102 @@ internal class FleetUserRepository(AccountsContext dbContext) : IEntityRepositor
     }
     public IQueryable<FleetUser> Filter(IQueryable<FleetUser> query, IList<FleetUserSearchObject?> searchObjects)
         => searchObjects.Aggregate((IQueryable<FleetUser>?)null, (r, so) => r == null ? Filter(query, so) : r.Union(Filter(query, so))) ?? query;
-    public virtual IQueryable<FleetUser> Query(IQueryable<FleetUser> query, IList<FleetUserSearchObject?> searchObjects, PagingInfo? pagingInfo)
+    public IQueryable<FleetUser> AddIncludes(IQueryable<FleetUser> query, FleetUserIncludes? includes)
+    {
+        if (includes != null)
+        {
+            if (includes.Value.HasFlag(FleetUserIncludes.UserClaims))
+            {
+                query = query.Include(x => x.UserClaims);
+            }
+            if (includes.Value.HasFlag(FleetUserIncludes.ClientClaims))
+            {
+                query = query.Include(x => x.ClientClaims);
+            }
+        }
+
+        return query;
+    }
+    public virtual IQueryable<FleetUser> Query(IQueryable<FleetUser> query, IList<FleetUserSearchObject?> searchObjects, FleetUserIncludes? includes, PagingInfo? pagingInfo)
     {
         var filteredQuery = Filter(query, searchObjects);
         var sortedQuery = filteredQuery.OrderBy(x => x.UserName);
         var pagedQuery = sortedQuery.PageQuery(pagingInfo);
-        var includingQuery = pagedQuery;
+        var includingQuery = AddIncludes(pagedQuery, includes);
 
         return includingQuery;
     }
 
 
-    public Task Add(FleetUser item)
+    public async Task Add(FleetUser item)
     {
-        throw new NotImplementedException();
+        var result = string.IsNullOrWhiteSpace(item.NewPassword)
+            ? await userManager.CreateAsync(item)
+            : await userManager.CreateAsync(item, item.NewPassword);
+        if (result.Succeeded)
+        {
+            await Modify(item, item);
+        }
     }
-    public Task Modify(FleetUser item)
+    public async Task Modify(FleetUser item)
     {
-        throw new NotImplementedException();
+        var original = await Details(item.Id);
+        if (original != null)
+        {
+            await Modify(item, original);
+        }
     }
-    public Task Save(FleetUser item)
+    public async Task Save(FleetUser item)
     {
-        throw new NotImplementedException();
+        var original = await Details(item.Id);
+        if (original != null)
+        {
+            await Modify(item, original);
+        }
+        else
+        {
+            await Add(item);
+        }
     }
     public Task Remove(FleetUser item)
+        => userManager.DeleteAsync(item);
+
+    public async Task Modify(FleetUser item, FleetUser original)
     {
-        throw new NotImplementedException();
+        await userManager.UpdateAsync(item);
+
+        if (item.UserClaims != null)
+        {
+            var originalClaims = await userManager.GetClaimsAsync(original);
+            var claimsToRemove = originalClaims.Where(oc => item.UserClaims.All(c => c.ClaimType != oc.Type && c.ClaimValue != oc.Value));
+            var claimsToAdd = item.UserClaims.Where(c => originalClaims.All(oc => c.ClaimType != oc.Type && c.ClaimValue != oc.Value));
+
+            if (claimsToRemove.Any())
+            {
+                await userManager.RemoveClaimsAsync(original, claimsToRemove);
+            }
+            if (claimsToAdd.Any())
+            {
+                await userManager.AddClaimsAsync(original, claimsToAdd.Select(c => new Claim(c.ClaimType!, c.ClaimValue!)));
+            }
+        }
+
+        if (item.ClientClaims != null && original.ClientClaims != null)
+        {
+            var originalClaims = original.ClientClaims;
+            var claimsToRemove = originalClaims.Where(oc => item.ClientClaims.All(c => c.ClientId != oc.ClientId && c.ClaimType != oc.ClaimType && c.ClaimValue != oc.ClaimValue));
+            var claimsToAdd = item.ClientClaims.Where(c => originalClaims.All(oc => c.ClientId != oc.ClientId && c.ClaimType != oc.ClaimType && c.ClaimValue != oc.ClaimValue));
+
+            if (claimsToRemove.Any())
+            {
+                dbContext.ClientUserClaims.RemoveRange(originalClaims);
+            }
+            if (claimsToAdd.Any())
+            {
+                dbContext.ClientUserClaims.AddRange(claimsToAdd);
+            }
+            await SaveChanges();
+        }
     }
 
 

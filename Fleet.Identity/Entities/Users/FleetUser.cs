@@ -1,5 +1,7 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Regira.Entities.Models.Abstractions;
+using Regira.Fleet.Identity.Entities.Clients;
+using Regira.Fleet.Identity.Entities.Users.Claims;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -20,5 +22,8 @@ public class FleetUser : IdentityUser, IEntity<string>
     public string? NewPassword { get; set; }
 
     public ICollection<IdentityUserClaim<string>>? UserClaims { get; set; }
-    public ICollection<IdentityRole>? UserRoles { get; set; }
+    public ICollection<ClientUserClaim>? ClientClaims { get; set; }
+
+    [NotMapped]
+    public ICollection<Client>? Clients { get; set; }
 }

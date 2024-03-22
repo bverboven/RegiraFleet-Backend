@@ -1,11 +1,12 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Regira.Fleet.Core.Abstractions;
 using Regira.Fleet.Data;
 using System.Data;
 using System.Data.Common;
 
 namespace Regira.Fleet.Statistics;
 
-public class StatisticsService(FleetContext dbContext) : IDisposable
+public class StatisticsService(FleetContext dbContext, IClientContext clientContext) : IDisposable
 {
     private readonly DbConnection _dbConnection = dbContext.Database.GetDbConnection();
 
@@ -15,6 +16,10 @@ public class StatisticsService(FleetContext dbContext) : IDisposable
         await using (var cmd = _dbConnection.CreateCommand())
         {
             cmd.CommandText = VEHICLETYPES_PER_MONTH;
+            var clientParam = cmd.CreateParameter();
+            clientParam.ParameterName = "clientId";
+            clientParam.Value = clientContext.ClientId;
+            cmd.Parameters.Add(clientParam);
             var yearParam = cmd.CreateParameter();
             yearParam.ParameterName = "year";
             yearParam.Value = year;
@@ -64,6 +69,10 @@ public class StatisticsService(FleetContext dbContext) : IDisposable
         await using (var cmd = _dbConnection.CreateCommand())
         {
             cmd.CommandText = VEHICLES_PER_VEHICLETYPES_PER_MONTH;
+            var clientParam = cmd.CreateParameter();
+            clientParam.ParameterName = "clientId";
+            clientParam.Value = clientContext.ClientId;
+            cmd.Parameters.Add(clientParam);
             var yearParam = cmd.CreateParameter();
             yearParam.ParameterName = "year";
             yearParam.Value = year;
@@ -120,6 +129,10 @@ public class StatisticsService(FleetContext dbContext) : IDisposable
         await using (var cmd = _dbConnection.CreateCommand())
         {
             cmd.CommandText = VEHICLES_PER_MONTH;
+            var clientParam = cmd.CreateParameter();
+            clientParam.ParameterName = "clientId";
+            clientParam.Value = clientContext.ClientId;
+            cmd.Parameters.Add(clientParam);
             var yearParam = cmd.CreateParameter();
             yearParam.ParameterName = "year";
             yearParam.Value = year;
@@ -165,6 +178,10 @@ public class StatisticsService(FleetContext dbContext) : IDisposable
         await using (var cmd = _dbConnection.CreateCommand())
         {
             cmd.CommandText = INTERVENTION_TYPES_PER_MONTH;
+            var clientParam = cmd.CreateParameter();
+            clientParam.ParameterName = "clientId";
+            clientParam.Value = clientContext.ClientId;
+            cmd.Parameters.Add(clientParam);
             var yearParam = cmd.CreateParameter();
             yearParam.ParameterName = "year";
             yearParam.Value = year;
@@ -206,6 +223,10 @@ public class StatisticsService(FleetContext dbContext) : IDisposable
         await using (var cmd = _dbConnection.CreateCommand())
         {
             cmd.CommandText = INTERVENTION_OPERATORS_PER_MONTH;
+            var clientParam = cmd.CreateParameter();
+            clientParam.ParameterName = "clientId";
+            clientParam.Value = clientContext.ClientId;
+            cmd.Parameters.Add(clientParam);
             var yearParam = cmd.CreateParameter();
             yearParam.ParameterName = "year";
             yearParam.Value = year;
@@ -253,6 +274,10 @@ public class StatisticsService(FleetContext dbContext) : IDisposable
         await using (var cmd = _dbConnection.CreateCommand())
         {
             cmd.CommandText = INTERVENTIONTYPES_AND_VEHICLETYPES_PER_MONTH;
+            var clientParam = cmd.CreateParameter();
+            clientParam.ParameterName = "clientId";
+            clientParam.Value = clientContext.ClientId;
+            cmd.Parameters.Add(clientParam);
             var yearParam = cmd.CreateParameter();
             yearParam.ParameterName = "year";
             yearParam.Value = year;
@@ -372,23 +397,29 @@ public class StatisticsService(FleetContext dbContext) : IDisposable
     #region SQL
     const string VEHICLETYPES_PER_MONTH = @"SELECT year, month, vehicle_type_code, total
 FROM stats_vehicletypes_per_month
-WHERE year = @year;";
+WHERE client_id = @clientId
+AND year = @year;";
     const string VEHICLES_PER_VEHICLETYPES_PER_MONTH = @"SELECT year, month, vehicle_code, vehicle_brand_code, model, total
 FROM stats_vehicles_per_vehicletypes_per_month
-WHERE year = @year
+WHERE client_id = @clientId
+AND year = @year
 AND vehicle_type_id = @vehicleTypeId;";
     const string VEHICLES_PER_MONTH = @"SELECT year, month, vehicle_code, vehicle_brand_code, model, total
 FROM stats_vehicles_per_month
-WHERE year = @year;";
+WHERE client_id = @clientId
+AND year = @year;";
     const string INTERVENTION_TYPES_PER_MONTH = @"SELECT year, month, interventiontype_code, total
 FROM stats_interventiontypes_per_month
-WHERE year = @year;";
+WHERE client_id = @clientId
+AND year = @year;";
     const string INTERVENTION_OPERATORS_PER_MONTH = @"SELECT year, month, intervention_operator_id, supplier, total
 FROM stats_interventionoperators_per_month
-WHERE year = @year;";
+WHERE client_id = @clientId
+AND year = @year;";
     const string INTERVENTIONTYPES_AND_VEHICLETYPES_PER_MONTH = @"SELECT year, month, interventiontype_code, vehicle_type, total
 FROM stats_interventiontypes_and_vehicletypes_per_month
-WHERE year = @year;";
+WHERE client_id = @clientId
+AND year = @year;";
     #endregion
 
     public void Dispose()

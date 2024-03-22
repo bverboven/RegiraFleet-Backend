@@ -26,7 +26,7 @@
 
     <ItemGroup>
         <PackageReference Include="Regira.DAL.EFcore" Version="4.0.3" />
-        <PackageReference Include="Regira.Entities.DependencyInjection" Version="4.0.5" />
+        <PackageReference Include="Regira.Entities.DependencyInjection" Version="4.0.6" />
         <PackageReference Include="Regira.Globalization.LibPhoneNumber" Version="4.0.3" />
     </ItemGroup>
 

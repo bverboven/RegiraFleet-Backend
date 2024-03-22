@@ -64,25 +64,29 @@ static void ConfigureServices(HostBuilderContext context, IServiceCollection ser
         .AddTransient<AccountSeeder>();
 
     // PostgreSQL
-    services
-        // IdentityContext
-        .AddDbContext<AccountsContext>(db => db.UseNpgsql(config["ConnectionStrings:FleetAccounts"], o => o.MigrationsAssembly(typeof(AccountsContext).Assembly.GetName().Name)));
-    //services
-    //    // Fleet Data
-    //    .AddDbContext<FleetContext>(db => db.UseNpgsql(config["ConnectionStrings:FleetData"], o => o.MigrationsAssembly(typeof(FleetContext).Assembly.GetName().Name)));
 
     services.AddAuthentication();
     services.AddFleetAuthentication();
 
+    services.AddClientAdmin(c =>
+    {
+        var dataDirectory = config["Data:Directory"];
+        c.ConnectionString = config["ConnectionStrings:FleetAccounts"];
+        var fsConfig = new BinaryFileService.FileServiceOptions
+        {
+            RootFolder = dataDirectory!
+        };
+        c.ConfigureStorageService(_ => new BinaryFileService(fsConfig));
+    });
     services.AddFleet(c =>
-            {
-                var dataDirectory = config["Data:Directory"];
-                c.ConnectionString = config["ConnectionStrings:FleetData"];
-                var fsConfig = new BinaryFileService.FileServiceOptions
-                {
-                    RootFolder = dataDirectory!
-                };
-                c.ConfigureStorageService(_ => new BinaryFileService(fsConfig));
-            });
+    {
+        var dataDirectory = config["Data:Directory"];
+        c.ConnectionString = config["ConnectionStrings:FleetData"];
+        var fsConfig = new BinaryFileService.FileServiceOptions
+        {
+            RootFolder = dataDirectory!
+        };
+        c.ConfigureStorageService(_ => new BinaryFileService(fsConfig));
+    });
 }
 #endregion

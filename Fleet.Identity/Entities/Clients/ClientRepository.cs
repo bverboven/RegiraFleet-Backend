@@ -1,19 +1,32 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Regira.Entities.EFcore.Abstractions;
-using Regira.Entities.EFcore.Extensions;
 using Regira.Entities.Keywords;
 using Regira.Entities.Models;
-using Regira.Entities.Models.Abstractions;
 using Regira.Fleet.Identity.Data;
-using Regira.Normalizing.Abstractions;
-using Regira.Utilities;
 
 namespace Regira.Fleet.Identity.Entities.Clients;
 public class ClientRepository(AccountsContext dbContext) : EntityRepositoryBase<AccountsContext, Client, string, ClientSearchObject, EntitySortBy, ClientIncludes>(dbContext)
 {
     public override IQueryable<Client> Filter(IQueryable<Client> query, ClientSearchObject? so)
     {
-        return query.Filter(so);
+        if (so != null)
+        {
+            var qHelper = QKeywordHelper.Create();
+            if (!string.IsNullOrWhiteSpace(so.Id))
+            {
+                query = query.Where(x => x.Id == so.Id);
+            }
+            if (!string.IsNullOrWhiteSpace(so.Q))
+            {
+                var keywords = qHelper.Parse(so.Q);
+                foreach (var q in keywords)
+                {
+                    query = query.Where(x => EF.Functions.ILike(x.Code!, q.Keyword!) || EF.Functions.ILike(x.NormalizedTitle!, q.QW!));
+                }
+            }
+        }
+
+        return query;
     }
     public override IQueryable<Client> AddIncludes(IQueryable<Client> query, ClientIncludes? includes)
     {
@@ -36,6 +49,11 @@ public class ClientRepository(AccountsContext dbContext) : EntityRepositoryBase<
         }
 
         return query;
+    }
+    public override Task Add(Client item)
+    {
+        item.Id ??= Guid.NewGuid().ToString("N");
+        return base.Add(item);
     }
     public override void Modify(Client item, Client original)
     {
