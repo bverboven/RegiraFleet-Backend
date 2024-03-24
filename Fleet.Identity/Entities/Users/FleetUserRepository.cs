@@ -1,33 +1,32 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using AutoMapper;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Regira.DAL.Paging;
 using Regira.Entities.Abstractions;
+using Regira.Entities.EFcore.Extensions;
 using Regira.Entities.Models;
-using Regira.Fleet.Core.Constants;
+using Regira.Entities.Models.Abstractions;
 using Regira.Fleet.Identity.Data;
+using Regira.Fleet.Identity.Entities.Users.Claims;
 using Regira.Utilities;
-using System.Security.Claims;
 
 namespace Regira.Fleet.Identity.Entities.Users;
-internal class FleetUserRepository(AccountsContext dbContext, UserManager<FleetUser> userManager) : IEntityRepository<FleetUser, string, FleetUserSearchObject, EntitySortBy, FleetUserIncludes>
+internal class FleetUserRepository(AccountsContext dbContext, UserManager<FleetUser> userManager, IMapper mapper) : IEntityRepository<FleetUserModel, string, FleetUserSearchObject, EntitySortBy, FleetUserIncludes>
 {
-    public async Task<FleetUser?> Details(string id)
+    public async Task<FleetUserModel?> Details(string id)
     {
-        var item = await dbContext.Users
-            .Include(x => x.UserClaims)
-            .AsNoTrackingWithIdentityResolution()
-            .FirstOrDefaultAsync(x => x.Id == id);
-        return item;
+        var item = await GetItem(id);
+        return mapper.Map<FleetUserModel>(item);
     }
-    public async Task<IList<FleetUser>> List(IList<FleetUserSearchObject?> searchObjects, IList<EntitySortBy> sortBy, FleetUserIncludes? includes = null, PagingInfo? pagingInfo = null)
+    public async Task<IList<FleetUserModel>> List(IList<FleetUserSearchObject?> searchObjects, IList<EntitySortBy> sortBy, FleetUserIncludes? includes = null, PagingInfo? pagingInfo = null)
     {
         IQueryable<FleetUser> query = Query(dbContext.Users, searchObjects, includes, pagingInfo);
         var items = await query
             .AsNoTrackingWithIdentityResolution()
             .ToListAsync();
-        return items;
+        return mapper.Map<List<FleetUserModel>>(items);
     }
-    public Task<IList<FleetUser>> List(object? so = null, PagingInfo? pagingInfo = null)
+    public Task<IList<FleetUserModel>> List(object? so = null, PagingInfo? pagingInfo = null)
         => List(Convert(so), pagingInfo);
     public Task<int> Count(IList<FleetUserSearchObject?> searchObjects)
     {
@@ -35,15 +34,27 @@ internal class FleetUserRepository(AccountsContext dbContext, UserManager<FleetU
         return query.CountAsync();
     }
     public Task<int> Count(object? so)
-        => Count(Convert(so));
+        => Count(new[] { Convert(so) });
 
+    public Task<FleetUser?> GetItem(string id)
+    {
+        return AddIncludes(dbContext.Users, FleetUserIncludes.All)
+            .AsNoTrackingWithIdentityResolution()
+            .FirstOrDefaultAsync(x => x.Id == id);
+    }
     public IQueryable<FleetUser> Filter(IQueryable<FleetUser> query, FleetUserSearchObject? so)
     {
         if (so != null)
         {
+            query = query.FilterId(so.Id);
+            //if (!string.IsNullOrWhiteSpace(so.Id))
+            //{
+            //    query = query.Where(x => x.Id == so.Id);
+            //}
+            query = query.FilterIds(so.Ids);
             if (!string.IsNullOrWhiteSpace(so.ClientId))
             {
-                query = query.Where(x => x.UserClaims!.Any(c => c.ClaimType == FleetClaimTypes.ClientId && c.ClaimValue == so.ClientId));
+                query = query.Where(x => x.ClientClaims!.Any(c => c.ClientId == so.ClientId));
             }
         }
         return query;
@@ -60,7 +71,8 @@ internal class FleetUserRepository(AccountsContext dbContext, UserManager<FleetU
             }
             if (includes.Value.HasFlag(FleetUserIncludes.ClientClaims))
             {
-                query = query.Include(x => x.ClientClaims);
+                query = query.Include(x => x.ClientClaims!)
+                    .ThenInclude(x => x.Client);
             }
         }
 
@@ -77,75 +89,107 @@ internal class FleetUserRepository(AccountsContext dbContext, UserManager<FleetU
     }
 
 
-    public async Task Add(FleetUser item)
+    public async Task Add(FleetUserModel model)
     {
+        var item = mapper.Map<FleetUser>(model);
         var result = string.IsNullOrWhiteSpace(item.NewPassword)
             ? await userManager.CreateAsync(item)
             : await userManager.CreateAsync(item, item.NewPassword);
         if (result.Succeeded)
         {
-            await Modify(item, item);
+            PrepareItem(model, null);
+            await Modify(model, item);
         }
     }
-    public async Task Modify(FleetUser item)
+    public async Task Modify(FleetUserModel model)
     {
-        var original = await Details(item.Id);
+        var original = await GetItem(model.Id);
         if (original != null)
         {
-            await Modify(item, original);
+            PrepareItem(model, original);
+            await Modify(model, original);
+            await UpdateAndCleanUp(original);
         }
     }
-    public async Task Save(FleetUser item)
+    public async Task Save(FleetUserModel model)
     {
-        var original = await Details(item.Id);
+        var original = await GetItem(model.Id);
         if (original != null)
         {
-            await Modify(item, original);
+            PrepareItem(model, original);
+            await Modify(model, original);
+            await UpdateAndCleanUp(original);
         }
         else
         {
-            await Add(item);
+            await Add(model);
         }
     }
-    public Task Remove(FleetUser item)
-        => userManager.DeleteAsync(item);
+    public Task Remove(FleetUserModel item)
+        => userManager.DeleteAsync(mapper.Map<FleetUser>(item));
 
-    public async Task Modify(FleetUser item, FleetUser original)
+    public void PrepareItem(FleetUserModel item, FleetUser? original)
     {
-        await userManager.UpdateAsync(item);
+        item.Email ??= original?.Email!;
+        if (item.UserClaims?.Any() == true)
+        {
+            foreach (var claim in item.UserClaims)
+            {
+                claim.UserId = item.Id;
+            }
+        }
+        if (item.ClientClaims?.Any() == true)
+        {
+            foreach (var claim in item.ClientClaims)
+            {
+                claim.UserId = item.Id;
+            }
+        }
+    }
+    public async Task UpdateAndCleanUp(FleetUser item)
+    {
+        dbContext.Entry(item).State = EntityState.Modified;
+        var result = await userManager.UpdateAsync(item);
+        if (!result.Succeeded)
+        {
+            throw new Exception(result.Errors?.FirstOrDefault()?.Code);
+        }
+    }
+    public async Task Modify(FleetUserModel item, FleetUser original)
+    {
+        dbContext.Entry(original).CurrentValues.SetValues(item);
 
         if (item.UserClaims != null)
         {
-            var originalClaims = await userManager.GetClaimsAsync(original);
-            var claimsToRemove = originalClaims.Where(oc => item.UserClaims.All(c => c.ClaimType != oc.Type && c.ClaimValue != oc.Value));
-            var claimsToAdd = item.UserClaims.Where(c => originalClaims.All(oc => c.ClaimType != oc.Type && c.ClaimValue != oc.Value));
+            var originalClaims = original.UserClaims!;
+            var claimsToRemove = originalClaims.Where(oc => item.UserClaims.All(c => c.Id != oc.Id));
+            var claimsToAdd = item.UserClaims.Where(c => originalClaims.All(oc => c.Id != oc.Id));
+            var claimsToUpdate = originalClaims.Except(claimsToRemove);
 
             if (claimsToRemove.Any())
             {
-                await userManager.RemoveClaimsAsync(original, claimsToRemove);
+                dbContext.UserClaims.RemoveRange(claimsToRemove);
             }
             if (claimsToAdd.Any())
             {
-                await userManager.AddClaimsAsync(original, claimsToAdd.Select(c => new Claim(c.ClaimType!, c.ClaimValue!)));
+                dbContext.AddRange(claimsToAdd);
+            }
+            if (claimsToUpdate?.Any() == true)
+            {
+                foreach (var claim in claimsToUpdate)
+                {
+                    var itemClaim = item.UserClaims.First(c => c.Id == claim.Id);
+                    if (itemClaim.ClaimValue != claim.ClaimValue)
+                    {
+                        claim.ClaimValue = itemClaim.ClaimValue;
+                        dbContext.Entry(claim).State = EntityState.Modified;
+                    }
+                }
             }
         }
 
-        if (item.ClientClaims != null && original.ClientClaims != null)
-        {
-            var originalClaims = original.ClientClaims;
-            var claimsToRemove = originalClaims.Where(oc => item.ClientClaims.All(c => c.ClientId != oc.ClientId && c.ClaimType != oc.ClaimType && c.ClaimValue != oc.ClaimValue));
-            var claimsToAdd = item.ClientClaims.Where(c => originalClaims.All(oc => c.ClientId != oc.ClientId && c.ClaimType != oc.ClaimType && c.ClaimValue != oc.ClaimValue));
-
-            if (claimsToRemove.Any())
-            {
-                dbContext.ClientUserClaims.RemoveRange(originalClaims);
-            }
-            if (claimsToAdd.Any())
-            {
-                dbContext.ClientUserClaims.AddRange(claimsToAdd);
-            }
-            await SaveChanges();
-        }
+        var originalModel = mapper.Map<FleetUserModel>(original);
+        dbContext.UpdateEntityChildCollection<FleetUserModel, string, ClientUserClaim, int>(originalModel, item, item => item.ClientClaims, (item, collection) => item.ClientClaims = collection);
     }
 
 
@@ -157,5 +201,48 @@ internal class FleetUserRepository(AccountsContext dbContext, UserManager<FleetU
         => so == default ? default
             : so is FleetUserSearchObject tso ? tso
             : ObjectUtility.Create<FleetUserSearchObject>(so);
+}
+public static class Extensions
+{
+    public static void UpdateEntityChildCollection<TEntity, TEntityKey, TChild, TChildKey>(this DbContext dbContext, TEntity original, TEntity modified, Func<TEntity, ICollection<TChild>?> childrenGetter, Action<TEntity, ICollection<TChild>> childrenSetter, Action<TChild?, TChild>? processExtra = null)
+    where TChild : class, IEntity<TChildKey>
+    {
+        var originalChildCollection = childrenGetter(original);
+        var modifiedChildCollection = childrenGetter(modified);
+        // ignore when no child collection is passed for either original OR modified entity
+        if (originalChildCollection == null || modifiedChildCollection == null)
+        {
+            return;
+        }
 
+        var childrenToRemove = originalChildCollection!.Where(oc => modifiedChildCollection.All(c => !oc.Id!.Equals(c.Id)));
+        var childrenToAdd = modifiedChildCollection!.Where(c => originalChildCollection.All(oc => !oc.Id!.Equals(c.Id)));
+        var childrenToUpdate = originalChildCollection.Except(childrenToRemove);
+
+        if (childrenToRemove.Any())
+        {
+            dbContext.RemoveRange(childrenToRemove);
+        }
+        if (childrenToAdd.Any())
+        {
+            foreach (var child in childrenToAdd)
+            {
+                processExtra?.Invoke(null, child);
+                dbContext.Add(child);
+            }
+        }
+        if (childrenToUpdate?.Any() == true)
+        {
+            foreach (var originalChild in childrenToUpdate)
+            {
+                var modifiedChild = modifiedChildCollection.First(c => c.Id!.Equals(originalChild.Id));
+                processExtra?.Invoke(originalChild, modifiedChild);
+                var childEntry = dbContext.Entry(originalChild);
+                childEntry.CurrentValues.SetValues(modifiedChild);
+                childEntry.State = EntityState.Modified;
+            }
+        }
+
+        childrenSetter(original, modifiedChildCollection);
+    }
 }

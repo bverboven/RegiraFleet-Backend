@@ -61,6 +61,12 @@ public class AccountsContext : IdentityDbContext<FleetUser, IdentityRole, string
                 .WithOne()
                 .HasForeignKey(e => e.UserId);
         });
+        builder.Entity<IdentityUserClaim<string>>(entity =>
+        {
+            entity.HasIndex(e => e.UserId);
+            entity.Property(e => e.ClaimType).HasMaxLength(64);
+            entity.Property(e => e.ClaimValue).HasMaxLength(256);
+        });
 
         builder.Entity<IdentityRole>(entity =>
         {

@@ -46,7 +46,6 @@ public class AccountSeeder(FleetUserIdentityManager userManager, RoleManager<Ide
                     {
                         // Identity claims
                         await userManager.AddClaimsAsync(user, new[] {
-                            new Claim(FleetClaimTypes.ClientId, client.Id),
                             new Claim(FleetClaimTypes.GivenName, client.Code.Capitalize()!),
                             new Claim(FleetClaimTypes.LastName, $"({permission.Key})"),
                         });

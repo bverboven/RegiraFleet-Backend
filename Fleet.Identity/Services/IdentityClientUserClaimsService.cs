@@ -19,23 +19,26 @@ public class IdentityClientUserClaimsService(AccountsContext dbContext, IHttpCon
     public async Task Process(ClaimsIdentity identity)
     {
         var requestedClientId = httpContextAccessor.HttpContext?.Request.Query["clientId"].ToString();
-        var clientId = identity.FindFirst(c => c.Type == FleetClaimTypes.ClientId)?.Value;
         var userId = identity.FindFirst(ClaimTypes.NameIdentifier)!.Value;
 
-        var claims = await GetClaims(userId, clientId);
+        var claims = await GetClaims(userId, requestedClientId);
+        if (!string.IsNullOrWhiteSpace(requestedClientId) && claims.Any(c => c.ClientId == requestedClientId))
+        {
+            identity.AddClaim(new Claim(FleetClaimTypes.ClientId, requestedClientId));
+        }
         foreach (var claim in claims)
         {
             identity.AddClaim(new Claim(claim.ClaimType, claim.ClaimValue ?? string.Empty));
         }
 
         // remove unused clientIds from IdentityClaims
-        var clientClaimsToRemove = identity.Claims
-            .Where(c => c.Type == FleetClaimTypes.ClientId && c.Value != requestedClientId)
-            .ToArray();
-        foreach (var claim in clientClaimsToRemove)
-        {
-            identity.RemoveClaim(claim);
-        }
+        //var clientClaimsToRemove = identity.Claims
+        //    .Where(c => c.Type == FleetClaimTypes.ClientId && c.Value != requestedClientId)
+        //    .ToArray();
+        //foreach (var claim in clientClaimsToRemove)
+        //{
+        //    identity.RemoveClaim(claim);
+        //}
     }
 
     Task<List<ClientUserClaim>> GetClaims(string userId, string? clientId)

@@ -14,7 +14,7 @@ namespace Regira.Fleet.Admin.Api.Controllers;
 [AllowAnonymous]
 [ApiController]
 [Route("users")]
-public class UserController(AccountsContext dbContext, FleetUserIdentityManager userManager) : EntityControllerBase<FleetUser, string, FleetUserSearchObject, EntitySortBy, EntityIncludes, FleetUserDto, FleetUserDto>
+public class UserController(AccountsContext dbContext, FleetUserIdentityManager userManager) : EntityControllerBase<FleetUserModel, string, FleetUserSearchObject, EntitySortBy, FleetUserIncludes, FleetUserDto, FleetUserInputDto>
 {
     [HttpPost("link")]
     public async Task<IActionResult> AddUserToClient([FromBody] UserToClientInputDto input)

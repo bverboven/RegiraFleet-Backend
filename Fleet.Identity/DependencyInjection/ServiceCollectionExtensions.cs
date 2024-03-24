@@ -62,7 +62,7 @@ public static class ServiceCollectionExtensions
           .For<ClientSubscription, int, ClientSubscriptionSearchObject>(e =>
            {
            })
-          .For<FleetUser, string, FleetUserRepository, FleetUserSearchObject, EntitySortBy, FleetUserIncludes>(e =>
+          .For<FleetUserModel, string, FleetUserRepository, FleetUserSearchObject, EntitySortBy, FleetUserIncludes>(e =>
           {
               e.HasRepository<FleetUserRepository>();
           });

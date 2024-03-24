@@ -9,8 +9,8 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="Regira.Office" Version="4.0.5" />
-        <PackageReference Include="Regira.Web" Version="4.0.3" />
+        <PackageReference Include="Regira.Office" Version="4.0.6" />
+        <PackageReference Include="Regira.Web" Version="4.0.4" />
     </ItemGroup>
 
     <ItemGroup>
