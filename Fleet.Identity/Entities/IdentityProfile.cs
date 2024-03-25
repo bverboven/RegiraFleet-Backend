@@ -27,6 +27,7 @@ public class IdentityProfile : Profile
             .ForMember(e => e.UserClaims, e => e.Ignore())
             .AfterMap((dto, model, ctx) =>
             {
+                model.UserName ??= dto.Email;
                 if (dto.UserClaims != null)
                 {
                     var userClaims = dto.UserClaims.Select(x => new IdentityUserClaim<string> { Id = x.Id, ClaimType = x.ClaimType!, ClaimValue = x.ClaimValue }).ToList();

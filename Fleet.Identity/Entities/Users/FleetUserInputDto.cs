@@ -5,10 +5,12 @@ namespace Regira.Fleet.Identity.Entities.Users;
 
 public class FleetUserInputDto
 {
-    public string Id { get; set; } = null!;
-    [Required]
+    public string? Id { get; set; } = null!;
     [MaxLength(256)]
-    public string UserName { get; set; } = null!;
+    public string? UserName { get; set; } = null!;
+    [MaxLength(256)]
+    public string? NewPassword { get; set; }
+    [Required]
     [MaxLength(256)]
     public string Email { get; set; } = null!;
     [MaxLength(256)]

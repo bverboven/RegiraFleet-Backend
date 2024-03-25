@@ -91,13 +91,13 @@ internal class FleetUserRepository(AccountsContext dbContext, UserManager<FleetU
 
     public async Task Add(FleetUserModel model)
     {
+        PrepareItem(model, null);
         var item = mapper.Map<FleetUser>(model);
         var result = string.IsNullOrWhiteSpace(item.NewPassword)
             ? await userManager.CreateAsync(item)
             : await userManager.CreateAsync(item, item.NewPassword);
         if (result.Succeeded)
         {
-            PrepareItem(model, null);
             await Modify(model, item);
         }
     }
@@ -108,7 +108,7 @@ internal class FleetUserRepository(AccountsContext dbContext, UserManager<FleetU
         {
             PrepareItem(model, original);
             await Modify(model, original);
-            await UpdateAndCleanUp(original);
+            await UpdateUser(model, original);
         }
     }
     public async Task Save(FleetUserModel model)
@@ -118,7 +118,7 @@ internal class FleetUserRepository(AccountsContext dbContext, UserManager<FleetU
         {
             PrepareItem(model, original);
             await Modify(model, original);
-            await UpdateAndCleanUp(original);
+            await UpdateUser(model, original);
         }
         else
         {
@@ -128,27 +128,39 @@ internal class FleetUserRepository(AccountsContext dbContext, UserManager<FleetU
     public Task Remove(FleetUserModel item)
         => userManager.DeleteAsync(mapper.Map<FleetUser>(item));
 
-    public void PrepareItem(FleetUserModel item, FleetUser? original)
+    public void PrepareItem(FleetUserModel model, FleetUser? original)
     {
-        item.Email ??= original?.Email!;
-        if (item.UserClaims?.Any() == true)
+        model.Id ??= Guid.NewGuid().ToString();
+        if (original != null)
         {
-            foreach (var claim in item.UserClaims)
+            dbContext.Entry(original).CurrentValues.SetValues(model);
+            if (!string.IsNullOrWhiteSpace(model.NewPassword))
             {
-                claim.UserId = item.Id;
+                original.PasswordHash = userManager.PasswordHasher.HashPassword(original, model.NewPassword);
             }
         }
-        if (item.ClientClaims?.Any() == true)
+        if (model.UserClaims?.Any() == true)
         {
-            foreach (var claim in item.ClientClaims)
+            foreach (var claim in model.UserClaims)
             {
-                claim.UserId = item.Id;
+                claim.UserId = model.Id;
+            }
+        }
+        if (model.ClientClaims?.Any() == true)
+        {
+            foreach (var claim in model.ClientClaims)
+            {
+                claim.UserId = model.Id;
             }
         }
     }
-    public async Task UpdateAndCleanUp(FleetUser item)
+    public async Task UpdateUser(FleetUserModel model, FleetUser item)
     {
-        dbContext.Entry(item).State = EntityState.Modified;
+        var entry = dbContext.Entry(item);
+        if (entry.State == EntityState.Detached)
+        {
+            entry.State = EntityState.Modified;
+        }
         var result = await userManager.UpdateAsync(item);
         if (!result.Succeeded)
         {
@@ -157,8 +169,6 @@ internal class FleetUserRepository(AccountsContext dbContext, UserManager<FleetU
     }
     public async Task Modify(FleetUserModel item, FleetUser original)
     {
-        dbContext.Entry(original).CurrentValues.SetValues(item);
-
         if (item.UserClaims != null)
         {
             var originalClaims = original.UserClaims!;

@@ -20,7 +20,7 @@ public class Client : IEntity<string>, IHasCode, IHasNormalizedTitle, IHasTimest
     public DateTime? LastModified { get; set; }
 
     [MaxLength(256)]
-    [Normalized(SourceProperties = new[] { nameof(Title), nameof(Code) })]
+    [Normalized(SourceProperties = [nameof(Title), nameof(Code)])]
     public string? NormalizedTitle { get; set; }
 
     public ICollection<ClientLanguage>? Languages { get; set; }
