@@ -12,6 +12,8 @@ public class ClientInputDto
     [MaxLength(8)]
     public string? DefaultCulture { get; set; }
 
+    public string? Description { get; set; }
+
 
     public ICollection<string>? Languages { get; set; }
 }

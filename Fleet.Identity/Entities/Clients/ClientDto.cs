@@ -11,6 +11,8 @@ public class ClientDto
     public DateTime Created { get; set; } = DateTime.Now;
     public DateTime? LastModified { get; set; }
 
+    public string? Description { get; set; }
+
     public ICollection<string>? Languages { get; set; }
     public ICollection<ClientSubscriptionDto>? Subscriptions { get; set; }
 }

@@ -1,5 +1,4 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Infrastructure;
 using Regira.DAL.EFcore.Normalizing;
 using Regira.Entities.EFcore.Abstractions;
 using Regira.Entities.EFcore.Extensions;
@@ -77,19 +76,10 @@ public abstract class FleetRepositoryBase<TEntity, TSearchObject, TSortBy, TIncl
     }
     public override async Task<int> SaveChanges(CancellationToken token = new())
     {
-        var normalizers = dbContext.GetService<ObjectNormalizerContainer>();
-
         DbContext.ApplyNormalizers();
         await DbContext.ApplyPrimers();
 
-        try
-        {
-            return await base.SaveChanges(token);
-        }
-        catch (Exception ex)
-        {
-            throw;
-        }
+        return await base.SaveChanges(token);
     }
 
     public override void PrepareItem(TEntity item)

@@ -1,11 +1,11 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Regira.Entities.EFcore.Abstractions;
 using Regira.Entities.Keywords;
 using Regira.Entities.Models;
+using Regira.Fleet.Identity.Abstractions;
 using Regira.Fleet.Identity.Data;
 
 namespace Regira.Fleet.Identity.Entities.Clients;
-public class ClientRepository(AccountsContext dbContext) : EntityRepositoryBase<AccountsContext, Client, string, ClientSearchObject, EntitySortBy, ClientIncludes>(dbContext)
+public class ClientRepository(AccountsContext dbContext) : IdentityRepositoryBase<Client, string, ClientSearchObject, EntitySortBy, ClientIncludes>(dbContext)
 {
     public override IQueryable<Client> Filter(IQueryable<Client> query, ClientSearchObject? so)
     {

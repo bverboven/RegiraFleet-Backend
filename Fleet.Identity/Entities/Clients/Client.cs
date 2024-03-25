@@ -6,7 +6,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Regira.Fleet.Identity.Entities.Clients;
 
-public class Client : IEntity<string>, IHasCode, IHasNormalizedTitle, IHasTimestamps
+public class Client : IEntity<string>, IHasCode, IHasNormalizedTitle, IHasDescription, IHasTimestamps
 {
     [StringLength(32)]
     public string Id { get; set; } = Guid.NewGuid().ToString("N");
@@ -16,6 +16,7 @@ public class Client : IEntity<string>, IHasCode, IHasNormalizedTitle, IHasTimest
     public string Title { get; set; } = null!;
     [MaxLength(8)]
     public string? DefaultCulture { get; set; }
+    public string? Description { get; set; }
     public DateTime Created { get; set; } = DateTime.Now;
     public DateTime? LastModified { get; set; }
 
