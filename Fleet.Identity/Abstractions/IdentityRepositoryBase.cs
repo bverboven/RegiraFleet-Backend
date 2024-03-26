@@ -25,6 +25,7 @@ public abstract class IdentityRepositoryBase<TEntity, TKey, TSearchObject, TSort
         {
             query = query.FilterId(so.Id);
             query = query.FilterIds(so.Ids);
+            query = query.FilterExclude(so.Exclude);
 
             if (TypeUtility.ImplementsInterface<IHasCreated>(typeof(TEntity)))
             {

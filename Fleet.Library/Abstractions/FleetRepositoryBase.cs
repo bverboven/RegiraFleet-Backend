@@ -38,6 +38,7 @@ public abstract class FleetRepositoryBase<TEntity, TSearchObject, TSortBy, TIncl
         {
             query = query.FilterId(so.Id);
             query = query.FilterIds(so.Ids);
+            query = query.FilterExclude(so.Exclude);
 
             if (TypeUtility.ImplementsInterface<IHasCreated>(typeof(TEntity)))
             {

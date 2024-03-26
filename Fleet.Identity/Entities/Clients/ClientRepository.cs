@@ -9,6 +9,8 @@ public class ClientRepository(AccountsContext dbContext) : IdentityRepositoryBas
 {
     public override IQueryable<Client> Filter(IQueryable<Client> query, ClientSearchObject? so)
     {
+        query = base.Filter(query, so);
+
         if (so != null)
         {
             var qHelper = QKeywordHelper.Create();
