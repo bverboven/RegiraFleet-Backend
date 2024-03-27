@@ -1,6 +1,6 @@
 ﻿using static Regira.Fleet.Identity.DependencyInjection.ServiceCollectionExtensions;
 
-namespace Regira.CRM.Identity.Web.DependencyInjection;
+namespace Regira.Fleet.Identity.Web.DependencyInjection;
 
 public class FleetIdentityOptions : FleetAuthenticateOptions
 {

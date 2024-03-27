@@ -13,7 +13,7 @@ using Regira.Security.Authentication.Jwt.Services;
 using Regira.Web.Utilities;
 using System.Security.Claims;
 
-namespace Regira.CRM.Identity.Web.Controllers;
+namespace Regira.Fleet.Identity.Web.Controllers;
 
 [ApiController]
 [Route("auth")]

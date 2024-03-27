@@ -19,6 +19,11 @@ public class IdentityClientUserClaimsService(AccountsContext dbContext, IHttpCon
     public async Task Process(ClaimsIdentity identity)
     {
         var requestedClientId = httpContextAccessor.HttpContext?.Request.Query["clientId"].ToString();
+        if (string.IsNullOrWhiteSpace(requestedClientId))
+        {
+            // when refreshing token
+            requestedClientId = httpContextAccessor.HttpContext?.User.FindFirstValue(FleetClaimTypes.ClientId);
+        }
         var userId = identity.FindFirst(ClaimTypes.NameIdentifier)!.Value;
 
         var claims = await GetClaims(userId, requestedClientId);

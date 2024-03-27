@@ -7,7 +7,7 @@ using Regira.Security.Authentication.Jwt.Extensions;
 using Regira.Security.Encryption;
 using static Regira.Fleet.Identity.DependencyInjection.ServiceCollectionExtensions;
 
-namespace Regira.CRM.Identity.Web.DependencyInjection;
+namespace Regira.Fleet.Identity.Web.DependencyInjection;
 public static class ServiceCollectionExtensions
 {
     const string AUTH_SECRET = "ACA_FLEET_SECRET:F061E1B7-363F-40F3-B052-0EE536792551:5A296568-C287-412F-836B-8E29ACD93A6A";
