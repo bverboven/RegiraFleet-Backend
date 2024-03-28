@@ -7,7 +7,8 @@ using System.Security.Claims;
 
 namespace Regira.Fleet.Identity.Services;
 
-public class FleetUserClaimsPrincipalFactory(FleetUserIdentityManager userManager, RoleManager<IdentityRole> roleManager, IOptions<IdentityOptions> options, IEnumerable<IClientUserClaimsService> clientUserClaimsService)
+public class FleetUserClaimsPrincipalFactory(FleetUserIdentityManager userManager, RoleManager<IdentityRole> roleManager,
+    IOptions<IdentityOptions> options, IEnumerable<IClientUserClaimsService> clientUserClaimsService)
     : UserClaimsPrincipalFactory<FleetUser, IdentityRole>(userManager, roleManager, options)
 {
     protected override async Task<ClaimsIdentity> GenerateClaimsAsync(FleetUser user)

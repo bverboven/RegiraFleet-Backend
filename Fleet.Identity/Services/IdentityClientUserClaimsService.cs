@@ -18,13 +18,14 @@ public class IdentityClientUserClaimsService(AccountsContext dbContext, IHttpCon
 {
     public async Task Process(ClaimsIdentity identity)
     {
+        var userId = identity.FindFirst(ClaimTypes.NameIdentifier)!.Value;
+
         var requestedClientId = httpContextAccessor.HttpContext?.Request.Query["clientId"].ToString();
         if (string.IsNullOrWhiteSpace(requestedClientId))
         {
-            // when refreshing token
-            requestedClientId = httpContextAccessor.HttpContext?.User.FindFirstValue(FleetClaimTypes.ClientId);
+            var firstUserClient = await dbContext.Clients.FirstOrDefaultAsync(c => c.UserClaims!.Any(c => c.UserId == userId));
+            requestedClientId = firstUserClient?.Id;
         }
-        var userId = identity.FindFirst(ClaimTypes.NameIdentifier)!.Value;
 
         var claims = await GetClaims(userId, requestedClientId);
         if (!string.IsNullOrWhiteSpace(requestedClientId) && claims.Any(c => c.ClientId == requestedClientId))
