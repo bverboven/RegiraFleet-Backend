@@ -1,4 +1,4 @@
-﻿namespace Regira.Fleet.Admin.Api.Models;
+﻿namespace Regira.Fleet.Api.Models;
 
 public class UserToClientInputDto
 {

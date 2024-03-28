@@ -26,6 +26,7 @@ public static class ServiceCollectionExtensions
             .AddAuthorization(auth =>
             {
                 auth.AddPolicy(FleetPolicies.CanReadPolicy, o => o.RequireClaim(FleetClaimTypes.Permission, ClientPermissions.CanRead));
+                auth.AddPolicy(FleetPolicies.CanWritePolicy, o => o.RequireClaim(FleetClaimTypes.Permission, ClientPermissions.CanWrite));
                 auth.AddPolicy(FleetPolicies.AdminPolicy, o => o.RequireClaim(FleetClaimTypes.Permission, ClientPermissions.Administrator));
                 auth.AddPolicy(FleetPolicies.SuperUserPolicy, o =>
                 {

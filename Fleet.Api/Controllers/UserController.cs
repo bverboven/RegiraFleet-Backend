@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Regira.Fleet.Api.Models;
 using Regira.Fleet.Core.Constants;
@@ -90,5 +91,13 @@ public class UserController(UserManager<FleetUser> userManager) : ControllerBase
 
 
         return Ok();
+    }
+
+
+    [Authorize(FleetPolicies.AdminPolicy)]
+    [HttpPost]
+    public async Task<IActionResult> Create()
+    {
+        return Ok("ToDo");
     }
 }
