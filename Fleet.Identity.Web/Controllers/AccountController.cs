@@ -10,6 +10,7 @@ using Regira.Fleet.Identity.Services;
 using Regira.Fleet.Identity.Web.Models;
 using Regira.Security.Authentication.Jwt.Extensions;
 using Regira.Security.Authentication.Jwt.Services;
+using Regira.Utilities;
 using Regira.Web.Utilities;
 using System.Security.Claims;
 
@@ -17,39 +18,35 @@ namespace Regira.Fleet.Identity.Web.Controllers;
 
 [ApiController]
 [Route("auth")]
-public class AccountController(JwtTokenHelper _tokenHelper, FleetUserIdentityManager _userManager, IUserClaimsPrincipalFactory<FleetUser> _claimsFactory, ILogger<AccountController> _logger) : ControllerBase
+public class AccountController(JwtTokenHelper tokenHelper, FleetUserIdentityManager userManager, IUserClaimsPrincipalFactory<FleetUser> claimsFactory, ILogger<AccountController> logger) : ControllerBase
 {
     [AllowAnonymous]
     [HttpPost]
     [Route("", Name = RouteNames.Authenticate)]
-    public async Task<IActionResult> Authenticate([FromBody] AuthenticateInputDto model, [FromQuery] string clientApp, [FromQuery] string? clientId = null)
+    public async Task<IActionResult> Authenticate([FromBody] AuthenticateInputDto model, [FromQuery] string clientApp)
     {
         bool? isLockedOut = null;
         DateTimeOffset? lockedOutEnd = null;
 
-        var user = await _userManager.FindByNameAsync(model.Username!);
+        var user = await userManager.FindByNameAsync(model.Username!);
         if (user != null)
         {
-            isLockedOut = await _userManager.IsLockedOutAsync(user);
+            isLockedOut = await userManager.IsLockedOutAsync(user);
             if (isLockedOut == false)
             {
-                bool isAuthenticated = await _userManager.CheckPasswordAsync(user, model.Password ?? string.Empty);
+                bool isAuthenticated = await userManager.CheckPasswordAsync(user, model.Password ?? string.Empty);
                 if (isAuthenticated)
                 {
-                    var principal = await _claimsFactory.CreateAsync(user);
-                    // check if user is linked to correct client
-                    if (string.IsNullOrWhiteSpace(clientId) || principal.HasClaim(FleetClaimTypes.ClientId, clientId))
-                    {
-                        return Ok(CreateSuccessResponse(principal.Claims, clientApp));
-                    }
+                    var principal = await claimsFactory.CreateAsync(user);
+                    return Ok(CreateSuccessResponse(principal.Claims, clientApp));
                 }
                 // authentication failed
-                await _userManager.AccessFailedAsync(user);
+                await userManager.AccessFailedAsync(user);
             }
             else
             {
-                lockedOutEnd = await _userManager.GetLockoutEndDateAsync(user);
-                _logger.LogWarning($"User {user.Id} {Request.GetIPAddress()} locked out until {lockedOutEnd:HH:mm:ss}");
+                lockedOutEnd = await userManager.GetLockoutEndDateAsync(user);
+                logger.LogWarning($"User {user.Id} {Request.GetIPAddress()} locked out until {lockedOutEnd:HH:mm:ss}");
             }
         }
 
@@ -62,7 +59,7 @@ public class AccountController(JwtTokenHelper _tokenHelper, FleetUserIdentityMan
         if (User.Identity?.IsAuthenticated ?? false)
         {
             // check if user is valid
-            var exists = await _userManager.FindByIdAsync(User.FindUserId()!) != null;
+            var exists = await userManager.FindByIdAsync(User.FindUserId()!) != null;
             return exists ? NoContent() : Forbid();
         }
 
@@ -79,7 +76,7 @@ public class AccountController(JwtTokenHelper _tokenHelper, FleetUserIdentityMan
                 isAuthenticated = false
             });
         }
-        var user = await _userManager.FindByIdAsync(userId);
+        var user = await userManager.FindByIdAsync(userId);
         if (user == null)
         {
             return Unauthorized(new
@@ -87,7 +84,7 @@ public class AccountController(JwtTokenHelper _tokenHelper, FleetUserIdentityMan
                 isAuthenticated = false
             });
         }
-        var principal = await _claimsFactory.CreateAsync(user);
+        var principal = await claimsFactory.CreateAsync(user);
         return Ok(CreateSuccessResponse(principal.Claims, User.FindFirstValue("aud")!));
     }
 
@@ -95,12 +92,12 @@ public class AccountController(JwtTokenHelper _tokenHelper, FleetUserIdentityMan
     [HttpGet("personal-data")]
     public async Task<IActionResult> GetPersonalData()
     {
-        var user = await _userManager.FindByIdAsync(User.FindUserId()!);
+        var user = await userManager.FindByIdAsync(User.FindUserId()!);
         if (user == null)
         {
             return Unauthorized();
         }
-        var principal = await _claimsFactory.CreateAsync(user);
+        var principal = await claimsFactory.CreateAsync(user);
         var personalDataClaimTypes = new[]
         {
             JwtClaimTypes.GivenName, JwtClaimTypes.FamilyName
@@ -112,12 +109,12 @@ public class AccountController(JwtTokenHelper _tokenHelper, FleetUserIdentityMan
     [HttpGet("permissions")]
     public async Task<IActionResult> GetPermissions()
     {
-        var user = await _userManager.FindByIdAsync(User.FindUserId()!);
+        var user = await userManager.FindByIdAsync(User.FindUserId()!);
         if (user == null)
         {
             return Unauthorized();
         }
-        var principal = await _claimsFactory.CreateAsync(user);
+        var principal = await claimsFactory.CreateAsync(user);
         var permissions = principal.Claims.Where(c => c.Type == ClientClaimTypes.Permission).Select(c => c.Value);
         return Ok(permissions);
     }
@@ -134,7 +131,7 @@ public class AccountController(JwtTokenHelper _tokenHelper, FleetUserIdentityMan
     }
     protected AuthenticateResponseDto CreateSuccessResponse(IEnumerable<Claim> claims, string? audience = null)
     {
-        var token = _tokenHelper.Create(claims, audience);
+        var token = tokenHelper.Create(claims, audience);
         return new AuthenticateResponseDto
         {
             IsAuthenticated = true,

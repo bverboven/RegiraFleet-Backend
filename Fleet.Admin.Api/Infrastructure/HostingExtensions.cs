@@ -10,6 +10,7 @@ using Regira.Fleet.Identity.DependencyInjection;
 using Regira.Fleet.Identity.Entities;
 using Regira.Fleet.Identity.Web.DependencyInjection;
 using Regira.IO.Storage.FileSystem;
+using Regira.Office.Mail.SendGrid;
 using Regira.Security.Abstractions;
 using Regira.Security.Encryption;
 using Regira.Serializing.Abstractions;
@@ -91,15 +92,15 @@ public static class HostingExtensions
     public static IServiceCollection AddServices(this IServiceCollection services, IConfiguration config)
     {
         services
-            .AddClientAdmin(c =>
+            .AddClientAdmin(o =>
             {
                 var dataDirectory = config["Data:Directory"];
-                c.ConnectionString = config["ConnectionStrings:FleetAccounts"];
+                o.ConnectionString = config["ConnectionStrings:FleetAccounts"];
                 var fsConfig = new BinaryFileService.FileServiceOptions
                 {
                     RootFolder = dataDirectory!
                 };
-                c.ConfigureStorageService(_ => new BinaryFileService(fsConfig));
+                o.ConfigureStorageService(_ => new BinaryFileService(fsConfig));
             });
 
         return services;
@@ -113,6 +114,12 @@ public static class HostingExtensions
                 var options = config.GetSection("Identity").Get<FleetIdentityOptions>()!;
                 o.SecretKey = options.SecretKey;
                 o.Audiences.AddRange(options.Audiences);
+                o.AddMailer(_ =>
+                {
+                    var key = config[$"SendGrid:Key"];
+                    ArgumentException.ThrowIfNullOrWhiteSpace(key, "SendGrid API key");
+                    return new SendGridMailer(new SendGridConfig { Key = key });
+                });
             });
 
         services.AddSingleton<IAuthorizationHandler, SuperUserRequirementHandler>();

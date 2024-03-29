@@ -58,8 +58,9 @@ public class AccountsContext : IdentityDbContext<FleetUser, IdentityRole, string
                 .WithOne()
                 .HasForeignKey(e => e.UserId);
             entity.HasMany(e => e.ClientClaims)
-                .WithOne()
-                .HasForeignKey(e => e.UserId);
+                .WithOne(e => e.User)
+                .HasForeignKey(e => e.UserId)
+                .HasPrincipalKey(e => e.Id);
         });
         builder.Entity<IdentityUserClaim<string>>(entity =>
         {

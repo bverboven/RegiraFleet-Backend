@@ -42,7 +42,7 @@ public class PasswordController(FleetUserIdentityManager userManager, ISerialize
         if (user != null)
         {
             var resetToken = await userManager.GeneratePasswordResetTokenAsync(user);
-            var token = serializer.Serialize(new ForgotPasswordModel { Token = resetToken, Username = user.UserName! }).Base64Encode();
+            var token = serializer.Serialize(new UserTokenModel { Token = resetToken, Username = user.UserName! }).Base64Encode();
             var resetUri = new UriBuilder(model.SiteUrl)
             {
                 Query = $"?token={token}"
@@ -61,9 +61,9 @@ Token: {token}
 
     [AllowAnonymous]
     [HttpPost("reset")]
-    public async Task<IActionResult> ResetPassword([FromBody] ResetPasswordModel input)
+    public async Task<IActionResult> ResetPassword([FromBody] ResetPasswordInput input)
     {
-        var tokenModel = serializer.Deserialize<ForgotPasswordModel>(input.Token.Base64Decode())!;
+        var tokenModel = serializer.Deserialize<UserTokenModel>(input.Token.Base64Decode())!;
         var user = await userManager.FindByNameAsync(tokenModel.Username);
         if (user != null)
         {

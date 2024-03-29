@@ -25,7 +25,6 @@ using Regira.Normalizing;
 using Regira.Normalizing.Abstractions;
 using Regira.Normalizing.Models;
 using Regira.Office.Mail.Abstractions;
-using Regira.Security.Authentication.Mail;
 
 namespace Regira.Fleet.Identity.DependencyInjection;
 
@@ -172,7 +171,7 @@ public static class ServiceCollectionExtensions
         if (options.MailerFactory != null)
         {
             services.AddTransient(options.MailerFactory);
-            services.AddTransient<IEmailSender, IdentityMailer>();
+            services.AddTransient<IEmailSender, Services.IdentityMailer>();
         }
 
         return builder;

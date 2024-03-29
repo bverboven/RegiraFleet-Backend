@@ -19,38 +19,30 @@ public class IdentityClientUserClaimsService(AccountsContext dbContext, IHttpCon
     public async Task Process(ClaimsIdentity identity)
     {
         var userId = identity.FindFirst(ClaimTypes.NameIdentifier)!.Value;
-
         var requestedClientId = httpContextAccessor.HttpContext?.Request.Query["clientId"].ToString();
-        if (string.IsNullOrWhiteSpace(requestedClientId))
-        {
-            var firstUserClient = await dbContext.Clients.FirstOrDefaultAsync(c => c.UserClaims!.Any(c => c.UserId == userId));
-            requestedClientId = firstUserClient?.Id;
-        }
 
-        var claims = await GetClaims(userId, requestedClientId);
-        if (!string.IsNullOrWhiteSpace(requestedClientId) && claims.Any(c => c.ClientId == requestedClientId))
+        var allClaims = await GetClientClaims(userId);
+        var clientClaims = allClaims.FindAll(x => x.ClientId == requestedClientId);
+        if (!clientClaims.Any())
         {
-            identity.AddClaim(new Claim(FleetClaimTypes.ClientId, requestedClientId));
+            // return claims for first client if requestedclient is not present
+            clientClaims = allClaims
+                .GroupBy(x => x.ClientId)
+                .SelectMany(x => x.ToList())
+                .ToList();
         }
-        foreach (var claim in claims)
+        if (clientClaims.Any())
+        {
+            identity.AddClaim(new Claim(FleetClaimTypes.ClientId, clientClaims.First().ClientId));
+        }
+        foreach (var claim in clientClaims)
         {
             identity.AddClaim(new Claim(claim.ClaimType, claim.ClaimValue ?? string.Empty));
         }
-
-        // remove unused clientIds from IdentityClaims
-        //var clientClaimsToRemove = identity.Claims
-        //    .Where(c => c.Type == FleetClaimTypes.ClientId && c.Value != requestedClientId)
-        //    .ToArray();
-        //foreach (var claim in clientClaimsToRemove)
-        //{
-        //    identity.RemoveClaim(claim);
-        //}
     }
 
-    Task<List<ClientUserClaim>> GetClaims(string userId, string? clientId)
-        => dbContext.Clients
-            .Where(c => c.Id == clientId)
-            .SelectMany(c => c.UserClaims!.Where(uc => uc.UserId == userId))
-            .AsNoTrackingWithIdentityResolution()
+    Task<List<ClientUserClaim>> GetClientClaims(string userId)
+        => dbContext.ClientUserClaims
+            .Where(u => u.UserId == userId)
             .ToListAsync();
 }

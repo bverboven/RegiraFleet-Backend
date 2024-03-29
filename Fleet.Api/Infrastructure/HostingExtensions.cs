@@ -11,6 +11,7 @@ using Regira.Fleet.Identity.Web.Middleware;
 using Regira.Fleet.Statistics;
 using Regira.IO.Storage.FileSystem;
 using Regira.Office.Excel.Abstractions;
+using Regira.Office.Mail.SendGrid;
 using Regira.Security.Abstractions;
 using Regira.Security.Encryption;
 using Regira.Serializing.Abstractions;
@@ -65,8 +66,8 @@ public static class HostingExtensions
                         .AllowAnyHeader()
                         .AllowAnyMethod()
                         .AllowAnyOrigin()
-                        //.AllowCredentials()
-                        //.WithMethods("GET", "PUT", "POST", "DELETE", "OPTIONS")
+                    //.AllowCredentials()
+                    //.WithMethods("GET", "PUT", "POST", "DELETE", "OPTIONS")
                     )
             )
             // Swagger (with auth)
@@ -109,6 +110,12 @@ public static class HostingExtensions
                 var options = config.GetSection("Identity").Get<FleetIdentityOptions>()!;
                 o.SecretKey = options.SecretKey;
                 o.Audiences.AddRange(options.Audiences);
+                o.AddMailer(_ =>
+                {
+                    var key = config[$"SendGrid:Key"];
+                    ArgumentException.ThrowIfNullOrWhiteSpace(key, "SendGrid API key");
+                    return new SendGridMailer(new SendGridConfig { Key = key });
+                });
             });
 
         return services;

@@ -19,4 +19,5 @@ public class ClientUserClaim : IEntityWithSerial, IHasClientId, IHasUserId
     public DateTime Created { get; set; } = DateTime.Now;
 
     public Client? Client { get; set; }
+    public FleetUser? User { get; set; }
 }
