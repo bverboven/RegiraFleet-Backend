@@ -12,7 +12,12 @@ public class IdentityProfile : Profile
 {
     public IdentityProfile()
     {
-        CreateMap<FleetUser, FleetUserModel>().ReverseMap();
+        CreateMap<FleetUser, FleetUserModel>()
+            .AfterMap((item, model) =>
+            {
+                model.IsEmailConfirmed = item.EmailConfirmed;
+            })
+            .ReverseMap();
         CreateMap<ClientUserClaim, ClientUserClaimDto>().ReverseMap();
         CreateMap<FleetUserModel, FleetUserDto>()
             .ForMember(e => e.UserClaims, e => e.Ignore())

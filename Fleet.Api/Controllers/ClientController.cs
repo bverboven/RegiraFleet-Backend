@@ -38,21 +38,4 @@ public class ClientController(AccountsContext dbContext) : ControllerBase
         });
         return Ok(models);
     }
-
-    [Authorize(FleetPolicies.AdminPolicy)]
-    [HttpGet("users")]
-    public async Task<IActionResult> ListClientUsers()
-    {
-        var clientId = User.FindFirstValue(FleetClaimTypes.ClientId);
-        var items = await dbContext.Users
-            .Where(u => u.ClientClaims!.Any(x => x.ClientId == clientId))
-            .ToListAsync();
-        var models = items.Select(x => new
-        {
-            x.Id,
-            x.Email,
-            x.UserClaims
-        });
-        return Ok(models);
-    }
 }

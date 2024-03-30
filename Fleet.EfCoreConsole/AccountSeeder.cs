@@ -1,7 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Regira.DAL.EFcore.Normalizing;
-using Regira.Entities.Abstractions;
 using Regira.Entities.EFcore.Extensions;
 using Regira.Fleet.Core.Constants;
 using Regira.Fleet.Identity.Data;
@@ -29,10 +28,10 @@ public class AccountSeeder(FleetUserIdentityManager userManager, RoleManager<Ide
         foreach (var client in clients)
         {
             var permissions = new Dictionary<string, string[]>{
-                { "read" ,  new[] { ClientPermissions.CanRead } },
-                { "write" ,  new[] { ClientPermissions.CanRead, ClientPermissions.CanWrite } },
-                { "admin" ,  new[] { ClientPermissions.Administrator, ClientPermissions.CanRead, ClientPermissions.CanWrite } }
-            };
+                    { "read" ,  new[] { ClientPermissions.CanRead } },
+                    { "write" ,  new[] { ClientPermissions.CanRead, ClientPermissions.CanWrite } },
+                    { "admin" ,  new[] { ClientPermissions.Administrator, ClientPermissions.CanRead, ClientPermissions.CanWrite } }
+                };
             foreach (var permission in permissions)
             {
                 var username = $"{client.Code}_{permission.Key}".ToLower();

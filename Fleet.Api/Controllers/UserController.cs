@@ -18,7 +18,7 @@ using System.Security.Claims;
 namespace Regira.Fleet.Api.Controllers;
 
 [ApiController]
-[Route("user")]
+[Route("users")]
 public class UserController(UserManager<FleetUser> userManager, AccountsContext dbContext, ISerializer serializer, IClientContext clientContext) : ControllerBase
 {
     static string[] ALLOWED_PERMISSIONS = { ClientPermissions.CanRead, ClientPermissions.CanWrite };
@@ -105,19 +105,42 @@ public class UserController(UserManager<FleetUser> userManager, AccountsContext 
     }
 
 
+
+    [Authorize(FleetPolicies.AdminPolicy)]
+    [HttpGet]
+    public async Task<IActionResult> ListClientUsers()
+    {
+        var clientId = User.FindFirstValue(FleetClaimTypes.ClientId);
+        var items = await dbContext.Users
+            .Include(u => u.UserClaims)
+            .Include(u => u.ClientClaims!.Where(x => x.ClientId == clientId))
+            .Where(u => u.ClientClaims!.Any(x => x.ClientId == clientId))
+            .AsNoTrackingWithIdentityResolution()
+            .ToListAsync();
+
+        var models = items
+            .Select(x => new ClientUserDto
+            {
+                Id = x.Id,
+                Email = x.Email!,
+                IsEmailConfirmed = x.EmailConfirmed,
+                HasPassword = !string.IsNullOrWhiteSpace(x.PasswordHash),
+                DisplayName = $"{x.UserClaims!.FirstOrDefault(c => c.ClaimType == FleetClaimTypes.GivenName)?.ClaimValue} {x.UserClaims!.FirstOrDefault(c => c.ClaimType == FleetClaimTypes.LastName)?.ClaimValue}".Trim(),
+                Permissions = x.ClientClaims!
+                    .Where(x => x.ClientId == clientId)
+                    .Select(c => c.ClaimValue)
+                    .ToList()!
+            });
+
+        return Ok(models);
+    }
+
     [Authorize(FleetPolicies.AdminPolicy)]
     [HttpPost]
-    public async Task<IActionResult> Create(ClientUserInputDto model, [FromServices] IEmailSender mailer)
+    public async Task<IActionResult> Save(ClientUserInputDto model, [FromServices] IEmailSender mailer)
     {
-        var tempToken = "";
-
         var user = await userManager.FindByNameAsync(model.Email);
-        var clientClaims = new List<ClientUserClaim>();
-        if (user != null)
-        {
-            clientClaims = await dbContext.ClientUserClaims.Where(x => x.ClientId == clientContext.ClientId && x.UserId == user.Id).ToListAsync();
-        }
-        else
+        if (user == null)
         {
             user = new FleetUser { UserName = model.Email, Email = model.Email, Culture = model.Culture };
             var response = await userManager.CreateAsync(user);
@@ -139,38 +162,12 @@ Please follow link below to confirm email:
 
 Token: {token}
 ";
-            await mailer.SendEmailAsync(model.Email, "Welcome", body);
-
-            tempToken = token;
+            await mailer.SendEmailAsync(model.Email, "Welcome at Regira Fleetmanager", body);
         }
 
-        var permissions = clientClaims.Select(x => x.ClaimValue).ToArray();
+        await SaveClientClaims(user, model.Permissions);
 
-        var claimsToAdd = new List<ClientUserClaim>();
-        if (model.Permissions?.Any() == true)
-        {
-            foreach (var permission in model.Permissions)
-            {
-                if (!permissions.Contains(permission))
-                {
-                    claimsToAdd.Add(new ClientUserClaim { ClientId = clientContext.ClientId!, UserId = user.Id, ClaimType = FleetClaimTypes.Permission, ClaimValue = permission });
-                }
-            }
-            // filter claims to prevent adding unauthorized claims (like Admin)
-            claimsToAdd = claimsToAdd.FindAll(c => ALLOWED_PERMISSIONS.Contains(c.ClaimValue));
-            if (claimsToAdd.Any())
-            {
-                dbContext.AddRange(claimsToAdd);
-            }
-            var claimsToRemove = clientClaims.Where(c => model.Permissions.All(p => p != c.ClaimValue));
-            if (claimsToRemove.Any())
-            {
-                dbContext.RemoveRange(claimsToRemove);
-            }
-            await dbContext.SaveChangesAsync();
-        }
-
-        return Ok(tempToken);
+        return Ok();
     }
 
 
@@ -190,7 +187,7 @@ Token: {token}
                 return BadRequest(ModelState);
             }
             // Add password
-            if (!string.IsNullOrWhiteSpace(model.Password))
+            if (string.IsNullOrWhiteSpace(user.PasswordHash) && !string.IsNullOrWhiteSpace(model.Password))
             {
                 var pwdResponse = await userManager.AddPasswordAsync(user, model.Password);
                 if (!pwdResponse.Succeeded)
@@ -201,5 +198,69 @@ Token: {token}
             }
         }
         return Ok();
+    }
+
+    [HttpPost("send-confirm-email")]
+    public async Task<IActionResult> RequestConfirmEmail(RequestConfirmEmailInput input, [FromServices] IEmailSender mailer)
+    {
+        var user = await userManager.FindByNameAsync(input.Email);
+        if (user != null)
+        {
+            var confirmToken = await userManager.GenerateEmailConfirmationTokenAsync(user);
+            var token = serializer.Serialize(new UserTokenModel { Token = confirmToken, Username = user.UserName! }).Base64Encode();
+
+            var confirmationUri = new UriBuilder(input.SiteUrl)
+            {
+                Query = $"?token={token}"
+            };
+            var body = $@"Welcome {user.UserName}, 
+Please follow link below to confirm email:
+{confirmationUri.Uri}
+
+Token: {token}
+";
+            await mailer.SendEmailAsync(input.Email, "Please confirm your email address", body);
+        }
+        return Ok();
+    }
+
+    protected async Task SaveClientClaims(FleetUser user, ICollection<string>? inputPermissions)
+    {
+        var currentClaims = await dbContext.ClientUserClaims
+            .Where(x => x.ClientId == clientContext.ClientId && x.UserId == user.Id)
+            .ToListAsync();
+        var currentPermissions = currentClaims
+            .Select(x => x.ClaimValue)
+            .ToArray();
+
+        var claimsToAdd = new List<ClientUserClaim>();
+        if (inputPermissions?.Any() == true)
+        {
+            foreach (var permission in inputPermissions)
+            {
+                if (!currentPermissions.Contains(permission))
+                {
+                    claimsToAdd.Add(new ClientUserClaim
+                    {
+                        ClientId = clientContext.ClientId!,
+                        UserId = user.Id,
+                        ClaimType = FleetClaimTypes.Permission,
+                        ClaimValue = permission
+                    });
+                }
+            }
+            // filter claims to prevent adding unauthorized claims (like Admin)
+            claimsToAdd = claimsToAdd.FindAll(c => ALLOWED_PERMISSIONS.Contains(c.ClaimValue));
+            if (claimsToAdd.Any())
+            {
+                dbContext.AddRange(claimsToAdd);
+            }
+            var claimsToRemove = currentClaims.Where(c => inputPermissions.All(p => p != c.ClaimValue));
+            if (claimsToRemove.Any())
+            {
+                dbContext.RemoveRange(claimsToRemove);
+            }
+            await dbContext.SaveChangesAsync();
+        }
     }
 }
