@@ -9,8 +9,7 @@ public class ClientUserInputDto
     public string Email { get; set; } = null!;
     [MaxLength(8)]
     public string? Culture { get; set; }
-    [Required]
-    public string SiteUrl { get; set; } = null!;
+    public string? SiteUrl { get; set; }
 
     public ICollection<string>? Permissions { get; set; }
 }

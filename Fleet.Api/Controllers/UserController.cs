@@ -152,6 +152,11 @@ public class UserController(UserManager<FleetUser> userManager, AccountsContext 
             }
             var confirmToken = await userManager.GenerateEmailConfirmationTokenAsync(user);
             var token = serializer.Serialize(new UserTokenModel { Token = confirmToken, Username = user.UserName! }).Base64Encode();
+            if (string.IsNullOrWhiteSpace(model.SiteUrl))
+            {
+                ModelState.AddModelError(nameof(model.SiteUrl), "Required for new user");
+                return BadRequest(ModelState);
+            }
             var confirmationUri = new UriBuilder(model.SiteUrl)
             {
                 Query = $"?token={token}"
@@ -234,7 +239,7 @@ Token: {token}
             .ToArray();
 
         var claimsToAdd = new List<ClientUserClaim>();
-        if (inputPermissions?.Any() == true)
+        if (inputPermissions != null)
         {
             foreach (var permission in inputPermissions)
             {
