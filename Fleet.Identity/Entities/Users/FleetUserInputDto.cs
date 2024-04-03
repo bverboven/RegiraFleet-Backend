@@ -13,9 +13,9 @@ public class FleetUserInputDto
     [Required]
     [MaxLength(256)]
     public string Email { get; set; } = null!;
-    [MaxLength(256)]
+    [MaxLength(64)]
     public string? GivenName { get; set; }
-    [MaxLength(256)]
+    [MaxLength(64)]
     public string? LastName { get; set; }
     [MaxLength(8)]
     public string? Culture { get; set; }

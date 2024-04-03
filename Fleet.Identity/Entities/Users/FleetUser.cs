@@ -10,6 +10,12 @@ namespace Regira.Fleet.Identity.Entities.Users;
 public class FleetUser : IdentityUser, IEntity<string>
 {
     [PersonalData]
+    [MaxLength(64)]
+    public string? GivenName { get; set; }
+    [PersonalData]
+    [MaxLength(64)]
+    public string? LastName { get; set; }
+    [PersonalData]
     [MaxLength(8)]
     public string? Culture { get; set; }
 

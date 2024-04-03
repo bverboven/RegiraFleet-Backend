@@ -11,6 +11,9 @@ public class FleetUserModel : IEntity<string>
     public string UserName { get; set; } = null!;
     public string Email { get; set; } = null!;
     public bool IsEmailConfirmed { get; set; }
+
+    public string? GivenName { get; set; }
+    public string? LastName { get; set; }
     public string? Culture { get; set; }
 
     public string? CurrentPassword { get; set; }

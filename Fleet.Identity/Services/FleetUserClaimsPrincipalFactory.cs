@@ -21,7 +21,7 @@ public class FleetUserClaimsPrincipalFactory(FleetUserIdentityManager userManage
             identity.AddClaim(new Claim(FleetClaimTypes.Culture, user.Culture));
         }
 
-        var displayName = $"{identity.FindFirst(FleetClaimTypes.GivenName)?.Value} {identity.FindFirst(FleetClaimTypes.LastName)?.Value}".Trim();
+        var displayName = $"{user.GivenName} {user.LastName}".Trim();
         if (!string.IsNullOrWhiteSpace(displayName))
         {
             identity.AddClaim(new Claim(FleetClaimTypes.DisplayName, $"{displayName}"));
@@ -32,12 +32,6 @@ public class FleetUserClaimsPrincipalFactory(FleetUserIdentityManager userManage
         {
             identity.AddClaim(new Claim(FleetClaimTypes.Permission, FleetClaimTypes.SuperUser));
         }
-
-        // ui_culture
-        //if (!string.IsNullOrWhiteSpace(user.UICulture))
-        //{
-        //    identity.AddClaim(new Claim(FleetClaimTypes.UICulture, user.UICulture));
-        //}
 
         foreach (var claimService in clientUserClaimsService)
         {

@@ -1,6 +1,5 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Identity;
-using Regira.Fleet.Core.Constants;
 using Regira.Fleet.Identity.Entities.Clients;
 using Regira.Fleet.Identity.Entities.Clients.Subscriptions;
 using Regira.Fleet.Identity.Entities.Users;
@@ -25,8 +24,8 @@ public class IdentityProfile : Profile
             {
                 dto.Clients = ctx.Mapper.Map<List<ClientDto>>(model.Clients);
                 dto.UserClaims = model.UserClaims?.Select(x => new UserClaimDto { Id = x.Id, ClaimType = x.ClaimType!, ClaimValue = x.ClaimValue }).ToList();
-                dto.GivenName = dto.UserClaims?.FirstOrDefault(c => c.ClaimType == FleetClaimTypes.GivenName)?.ClaimValue;
-                dto.LastName = dto.UserClaims?.FirstOrDefault(c => c.ClaimType == FleetClaimTypes.LastName)?.ClaimValue;
+                //dto.GivenName = dto.UserClaims?.FirstOrDefault(c => c.ClaimType == FleetClaimTypes.GivenName)?.ClaimValue;
+                //dto.LastName = dto.UserClaims?.FirstOrDefault(c => c.ClaimType == FleetClaimTypes.LastName)?.ClaimValue;
             });
         CreateMap<FleetUserInputDto, FleetUserModel>()
             .ForMember(e => e.UserClaims, e => e.Ignore())
@@ -36,30 +35,30 @@ public class IdentityProfile : Profile
                 if (dto.UserClaims != null)
                 {
                     var userClaims = dto.UserClaims.Select(x => new IdentityUserClaim<string> { Id = x.Id, ClaimType = x.ClaimType!, ClaimValue = x.ClaimValue }).ToList();
-                    if (!string.IsNullOrWhiteSpace(dto.GivenName))
-                    {
-                        var claim = userClaims.FirstOrDefault(c => c.ClaimType == FleetClaimTypes.GivenName);
-                        if (claim != null)
-                        {
-                            claim.ClaimValue = dto.GivenName;
-                        }
-                        else
-                        {
-                            userClaims.Add(new IdentityUserClaim<string> { ClaimType = FleetClaimTypes.GivenName, ClaimValue = dto.GivenName });
-                        }
-                    }
-                    if (!string.IsNullOrWhiteSpace(dto.LastName))
-                    {
-                        var claim = userClaims.FirstOrDefault(c => c.ClaimType == FleetClaimTypes.LastName);
-                        if (claim != null)
-                        {
-                            claim.ClaimValue = dto.LastName;
-                        }
-                        else
-                        {
-                            userClaims.Add(new IdentityUserClaim<string> { ClaimType = FleetClaimTypes.LastName, ClaimValue = dto.LastName });
-                        }
-                    }
+                    //if (!string.IsNullOrWhiteSpace(dto.GivenName))
+                    //{
+                    //    var claim = userClaims.FirstOrDefault(c => c.ClaimType == FleetClaimTypes.GivenName);
+                    //    if (claim != null)
+                    //    {
+                    //        claim.ClaimValue = dto.GivenName;
+                    //    }
+                    //    else
+                    //    {
+                    //        userClaims.Add(new IdentityUserClaim<string> { ClaimType = FleetClaimTypes.GivenName, ClaimValue = dto.GivenName });
+                    //    }
+                    //}
+                    //if (!string.IsNullOrWhiteSpace(dto.LastName))
+                    //{
+                    //    var claim = userClaims.FirstOrDefault(c => c.ClaimType == FleetClaimTypes.LastName);
+                    //    if (claim != null)
+                    //    {
+                    //        claim.ClaimValue = dto.LastName;
+                    //    }
+                    //    else
+                    //    {
+                    //        userClaims.Add(new IdentityUserClaim<string> { ClaimType = FleetClaimTypes.LastName, ClaimValue = dto.LastName });
+                    //    }
+                    //}
                     model.UserClaims = userClaims;
                 }
                 if (dto.ClientClaims != null)
