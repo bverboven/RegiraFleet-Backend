@@ -3,9 +3,9 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Regira.Fleet.Core.Constants;
 using Regira.Fleet.Identity.Authorization;
+using Regira.Fleet.Identity.DependencyInjection;
 using Regira.Security.Authentication.Jwt.Extensions;
 using Regira.Security.Encryption;
-using static Regira.Fleet.Identity.DependencyInjection.ServiceCollectionExtensions;
 
 namespace Regira.Fleet.Identity.Web.DependencyInjection;
 public static class ServiceCollectionExtensions

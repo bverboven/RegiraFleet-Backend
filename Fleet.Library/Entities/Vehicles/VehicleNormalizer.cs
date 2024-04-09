@@ -1,10 +1,11 @@
 ﻿using Regira.Fleet.Core.Normalizing;
 using Regira.Fleet.Data;
+using Regira.Fleet.Models.Vehicles;
 using Regira.Normalizing.Abstractions;
 
 namespace Regira.Fleet.Entities.Vehicles;
 
-public class VehicleNormalizer(INormalizer normalizer, FleetContext dbContext) : FleetEntityNormalizer<Vehicle>(normalizer)
+public class VehicleNormalizer(INormalizer normalizer, FleetContextBase dbContext) : FleetEntityNormalizer<Vehicle>(normalizer)
 {
     public override void HandleNormalize(Vehicle? item)
     {

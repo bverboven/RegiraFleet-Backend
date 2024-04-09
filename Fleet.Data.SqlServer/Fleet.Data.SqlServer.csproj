@@ -1,0 +1,19 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net8.0</TargetFramework>
+        <RootNamespace>Regira.Fleet.Data.SqlServer</RootNamespace>
+        <AssemblyName>Regira.Fleet.Data.SqlServer</AssemblyName>
+        <Authors>B.Verboven</Authors>
+        <Company>Regira</Company>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\Fleet.Data.Core\Fleet.Data.Core.csproj" />
+        <PackageReference Include="EFCore.NamingConventions" Version="8.0.3" />
+        <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="8.0.3" />
+    </ItemGroup>
+
+</Project>

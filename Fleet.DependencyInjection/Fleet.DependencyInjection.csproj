@@ -1,0 +1,24 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net8.0</TargetFramework>
+        <RootNamespace>Regira.Fleet.DependencyInjection</RootNamespace>
+        <AssemblyName>Regira.Fleet.DependencyInjection</AssemblyName>
+        <Authors>B.Verboven</Authors>
+        <Company>Regira</Company>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <PackageReference Include="Regira.Entities.DependencyInjection" Version="4.0.8" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\Fleet.Data.MySQL\Fleet.Data.MySQL.csproj" />
+        <ProjectReference Include="..\Fleet.Data.PostgreSQL\Fleet.Data.PostgreSQL.csproj" />
+        <ProjectReference Include="..\Fleet.Data.SqlServer\Fleet.Data.SqlServer.csproj" />
+        <ProjectReference Include="..\Fleet.Library\Fleet.Library.csproj" />
+    </ItemGroup>
+
+</Project>

@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Regira.Fleet.Core.Constants;
-using Regira.Fleet.Identity.Entities.Users;
+using Regira.Fleet.Identity.Models.Users;
 using Regira.Fleet.Identity.Services;
 using Regira.Fleet.Identity.Web.Models;
 using Regira.Security.Authentication.Jwt.Extensions;

@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Regira.Entities.Web.Controllers.Abstractions;
-using Regira.Fleet.Entities.InterventionTypes;
+using Regira.Fleet.Models.InterventionTypes;
 
 namespace Regira.Fleet.Manager.Api.Controllers;
 

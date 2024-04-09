@@ -13,23 +13,16 @@
     <ItemGroup>
         <PackageReference Include="AutoMapper" Version="13.0.1" />
         <PackageReference Include="Dapper" Version="2.1.35" />
-        <PackageReference Include="EFCore.NamingConventions" Version="8.0.3" />
-        <PackageReference Include="Pomelo.EntityFrameworkCore.MySql" Version="8.0.2" />
-        <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="8.0.2" />
     </ItemGroup>
 
     <ItemGroup>
-        <PackageReference Include="Regira.DAL.EFcore" Version="4.0.4" />
-        <PackageReference Include="Regira.Entities.DependencyInjection" Version="4.0.8" />
         <PackageReference Include="Regira.Globalization.LibPhoneNumber" Version="4.0.4" />
     </ItemGroup>
 
     <ItemGroup>
         <ProjectReference Include="..\Fleet.Core\Fleet.Core.csproj" />
-    </ItemGroup>
-
-    <ItemGroup>
-        <Folder Include="Migrations\" />
+        <ProjectReference Include="..\Fleet.Data.Core\Fleet.Data.Core.csproj" />
+        <ProjectReference Include="..\Fleet.Models\Fleet.Models.csproj" />
     </ItemGroup>
 
 </Project>

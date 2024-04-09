@@ -5,10 +5,11 @@ using Regira.Fleet.Abstractions;
 using Regira.Fleet.Core.Abstractions;
 using Regira.Fleet.Data;
 using Regira.Fleet.Extensions;
+using Regira.Fleet.Models.Interventions;
 
 namespace Regira.Fleet.Entities.Interventions;
 
-public class InterventionRepository(FleetContext dbContext, IFleetAppContext appContext) : FleetRepositoryBase<Intervention, InterventionSearchObject, InterventionSortBy, InterventionIncludes>(dbContext, appContext)
+public class InterventionRepository(FleetContextBase dbContext, IFleetAppContext appContext) : FleetRepositoryBase<Intervention, InterventionSearchObject, InterventionSortBy, InterventionIncludes>(dbContext, appContext)
 {
     public override IQueryable<Intervention> Filter(IQueryable<Intervention> query, InterventionSearchObject? so)
     {
@@ -54,7 +55,7 @@ public class InterventionRepository(FleetContext dbContext, IFleetAppContext app
                 query = query.Where(x => so.MaxDate >= x.InterventionDate);
             }
             // Q
-            query = query.FilterILikeQ(qHelper.Parse(so.Q));
+            query = dbContext.FilterILikeQ(query, qHelper.Parse(so.Q));
         }
 
         return query;

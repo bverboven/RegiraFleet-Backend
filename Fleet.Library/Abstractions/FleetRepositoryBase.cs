@@ -10,12 +10,12 @@ using Regira.Utilities;
 
 namespace Regira.Fleet.Abstractions;
 
-public abstract class FleetRepositoryBase<TEntity, TSearchObject>(FleetContext dbContext, IFleetAppContext appContext)
+public abstract class FleetRepositoryBase<TEntity, TSearchObject>(FleetContextBase dbContext, IFleetAppContext appContext)
     : FleetRepositoryBase<TEntity, TSearchObject, EntitySortBy, EntityIncludes>(dbContext, appContext)
     where TEntity : class, IEntity<int>, new()
     where TSearchObject : class, ISearchObject, new();
-public abstract class FleetRepositoryBase<TEntity, TSearchObject, TSortBy, TInclude>(FleetContext dbContext, IFleetAppContext appContext)
-    : EntityRepositoryBase<FleetContext, TEntity, TSearchObject, TSortBy, TInclude>(dbContext)
+public abstract class FleetRepositoryBase<TEntity, TSearchObject, TSortBy, TInclude>(FleetContextBase dbContext, IFleetAppContext appContext)
+    : EntityRepositoryBase<FleetContextBase, TEntity, TSearchObject, TSortBy, TInclude>(dbContext)
     where TEntity : class, IEntity<int>, new()
     where TSearchObject : class, ISearchObject, new()
     where TSortBy : struct, Enum

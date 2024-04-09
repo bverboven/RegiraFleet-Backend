@@ -4,25 +4,31 @@ using Regira.DAL.EFcore.Normalizing;
 using Regira.Entities.EFcore.Extensions;
 using Regira.Fleet.Core.Constants;
 using Regira.Fleet.Identity.Data;
-using Regira.Fleet.Identity.Entities.Clients;
-using Regira.Fleet.Identity.Entities.Users;
-using Regira.Fleet.Identity.Entities.Users.Claims;
+using Regira.Fleet.Identity.Models.Clients;
+using Regira.Fleet.Identity.Models.Users;
+using Regira.Fleet.Identity.Models.Users.Claims;
 using Regira.Fleet.Identity.Services;
 using Regira.Utilities;
 
 namespace DemoData.Console;
 
-public class AccountSeeder(FleetUserIdentityManager userManager, RoleManager<IdentityRole> roleManager, AccountsContext accountsContext)
+public class AccountSeeder(FleetUserIdentityManager userManager, RoleManager<IdentityRole> roleManager, AccountsContextBase accountsContext)
 {
     public async Task<IList<Client>> Seed()
     {
+        IList<Client> clients = await accountsContext.Clients.ToListAsync();
+        if (clients.Any())
+        {
+            return clients;
+        }
+
         // SuperUser
         var superUser = new FleetUser { UserName = "admin", Email = "admin@regira.com", Culture = "nl-BE" };
         await userManager.CreateAsync(superUser, "admin");
         await roleManager.CreateAsync(new IdentityRole(FleetClaimTypes.SuperUser));
         await userManager.AddToRoleAsync(superUser, FleetClaimTypes.SuperUser);
 
-        var clients = await SeedClients();
+        clients = await SeedClients();
 
         foreach (var client in clients)
         {

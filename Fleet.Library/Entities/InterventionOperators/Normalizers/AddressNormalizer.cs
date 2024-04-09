@@ -1,4 +1,4 @@
-﻿using Regira.Fleet.Entities.Addresses;
+﻿using Regira.Fleet.Models.Addresses;
 using Regira.Globalization;
 using Regira.Normalizing.Abstractions;
 

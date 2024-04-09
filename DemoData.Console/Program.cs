@@ -17,24 +17,21 @@ AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
 var host = CreateHostBuilder(args)
     .Build();
 
-var accountContext = host.Services.GetRequiredService<AccountsContext>();
+var accountContext = host.Services.GetRequiredService<AccountsContextBase>();
 await accountContext.Database.EnsureDeletedAsync();
-await accountContext.Database.EnsureCreatedAsync();
+//await accountContext.Database.EnsureCreatedAsync();
+await accountContext.Database.MigrateAsync();
 
 var accountSeeder = host.Services.GetRequiredService<AccountSeeder>();
 var clients = await accountSeeder.Seed();
 
-var fleetContext = host.Services.GetRequiredService<FleetContext>();
+var fleetContext = host.Services.GetRequiredService<FleetContextBase>();
 await fleetContext.Database.EnsureDeletedAsync();
-await fleetContext.Database.EnsureCreatedAsync();
+//await fleetContext.Database.EnsureCreatedAsync();
+await fleetContext.Database.MigrateAsync();
 
 var dataSeeder = host.Services.GetRequiredService<DataSeeder>();
 await dataSeeder.Seed(clients);
-
-foreach (var sql in StatisticsViews.All)
-{
-    await fleetContext.Database.ExecuteSqlRawAsync(sql);
-}
 
 Console.WriteLine("Created Host");
 
@@ -68,10 +65,11 @@ static void ConfigureServices(HostBuilderContext context, IServiceCollection ser
     services.AddAuthentication();
     services.AddFleetAuthentication();
 
-    services.AddClientAdmin(c =>
+    services.AddIdentityWithAdmin(c =>
     {
         var dataDirectory = config["Data:Directory"];
-        c.ConnectionString = config["ConnectionStrings:FleetAccounts"];
+        c.DatabaseType = config["Database:Accounts:Type"]!;
+        c.ConnectionString = config["Database:Accounts:ConnectionString"]!;
         var fsConfig = new BinaryFileService.FileServiceOptions
         {
             RootFolder = dataDirectory!
@@ -81,7 +79,8 @@ static void ConfigureServices(HostBuilderContext context, IServiceCollection ser
     services.AddFleet(c =>
     {
         var dataDirectory = config["Data:Directory"];
-        c.ConnectionString = config["ConnectionStrings:FleetData"];
+        c.DatabaseType = config["Database:Fleet:Type"]!;
+        c.ConnectionString = config["Database:Fleet:ConnectionString"]!;
         var fsConfig = new BinaryFileService.FileServiceOptions
         {
             RootFolder = dataDirectory!

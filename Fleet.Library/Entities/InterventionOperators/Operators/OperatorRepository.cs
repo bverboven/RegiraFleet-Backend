@@ -6,13 +6,14 @@ using Regira.Entities.Models;
 using Regira.Fleet.Abstractions;
 using Regira.Fleet.Core.Abstractions;
 using Regira.Fleet.Data;
-using Regira.Fleet.Entities.InterventionOperators.ContactData;
 using Regira.Fleet.Entities.InterventionOperators.Normalizers;
 using Regira.Fleet.Extensions;
+using Regira.Fleet.Models.InterventionOperators.ContactData;
+using Regira.Fleet.Models.InterventionOperators.Operators;
 
 namespace Regira.Fleet.Entities.InterventionOperators.Operators;
 
-public class OperatorRepository(FleetContext dbContext, IFleetAppContext appContext, ContactDataNormalizer contactDataNormalizer) : FleetRepositoryBase<Operator, OperatorSearchObject, EntitySortBy, OperatorIncludes>(dbContext, appContext)
+public class OperatorRepository(FleetContextBase dbContext, IFleetAppContext appContext, ContactDataNormalizer contactDataNormalizer) : FleetRepositoryBase<Operator, OperatorSearchObject, EntitySortBy, OperatorIncludes>(dbContext, appContext)
 {
     public override IQueryable<Operator> Filter(IQueryable<Operator> query, OperatorSearchObject? so)
     {
@@ -35,20 +36,20 @@ public class OperatorRepository(FleetContext dbContext, IFleetAppContext appCont
                 var keywords = qHelper.Parse(so.Title);
                 foreach (var kw in keywords)
                 {
-                    query = query.Where(x => x.Code == so.Title || EF.Functions.ILike(x.Title, kw.Q!));
+                    query = query.Where(x => x.Code == so.Title || dbContext.ILike(x.Title, kw.Q!));
                 }
             }
             // Phone
             if (!string.IsNullOrWhiteSpace(so.Phone))
             {
                 var q = contactDataNormalizer.Normalize(so.Phone, ContactDataTypes.Phone);
-                query = query.Where(x => x.ContactData!.Any(cd => cd.DataType == ContactDataTypes.Phone && EF.Functions.ILike(cd.NormalizedValue!, $"%{q}%")));
+                query = query.Where(x => x.ContactData!.Any(cd => cd.DataType == ContactDataTypes.Phone && dbContext.ILike(cd.NormalizedValue!, $"%{q}%")));
             }
             // Email
             if (!string.IsNullOrWhiteSpace(so.Email))
             {
                 var q = contactDataNormalizer.Normalize(so.Email, ContactDataTypes.Email);
-                query = query.Where(x => x.ContactData!.Any(cd => cd.DataType == ContactDataTypes.Email && EF.Functions.ILike(cd.NormalizedValue!, $"%{q}%")));
+                query = query.Where(x => x.ContactData!.Any(cd => cd.DataType == ContactDataTypes.Email && dbContext.ILike(cd.NormalizedValue!, $"%{q}%")));
             }
             // Address
             if (!string.IsNullOrWhiteSpace(so.Address))
@@ -56,7 +57,7 @@ public class OperatorRepository(FleetContext dbContext, IFleetAppContext appCont
                 var keywords = qHelper.Parse(so.Address);
                 foreach (var kw in keywords)
                 {
-                    query = query.Where(x => x.Addresses!.Any(a => EF.Functions.ILike(a.NormalizedContent!, kw.QW!)));
+                    query = query.Where(x => x.Addresses!.Any(a => dbContext.ILike(a.NormalizedContent!, kw.QW!)));
                 }
             }
             // InterventionTypeId
@@ -70,7 +71,7 @@ public class OperatorRepository(FleetContext dbContext, IFleetAppContext appCont
                 query = query.Where(x => DbContext.Interventions.Any(i => i.OperatorId == x.Id));
             }
             // Q
-            query = query.FilterILikeQ(qHelper.Parse(so.Q));
+            query = dbContext.FilterILikeQ(query, qHelper.Parse(so.Q));
         }
 
         return query;

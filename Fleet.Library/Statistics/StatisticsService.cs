@@ -6,7 +6,7 @@ using System.Data.Common;
 
 namespace Regira.Fleet.Statistics;
 
-public class StatisticsService(FleetContext dbContext, IClientContext clientContext) : IDisposable
+public class StatisticsService(FleetContextBase dbContext, IClientContext clientContext) : IDisposable
 {
     private readonly DbConnection _dbConnection = dbContext.Database.GetDbConnection();
 

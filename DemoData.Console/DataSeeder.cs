@@ -2,22 +2,22 @@
 using Microsoft.EntityFrameworkCore;
 using Regira.Entities.Abstractions;
 using Regira.Fleet.Data;
-using Regira.Fleet.Entities.InterventionOperators.Addresses;
-using Regira.Fleet.Entities.InterventionOperators.ContactData;
-using Regira.Fleet.Entities.InterventionOperators.Operators;
-using Regira.Fleet.Entities.Interventions;
-using Regira.Fleet.Entities.Interventions.Invoices;
-using Regira.Fleet.Entities.InterventionTypes;
-using Regira.Fleet.Entities.Vehicles;
-using Regira.Fleet.Entities.Vehicles.Brands;
-using Regira.Fleet.Entities.Vehicles.VehicleTypes;
-using Regira.Fleet.Identity.Entities.Clients;
+using Regira.Fleet.Identity.Models.Clients;
+using Regira.Fleet.Models.InterventionOperators.Addresses;
+using Regira.Fleet.Models.InterventionOperators.ContactData;
+using Regira.Fleet.Models.InterventionOperators.Operators;
+using Regira.Fleet.Models.Interventions;
+using Regira.Fleet.Models.Interventions.Invoices;
+using Regira.Fleet.Models.InterventionTypes;
+using Regira.Fleet.Models.Vehicles;
+using Regira.Fleet.Models.Vehicles.Brands;
+using Regira.Fleet.Models.Vehicles.VehicleTypes;
 using Regira.Utilities;
 using Regira.Web.Utilities;
 
 namespace DemoData.Console;
 
-public class DataSeeder(FleetContext dbContext, IEntityService<Brand> brandService, IEntityService<Intervention> interventionService,
+public class DataSeeder(FleetContextBase dbContext, IEntityService<Brand> brandService, IEntityService<Intervention> interventionService,
     IEntityService<InterventionType> interventionTypeService, IEntityService<VehicleType> vehicleTypeService,
     IEntityService<Operator> operatorService, IEntityService<Vehicle> vehicleService)
 {

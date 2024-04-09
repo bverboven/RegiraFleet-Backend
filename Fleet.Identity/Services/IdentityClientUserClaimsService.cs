@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using Regira.Fleet.Core.Abstractions;
 using Regira.Fleet.Core.Constants;
 using Regira.Fleet.Identity.Data;
-using Regira.Fleet.Identity.Entities.Users.Claims;
+using Regira.Fleet.Identity.Models.Users.Claims;
 using System.Security.Claims;
 
 namespace Regira.Fleet.Identity.Services;
@@ -14,7 +14,7 @@ namespace Regira.Fleet.Identity.Services;
 /// </summary>
 /// <param name="dbContext"></param>
 /// <param name="httpContextAccessor"></param>
-public class IdentityClientUserClaimsService(AccountsContext dbContext, IHttpContextAccessor httpContextAccessor) : IClientUserClaimsService
+public class IdentityClientUserClaimsService(AccountsContextBase dbContext, IHttpContextAccessor httpContextAccessor) : IClientUserClaimsService
 {
     public async Task Process(ClaimsIdentity identity)
     {

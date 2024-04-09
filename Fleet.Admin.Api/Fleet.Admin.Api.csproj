@@ -28,7 +28,7 @@
     </ItemGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\Fleet.Identity.Web\Fleet.Identity.Web.csproj" />
+      <ProjectReference Include="..\Fleet.Identity.Web\Fleet.Identity.Web.csproj" />
     </ItemGroup>
 
 </Project>

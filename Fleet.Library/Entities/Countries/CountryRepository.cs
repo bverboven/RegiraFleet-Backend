@@ -4,11 +4,11 @@ using Regira.Entities.Models;
 using Regira.Fleet.Core.Abstractions;
 using Regira.Globalization;
 using Regira.Utilities;
-using CountryEntity = Regira.Fleet.Entities.Countries.Country;
+using CountryEntity = Regira.Fleet.Models.Countries.Country;
 
 namespace Regira.Fleet.Entities.Countries;
 
-public class CountryRepository : IEntityService<Country, string>
+public class CountryRepository : IEntityService<CountryEntity, string>
 {
     private readonly ICultureContext _cultureContext;
     public CountryRepository(ICultureContext cultureContext)

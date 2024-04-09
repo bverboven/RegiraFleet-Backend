@@ -7,11 +7,12 @@ using Regira.Entities.EFcore.Extensions;
 using Regira.Entities.Models;
 using Regira.Entities.Models.Abstractions;
 using Regira.Fleet.Identity.Data;
-using Regira.Fleet.Identity.Entities.Users.Claims;
+using Regira.Fleet.Identity.Models.Users;
+using Regira.Fleet.Identity.Models.Users.Claims;
 using Regira.Utilities;
 
 namespace Regira.Fleet.Identity.Entities.Users;
-internal class FleetUserRepository(AccountsContext dbContext, UserManager<FleetUser> userManager, IMapper mapper) : IEntityRepository<FleetUserModel, string, FleetUserSearchObject, EntitySortBy, FleetUserIncludes>
+public class FleetUserRepository(AccountsContextBase dbContext, UserManager<FleetUser> userManager, IMapper mapper) : IEntityRepository<FleetUserModel, string, FleetUserSearchObject, EntitySortBy, FleetUserIncludes>
 {
     public async Task<FleetUserModel?> Details(string id)
     {

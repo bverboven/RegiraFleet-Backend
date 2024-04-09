@@ -1,0 +1,22 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net8.0</TargetFramework>
+        <RootNamespace>Regira.Fleet.Data</RootNamespace>
+        <AssemblyName>Regira.Fleet.Data</AssemblyName>
+        <Authors>B.Verboven</Authors>
+        <Company>Regira</Company>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <PackageReference Include="Regira.DAL.EFcore" Version="4.0.4" />
+        <PackageReference Include="EFCore.NamingConventions" Version="8.0.3" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\Fleet.Models\Fleet.Models.csproj" />
+    </ItemGroup>
+
+</Project>

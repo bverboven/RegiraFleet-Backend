@@ -28,8 +28,8 @@
     </ItemGroup>
 
     <ItemGroup>
+        <ProjectReference Include="..\Fleet.DependencyInjection\Fleet.DependencyInjection.csproj" />
         <ProjectReference Include="..\Fleet.Identity.Web\Fleet.Identity.Web.csproj" />
-        <ProjectReference Include="..\Fleet.Library\Fleet.Library.csproj" />
     </ItemGroup>
 
 </Project>

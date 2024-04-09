@@ -1,4 +1,4 @@
-﻿using Regira.Fleet.Entities.InterventionOperators.ContactData;
+﻿using Regira.Fleet.Models.InterventionOperators.ContactData;
 using Regira.Globalization.LibPhoneNumber;
 using Regira.Normalizing.Abstractions;
 

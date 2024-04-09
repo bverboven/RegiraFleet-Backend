@@ -10,10 +10,6 @@
 
     <ItemGroup>
         <PackageReference Include="AutoMapper" Version="13.0.1" />
-        <PackageReference Include="EFCore.NamingConventions" Version="8.0.3" />
-        <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="8.0.3" />
-        <PackageReference Include="Microsoft.Extensions.Identity.Core" Version="8.0.3" />
-        <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="8.0.2" />
     </ItemGroup>
 
     <ItemGroup>
@@ -25,10 +21,8 @@
 
     <ItemGroup>
         <ProjectReference Include="..\Fleet.Core\Fleet.Core.csproj" />
-    </ItemGroup>
-
-    <ItemGroup>
-      <Folder Include="Migrations\" />
+        <ProjectReference Include="..\Fleet.Identity.Data.Core\Fleet.Identity.Data.Core.csproj" />
+        <ProjectReference Include="..\Fleet.Identity.Models\Fleet.Identity.Models.csproj" />
     </ItemGroup>
 
 </Project>

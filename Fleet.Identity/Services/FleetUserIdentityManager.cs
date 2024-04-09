@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using Regira.Fleet.Identity.Entities.Users;
+using Regira.Fleet.Identity.Models.Users;
 
 namespace Regira.Fleet.Identity.Services;
 

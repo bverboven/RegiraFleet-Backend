@@ -8,12 +8,12 @@ using Regira.Utilities;
 
 namespace Regira.Fleet.Identity.Abstractions;
 
-public abstract class IdentityRepositoryBase<TEntity, TSearchObject>(AccountsContext dbContext)
+public abstract class IdentityRepositoryBase<TEntity, TSearchObject>(AccountsContextBase dbContext)
     : IdentityRepositoryBase<TEntity, string, TSearchObject, EntitySortBy, EntityIncludes>(dbContext)
     where TEntity : class, IEntity<string>, new()
     where TSearchObject : class, ISearchObject<string>, new();
-public abstract class IdentityRepositoryBase<TEntity, TKey, TSearchObject, TSortBy, TInclude>(AccountsContext dbContext)
-    : EntityRepositoryBase<AccountsContext, TEntity, TKey, TSearchObject, TSortBy, TInclude>(dbContext)
+public abstract class IdentityRepositoryBase<TEntity, TKey, TSearchObject, TSortBy, TInclude>(AccountsContextBase dbContext)
+    : EntityRepositoryBase<AccountsContextBase, TEntity, TKey, TSearchObject, TSortBy, TInclude>(dbContext)
     where TEntity : class, IEntity<TKey>, new()
     where TSearchObject : class, ISearchObject<TKey>, new()
     where TSortBy : struct, Enum

@@ -3,7 +3,7 @@ using Regira.Entities.Models;
 using Regira.Entities.Web.Attachments.Abstractions;
 using Regira.Entities.Web.Attachments.Models;
 using Regira.Entities.Web.Controllers.Abstractions;
-using Regira.Fleet.Entities.InterventionOperators.Operators;
+using Regira.Fleet.Models.InterventionOperators.Operators;
 
 namespace Regira.Fleet.Manager.Api.Controllers;
 

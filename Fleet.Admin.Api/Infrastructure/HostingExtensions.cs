@@ -7,7 +7,7 @@ using Regira.Fleet.Core.Constants;
 using Regira.Fleet.Identity.Authorization;
 using Regira.Fleet.Identity.Data;
 using Regira.Fleet.Identity.DependencyInjection;
-using Regira.Fleet.Identity.Entities;
+using Regira.Fleet.Identity.Models;
 using Regira.Fleet.Identity.Web.DependencyInjection;
 using Regira.IO.Storage.FileSystem;
 using Regira.Office.Mail.SendGrid;
@@ -92,15 +92,16 @@ public static class HostingExtensions
     public static IServiceCollection AddServices(this IServiceCollection services, IConfiguration config)
     {
         services
-            .AddClientAdmin(o =>
+            .AddIdentityWithAdmin(c =>
             {
                 var dataDirectory = config["Data:Directory"];
-                o.ConnectionString = config["ConnectionStrings:FleetAccounts"];
+                c.DatabaseType = config["Database:Accounts:Type"]!;
+                c.ConnectionString = config["Database:Accounts:ConnectionString"]!;
                 var fsConfig = new BinaryFileService.FileServiceOptions
                 {
                     RootFolder = dataDirectory!
                 };
-                o.ConfigureStorageService(_ => new BinaryFileService(fsConfig));
+                c.ConfigureStorageService(_ => new BinaryFileService(fsConfig));
             });
 
         return services;
@@ -108,7 +109,6 @@ public static class HostingExtensions
     public static IServiceCollection AddIdentity(this IServiceCollection services, IConfiguration config)
     {
         services
-            .AddDbContext<AccountsContext>(db => db.UseNpgsql(config["ConnectionStrings:FleetAccounts"], o => o.MigrationsAssembly(typeof(AccountsContext).Assembly.GetName().Name)))
             .AddFleetIdentity(o =>
             {
                 var options = config.GetSection("Identity").Get<FleetIdentityOptions>()!;
@@ -122,6 +122,7 @@ public static class HostingExtensions
                 });
             });
 
+        // Requirements
         services.AddSingleton<IAuthorizationHandler, SuperUserRequirementHandler>();
 
         return services;

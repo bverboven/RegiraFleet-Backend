@@ -6,8 +6,8 @@ using Microsoft.EntityFrameworkCore;
 using Regira.Fleet.Core.Abstractions;
 using Regira.Fleet.Core.Constants;
 using Regira.Fleet.Identity.Data;
-using Regira.Fleet.Identity.Entities.Users;
-using Regira.Fleet.Identity.Entities.Users.Claims;
+using Regira.Fleet.Identity.Models.Users;
+using Regira.Fleet.Identity.Models.Users.Claims;
 using Regira.Fleet.Identity.Web.Extensions;
 using Regira.Fleet.Identity.Web.Models;
 using Regira.Fleet.Manager.Api.Models;
@@ -19,7 +19,8 @@ namespace Regira.Fleet.Manager.Api.Controllers;
 
 [ApiController]
 [Route("users")]
-public class UserController(UserManager<FleetUser> userManager, AccountsContext dbContext, ISerializer serializer, IClientContext clientContext) : ControllerBase
+//public class UserController(UserManager<FleetUser> userManager, AccountsContextBase dbContext, ISerializer serializer, IClientContext clientContext) : ControllerBase
+public class UserController(UserManager<FleetUser> userManager, IAccountsDbContext dbContext, ISerializer serializer, IClientContext clientContext) : ControllerBase
 {
     static string[] ALLOWED_PERMISSIONS = { ClientPermissions.CanRead, ClientPermissions.CanWrite };
 
@@ -37,68 +38,6 @@ public class UserController(UserManager<FleetUser> userManager, AccountsContext 
         item.Culture = model.Culture;
 
         await userManager.UpdateAsync(item);
-
-        // Claims
-        //var claims = await userManager.GetClaimsAsync(item);
-        //var givenNameClaims = claims.Where(x => x.Type == FleetClaimTypes.GivenName);
-        //var lastNameClaims = claims.Where(x => x.Type == FleetClaimTypes.LastName);
-
-        //var claimsToRemove = new List<Claim>(givenNameClaims.Skip(1).Concat(lastNameClaims.Skip(1)));
-        //var claimsToAdd = new List<Claim>();
-
-        //var givenNameClaim = givenNameClaims.FirstOrDefault();
-        //var lastNameClaim = lastNameClaims.FirstOrDefault();
-
-        // Given name
-        //if (!string.IsNullOrWhiteSpace(model.GivenName))
-        //{
-        //    var claim = new Claim(FleetClaimTypes.GivenName, model.GivenName);
-        //    if (givenNameClaim == null)
-        //    {
-        //        claimsToAdd.Add(claim);
-        //    }
-        //    else if (givenNameClaim.Value != model.GivenName)
-        //    {
-        //        await userManager.ReplaceClaimAsync(item, givenNameClaim, claim);
-        //    }
-        //}
-        //else
-        //{
-        //    if (givenNameClaim != null)
-        //    {
-        //        claimsToRemove.Add(givenNameClaim);
-        //    }
-        //}
-        // Last name
-        //if (!string.IsNullOrWhiteSpace(model.LastName))
-        //{
-        //    var claim = new Claim(FleetClaimTypes.LastName, model.LastName);
-        //    if (lastNameClaim == null)
-        //    {
-        //        claimsToAdd.Add(claim);
-        //    }
-        //    else if (lastNameClaim.Value != model.LastName)
-        //    {
-        //        await userManager.ReplaceClaimAsync(item, lastNameClaim, claim);
-        //    }
-        //}
-        //else
-        //{
-        //    if (lastNameClaim != null)
-        //    {
-        //        claimsToRemove.Add(lastNameClaim);
-        //    }
-        //}
-
-        //if (claimsToRemove.Any())
-        //{
-        //    await userManager.RemoveClaimsAsync(item, claimsToRemove);
-        //}
-        //if (claimsToAdd.Any())
-        //{
-        //    await userManager.AddClaimsAsync(item, claimsToAdd);
-        //}
-
 
         return Ok();
     }
@@ -257,12 +196,12 @@ Token: {token}
             claimsToAdd = claimsToAdd.FindAll(c => ALLOWED_PERMISSIONS.Contains(c.ClaimValue));
             if (claimsToAdd.Any())
             {
-                dbContext.AddRange(claimsToAdd);
+                dbContext.ClientUserClaims.AddRange(claimsToAdd);
             }
             var claimsToRemove = currentClaims.Where(c => inputPermissions.All(p => p != c.ClaimValue));
             if (claimsToRemove.Any())
             {
-                dbContext.RemoveRange(claimsToRemove);
+                dbContext.ClientUserClaims.RemoveRange(claimsToRemove);
             }
             await dbContext.SaveChangesAsync();
         }

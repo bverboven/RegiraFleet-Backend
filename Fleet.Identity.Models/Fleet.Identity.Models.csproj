@@ -1,0 +1,21 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net8.0</TargetFramework>
+        <RootNamespace>Regira.Fleet.Identity.Models</RootNamespace>
+        <AssemblyName>Regira.Fleet.Identity.Models</AssemblyName>
+        <Authors>B.Verboven</Authors>
+        <Company>Regira</Company>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <PackageReference Include="Regira.Entities" Version="4.0.6" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\Fleet.Core\Fleet.Core.csproj" />
+    </ItemGroup>
+
+</Project>

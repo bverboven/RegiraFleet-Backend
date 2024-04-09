@@ -2,14 +2,18 @@
 
 ## EF Core
 
+Supported [Type]:
+- PostgreSQL
+- MySQL
+
 ### Migrations
 
-Add-Migration <MigrationName> -context FleetContext -project 'Fleet.Library'
-Update-Database -context FleetContext
+Add-Migration [MigrationName] -context Fleet[Type]Context -project 'Fleet.Data.[Type]'
+Update-Database -context Fleet[Type]Context
 
 #### Reverting
-Update-Database <MigrationName> -context FleetContext
-Remove-Migration -context FleetContext -project 'Fleet.Library'
+Update-Database [MigrationName] -context Fleet[Type]Context
+Remove-Migration -context Fleet[Type]Context -project 'Fleet.Data.[Type]'
 
 
 # Accounts
@@ -18,11 +22,11 @@ Remove-Migration -context FleetContext -project 'Fleet.Library'
 
 ### Migrations
 
-Add-Migration <MigrationName> -context AccountsContext -project 'Fleet.Identity'
-Update-Database -context AccountsContext
+Add-Migration [MigrationName] -context Accounts[Type]Context -project 'Fleet.Identity.Data.[Type]'
+Update-Database -context Accounts[Type]Context
 
 #### Reverting
-Update-Database <MigrationName> -context AccountsContext
-Remove-Migration -context AccountsContext -project 'Fleet.Identity'
+Update-Database [MigrationName] -context Accounts[Type]Context
+Remove-Migration -context Accounts[Type]Context -project 'Fleet.Identity.Data.[Type]'
 
 

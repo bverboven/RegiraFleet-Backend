@@ -5,10 +5,11 @@ using Regira.Fleet.Abstractions;
 using Regira.Fleet.Core.Abstractions;
 using Regira.Fleet.Data;
 using Regira.Fleet.Extensions;
+using Regira.Fleet.Models.InterventionTypes;
 
 namespace Regira.Fleet.Entities.InterventionTypes;
 
-public class InterventionTypeRepository(FleetContext dbContext, IFleetAppContext appContext) : FleetRepositoryBase<InterventionType, InterventionTypeSearchObject>(dbContext, appContext)
+public class InterventionTypeRepository(FleetContextBase dbContext, IFleetAppContext appContext) : FleetRepositoryBase<InterventionType, InterventionTypeSearchObject>(dbContext, appContext)
 {
     public override IQueryable<InterventionType> Filter(IQueryable<InterventionType> query, InterventionTypeSearchObject? so)
     {
@@ -20,9 +21,9 @@ public class InterventionTypeRepository(FleetContext dbContext, IFleetAppContext
             // Code
             query = query.FilterCode(so.Code);
             // Title
-            query = query.FilterILikeTitle(qHelper.Parse(so.Title));
+            query = dbContext.FilterILikeTitle(query, qHelper.Parse(so.Title));
             // Q
-            query = query.FilterILikeTitleQ(qHelper.Parse(so.Q));
+            query = dbContext.FilterILikeTitleQ(query, qHelper.Parse(so.Q));
 
             // Operator
             if (so.OperatorId?.Any() == true)

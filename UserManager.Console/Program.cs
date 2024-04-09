@@ -5,7 +5,7 @@ using Microsoft.Extensions.Hosting;
 using Regira.Fleet.Core.Constants;
 using Regira.Fleet.Identity.Data;
 using Regira.Fleet.Identity.DependencyInjection;
-using Regira.Fleet.Identity.Entities.Users;
+using Regira.Fleet.Identity.Models.Users;
 using Regira.IO.Storage.FileSystem;
 using Regira.Security.Abstractions;
 using Regira.Security.Encryption;
@@ -17,7 +17,7 @@ AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
 var host = CreateHostBuilder(args)
     .Build();
 
-var accountContext = host.Services.GetRequiredService<AccountsContext>();
+var accountContext = host.Services.GetRequiredService<AccountsContextBase>();
 
 var config = host.Services.GetRequiredService<IConfiguration>();
 var userManager = host.Services.GetRequiredService<UserManager<FleetUser>>();
@@ -74,10 +74,11 @@ static void ConfigureServices(HostBuilderContext context, IServiceCollection ser
     services.AddAuthentication();
     services.AddFleetAuthentication();
 
-    services.AddClientAdmin(c =>
+    services.AddIdentityWithAdmin(c =>
     {
         var dataDirectory = config["Data:Directory"];
-        c.ConnectionString = config["ConnectionStrings:FleetAccounts"];
+        c.DatabaseType = config["Database:Accounts:Type"]!;
+        c.ConnectionString = config["Database:Accounts:ConnectionString"]!;
         var fsConfig = new BinaryFileService.FileServiceOptions
         {
             RootFolder = dataDirectory!

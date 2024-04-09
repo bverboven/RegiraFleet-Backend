@@ -6,10 +6,11 @@ using Regira.Entities.Models;
 using Regira.Fleet.Abstractions;
 using Regira.Fleet.Core.Abstractions;
 using Regira.Fleet.Data;
+using Regira.Fleet.Models.Vehicles;
 
 namespace Regira.Fleet.Entities.Vehicles;
 
-public class VehicleRepository(FleetContext dbContext, IFleetAppContext appContext) : FleetRepositoryBase<Vehicle, VehicleSearchObject, EntitySortBy, VehicleIncludes>(dbContext, appContext)
+public class VehicleRepository(FleetContextBase dbContext, IFleetAppContext appContext) : FleetRepositoryBase<Vehicle, VehicleSearchObject, EntitySortBy, VehicleIncludes>(dbContext, appContext)
 {
     public override IQueryable<Vehicle> Filter(IQueryable<Vehicle> query, VehicleSearchObject? so)
     {
@@ -38,8 +39,8 @@ public class VehicleRepository(FleetContext dbContext, IFleetAppContext appConte
             // Brand
             if (!string.IsNullOrWhiteSpace(so.Brand))
             {
-                query = query.Where(x => EF.Functions.ILike(x.Brand!.Code!, so.Brand) ||
-                    EF.Functions.ILike(x.Brand!.Title!, so.Brand));
+                query = query.Where(x => dbContext.ILike(x.Brand!.Code!, so.Brand) ||
+                    dbContext.ILike(x.Brand!.Title!, so.Brand));
             }
             // VehicleTypeId
             if (so.VehicleTypeId?.Any() == true)
@@ -49,14 +50,14 @@ public class VehicleRepository(FleetContext dbContext, IFleetAppContext appConte
             // VehicleType
             if (!string.IsNullOrWhiteSpace(so.VehicleType))
             {
-                query = query.Where(x => EF.Functions.ILike(x.VehicleType!.Code!, so.VehicleType) ||
-                    EF.Functions.ILike(x.VehicleType!.Title!, so.VehicleType));
+                query = query.Where(x => dbContext.ILike(x.VehicleType!.Code!, so.VehicleType) ||
+                    dbContext.ILike(x.VehicleType!.Title!, so.VehicleType));
             }
             // Title
             if (!string.IsNullOrWhiteSpace(so.Title))
             {
                 var kw = qHelper.ParseKeyword(so.Title.ToUpper());
-                query = query.Where(x => EF.Functions.ILike(x.NormalizedTitle!, kw.Q!));
+                query = query.Where(x => dbContext.ILike(x.NormalizedTitle!, kw.Q!));
             }
             // HasIntervention
             if (so.HasIntervention.HasValue)

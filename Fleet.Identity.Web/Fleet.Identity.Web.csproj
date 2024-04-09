@@ -14,7 +14,7 @@
     </ItemGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\Fleet.Identity\Fleet.Identity.csproj" />
+      <ProjectReference Include="..\Fleet.Identity.DependencyInjection\Fleet.Identity.DependencyInjection.csproj" />
     </ItemGroup>
 
 </Project>

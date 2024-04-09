@@ -16,10 +16,15 @@
         <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="8.0.0" />
         <PackageReference Include="Microsoft.Extensions.Configuration.UserSecrets" Version="8.0.0" />
         <PackageReference Include="Microsoft.Extensions.Hosting" Version="8.0.0" />
-        <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="8.0.2" />
     </ItemGroup>
 
     <ItemGroup>
+        <ProjectReference Include="..\Fleet.Data.MySQL\Fleet.Data.MySQL.csproj" />
+        <ProjectReference Include="..\Fleet.Data.PostgreSQL\Fleet.Data.PostgreSQL.csproj" />
+        <ProjectReference Include="..\Fleet.Data.SqlServer\Fleet.Data.SqlServer.csproj" />
+        <ProjectReference Include="..\Fleet.Identity.Data.MySQL\Fleet.Identity.Data.MySQL.csproj" />
+        <ProjectReference Include="..\Fleet.Identity.Data.PostgreSQL\Fleet.Identity.Data.PostgreSQL.csproj" />
+        <ProjectReference Include="..\Fleet.Identity.Data.SqlServer\Fleet.Identity.Data.SqlServer.csproj" />
         <ProjectReference Include="..\Fleet.Identity\Fleet.Identity.csproj" />
         <ProjectReference Include="..\Fleet.Library\Fleet.Library.csproj" />
     </ItemGroup>

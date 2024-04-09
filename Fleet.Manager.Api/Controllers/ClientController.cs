@@ -1,14 +1,13 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Regira.Fleet.Core.Constants;
 using Regira.Fleet.Identity.Data;
 using System.Security.Claims;
 
 namespace Regira.Fleet.Manager.Api.Controllers;
 
 [ApiController]
-public class ClientController(AccountsContext dbContext) : ControllerBase
+public class ClientController(IAccountsDbContext dbContext) : ControllerBase
 {
     [HttpGet("clients")]
     public async Task<IActionResult> List()

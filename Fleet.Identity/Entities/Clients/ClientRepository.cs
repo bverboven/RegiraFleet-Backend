@@ -3,9 +3,10 @@ using Regira.Entities.Keywords;
 using Regira.Entities.Models;
 using Regira.Fleet.Identity.Abstractions;
 using Regira.Fleet.Identity.Data;
+using Regira.Fleet.Identity.Models.Clients;
 
 namespace Regira.Fleet.Identity.Entities.Clients;
-public class ClientRepository(AccountsContext dbContext) : IdentityRepositoryBase<Client, string, ClientSearchObject, EntitySortBy, ClientIncludes>(dbContext)
+public class ClientRepository(AccountsContextBase dbContext) : IdentityRepositoryBase<Client, string, ClientSearchObject, EntitySortBy, ClientIncludes>(dbContext)
 {
     public override IQueryable<Client> Filter(IQueryable<Client> query, ClientSearchObject? so)
     {
@@ -23,7 +24,7 @@ public class ClientRepository(AccountsContext dbContext) : IdentityRepositoryBas
                 var keywords = qHelper.Parse(so.Q);
                 foreach (var q in keywords)
                 {
-                    query = query.Where(x => EF.Functions.ILike(x.Code!, q.Keyword!) || EF.Functions.ILike(x.NormalizedTitle!, q.QW!));
+                    query = query.Where(x => dbContext.ILike(x.Code!, q.Keyword!) || dbContext.ILike(x.NormalizedTitle!, q.QW!));
                 }
             }
         }

@@ -4,10 +4,11 @@ using Regira.Fleet.Abstractions;
 using Regira.Fleet.Core.Abstractions;
 using Regira.Fleet.Data;
 using Regira.Fleet.Extensions;
+using Regira.Fleet.Models.Vehicles.VehicleTypes;
 
 namespace Regira.Fleet.Entities.Vehicles.VehicleTypes;
 
-public class VehicleTypeRepository(FleetContext dbContext, IFleetAppContext appContext) : FleetRepositoryBase<VehicleType, VehicleTypeSearchObject>(dbContext, appContext)
+public class VehicleTypeRepository(FleetContextBase dbContext, IFleetAppContext appContext) : FleetRepositoryBase<VehicleType, VehicleTypeSearchObject>(dbContext, appContext)
 {
     public override IQueryable<VehicleType> Filter(IQueryable<VehicleType> query, VehicleTypeSearchObject? so)
     {
@@ -19,9 +20,9 @@ public class VehicleTypeRepository(FleetContext dbContext, IFleetAppContext appC
             // Code
             query = query.FilterCode(so.Code);
             // Title
-            query = query.FilterILikeTitle(qHelper.Parse(so.Title));
+            query = dbContext.FilterILikeTitle(query, qHelper.Parse(so.Title));
             // Q
-            query = query.FilterILikeTitleQ(qHelper.Parse(so.Q));
+            query = dbContext.FilterILikeTitleQ(query, qHelper.Parse(so.Q));
         }
         return query;
     }
