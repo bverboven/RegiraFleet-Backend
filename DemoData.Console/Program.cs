@@ -27,8 +27,8 @@ var clients = await accountSeeder.Seed();
 
 var fleetContext = host.Services.GetRequiredService<FleetContextBase>();
 await fleetContext.Database.EnsureDeletedAsync();
-//await fleetContext.Database.EnsureCreatedAsync();
-await fleetContext.Database.MigrateAsync();
+await fleetContext.Database.EnsureCreatedAsync();
+//await fleetContext.Database.MigrateAsync();
 
 var dataSeeder = host.Services.GetRequiredService<DataSeeder>();
 await dataSeeder.Seed(clients);

@@ -42,10 +42,17 @@ public abstract class FleetContextBase(DbContextOptions options) : DbContext(opt
             entity.HasIndex(e => new { e.ClientId, e.Title })
                 .IsUnique();
             entity.HasIndex(e => e.NormalizedTitle);
+            // Translations
+            entity.HasMany(e => e.Translations)
+                .WithOne()
+                .HasPrincipalKey(e => e.Id)
+                .HasForeignKey(e => e.ObjectId);
         });
         modelBuilder.Entity<InterventionTypeTranslation>(entity =>
         {
-            entity.HasKey(e => new { e.InterventionTypeId, e.LangCode });
+            entity
+                .HasIndex(e => new { e.ObjectId, e.Culture })
+                .IsUnique();
         });
         modelBuilder.Entity<Intervention>(entity =>
         {
@@ -112,7 +119,7 @@ public abstract class FleetContextBase(DbContextOptions options) : DbContext(opt
         });
         modelBuilder.Entity<BrandTranslation>(entity =>
         {
-            entity.HasKey(e => new { e.BrandId, e.LangCode });
+            entity.HasKey(e => new { e.BrandId, e.Culture });
         });
         modelBuilder.Entity<Vehicle>(entity =>
         {
@@ -135,10 +142,17 @@ public abstract class FleetContextBase(DbContextOptions options) : DbContext(opt
             entity.HasIndex(e => new { e.ClientId, e.Title })
                 .IsUnique();
             entity.HasIndex(e => e.NormalizedTitle);
+            // Translations
+            entity.HasMany(e => e.Translations)
+                .WithOne()
+                .HasPrincipalKey(e => e.Id)
+                .HasForeignKey(e => e.ObjectId);
         });
         modelBuilder.Entity<VehicleTypeTranslation>(entity =>
         {
-            entity.HasKey(e => new { e.VehicleTypeId, e.LangCode });
+            entity
+                .HasIndex(e => new { e.ObjectId, e.Culture })
+                .IsUnique();
         });
 
         // Decimals

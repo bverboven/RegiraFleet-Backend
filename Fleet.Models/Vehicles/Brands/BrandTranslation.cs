@@ -5,11 +5,11 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Regira.Fleet.Models.Vehicles.Brands;
 
-public class BrandTranslation : IEntity, IHasNormalizedTitle, IHasLangCode
+public class BrandTranslation : IEntity, IHasNormalizedTitle, IHasCulture
 {
     public int BrandId { get; set; }
-    [StringLength(2)]
-    public string LangCode { get; set; } = null!;
+    [MaxLength(8)]
+    public string Culture { get; set; } = null!;
 
     [MaxLength(8)]
     public string? Code { get; set; }

@@ -1,11 +1,12 @@
 ﻿using Regira.Entities.Models.Abstractions;
 using Regira.Fleet.Models.Abstractions;
+using Regira.Fleet.Models.Translations;
 using Regira.Normalizing;
 using System.ComponentModel.DataAnnotations;
 
 namespace Regira.Fleet.Models.InterventionTypes;
 
-public class InterventionType : IFleetEntity, IEntityWithSerial, IHasCode, IHasNormalizedTitle, IHasDescription, IArchivable
+public class InterventionType : IFleetEntity, IEntityWithSerial, IHasCode, IHasNormalizedTitle, IHasDescription, IHasTranslations<InterventionTypeTranslation>, IHasTranslations, IArchivable
 {
     public int Id { get; set; }
     [StringLength(32)]
@@ -27,4 +28,9 @@ public class InterventionType : IFleetEntity, IEntityWithSerial, IHasCode, IHasN
     public string? NormalizedTitle { get; set; }
 
     public ICollection<InterventionTypeTranslation>? Translations { get; set; }
+    ICollection<Translation>? IHasTranslations.Translations
+    {
+        get => Translations?.Cast<Translation>().ToList();
+        set => Translations = value?.Cast<InterventionTypeTranslation>().ToList();
+    }
 }

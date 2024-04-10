@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Regira.Fleet.Models.Translations;
+using System.ComponentModel.DataAnnotations;
 
 namespace Regira.Fleet.Models.Vehicles.VehicleTypes;
 
@@ -12,4 +13,6 @@ public class VehicleTypeInputDto
     public string Title { get; set; } = null!;
     public string? Description { get; set; }
     public bool IsArchived { get; set; }
+
+    public ICollection<TranslationDto>? Translations { get; set; }
 }

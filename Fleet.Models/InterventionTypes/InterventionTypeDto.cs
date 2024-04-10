@@ -1,4 +1,6 @@
-﻿namespace Regira.Fleet.Models.InterventionTypes;
+﻿using Regira.Fleet.Models.Translations;
+
+namespace Regira.Fleet.Models.InterventionTypes;
 
 public class InterventionTypeDto
 {
@@ -11,4 +13,6 @@ public class InterventionTypeDto
     public DateTime Created { get; set; }
     public DateTime? LastModified { get; set; }
     public bool IsArchived { get; set; }
+    
+    public ICollection<TranslationDto>? Translations { get; set; }
 }

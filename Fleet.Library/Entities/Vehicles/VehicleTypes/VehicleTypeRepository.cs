@@ -1,5 +1,7 @@
-﻿using Regira.Entities.EFcore.Extensions;
+﻿using Microsoft.EntityFrameworkCore;
+using Regira.Entities.EFcore.Extensions;
 using Regira.Entities.Keywords;
+using Regira.Entities.Models;
 using Regira.Fleet.Abstractions;
 using Regira.Fleet.Core.Abstractions;
 using Regira.Fleet.Data;
@@ -25,5 +27,23 @@ public class VehicleTypeRepository(FleetContextBase dbContext, IFleetAppContext 
             query = dbContext.FilterILikeTitleQ(query, qHelper.Parse(so.Q));
         }
         return query;
+    }
+
+    public override IQueryable<VehicleType> AddIncludes(IQueryable<VehicleType> query, EntityIncludes? includes)
+    {
+        return query.Include(x => x.Translations);
+    }
+
+    public override void Modify(VehicleType item, VehicleType original)
+    {
+        base.Modify(item, original);
+
+        dbContext.UpdateEntityChildCollection(original, item, x => x.Translations, (x, collection) => x.Translations = collection);
+    }
+    public override void PrepareItem(VehicleType item)
+    {
+        base.PrepareItem(item);
+
+        item.Translations?.Prepare();
     }
 }

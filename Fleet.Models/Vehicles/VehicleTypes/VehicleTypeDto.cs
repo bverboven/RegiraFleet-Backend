@@ -1,4 +1,6 @@
-﻿namespace Regira.Fleet.Models.Vehicles.VehicleTypes;
+﻿using Regira.Fleet.Models.Translations;
+
+namespace Regira.Fleet.Models.Vehicles.VehicleTypes;
 
 public class VehicleTypeDto
 {
@@ -11,4 +13,6 @@ public class VehicleTypeDto
     public DateTime Created { get; set; }
     public DateTime? LastModified { get; set; }
     public bool IsArchived { get; set; }
+    
+    public ICollection<TranslationDto>? Translations { get; set; }
 }

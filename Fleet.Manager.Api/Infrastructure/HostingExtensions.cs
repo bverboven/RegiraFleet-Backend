@@ -104,7 +104,6 @@ public static class HostingExtensions
     public static IServiceCollection AddIdentity(this IServiceCollection services, IConfiguration config)
     {
         services
-            //.AddDbContext<AccountsPostgresContext>(db => db.UseNpgsql(config["ConnectionStrings:FleetAccounts"], o => o.MigrationsAssembly(typeof(AccountsPostgresContext).Assembly.GetName().Name)))
             .AddAccountsDbContext(config["Database:Accounts:ConnectionString"]!, config["Database:Accounts:Type"]!)
             .AddFleetIdentity(o =>
             {

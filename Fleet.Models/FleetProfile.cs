@@ -6,6 +6,7 @@ using Regira.Fleet.Models.InterventionOperators.Operators;
 using Regira.Fleet.Models.Interventions;
 using Regira.Fleet.Models.Interventions.Invoices;
 using Regira.Fleet.Models.InterventionTypes;
+using Regira.Fleet.Models.Translations;
 using Regira.Fleet.Models.Vehicles;
 using Regira.Fleet.Models.Vehicles.Brands;
 using Regira.Fleet.Models.Vehicles.VehicleTypes;
@@ -16,7 +17,6 @@ public class FleetProfile : Profile
 {
     public FleetProfile()
     {
-
         CreateMap<Vehicle, VehicleDto>()
             .ForMember(e => e.InterventionTypes, e => e.Ignore())
             .AfterMap((model, dto, ctx) =>
@@ -43,6 +43,8 @@ public class FleetProfile : Profile
             });
         CreateMap<VehicleType, VehicleTypeDto>();
         CreateMap<VehicleTypeInputDto, VehicleType>();
+        CreateMap<VehicleTypeTranslation, TranslationDto>()
+            .ReverseMap();
         CreateMap<Brand, BrandDto>();
         CreateMap<BrandInputDto, Brand>();
 
@@ -92,5 +94,7 @@ public class FleetProfile : Profile
         CreateMap<InvoiceInputDto, Invoice>();
         CreateMap<InterventionType, InterventionTypeDto>();
         CreateMap<InterventionTypeInputDto, InterventionType>();
+        CreateMap<InterventionTypeTranslation, TranslationDto>()
+            .ReverseMap();
     }
 }

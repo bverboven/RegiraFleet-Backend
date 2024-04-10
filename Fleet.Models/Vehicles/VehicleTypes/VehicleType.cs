@@ -1,11 +1,12 @@
 ﻿using Regira.Entities.Models.Abstractions;
 using Regira.Fleet.Models.Abstractions;
+using Regira.Fleet.Models.Translations;
 using Regira.Normalizing;
 using System.ComponentModel.DataAnnotations;
 
 namespace Regira.Fleet.Models.Vehicles.VehicleTypes;
 
-public class VehicleType : IFleetEntity, IEntityWithSerial, IHasCode, IHasNormalizedTitle, IHasDescription, IArchivable
+public class VehicleType : IFleetEntity, IEntityWithSerial, IHasCode, IHasNormalizedTitle, IHasDescription, IHasTranslations<VehicleTypeTranslation>, IHasTranslations, IArchivable
 {
     public int Id { get; set; }
     [StringLength(32)]
@@ -27,4 +28,9 @@ public class VehicleType : IFleetEntity, IEntityWithSerial, IHasCode, IHasNormal
     public string? NormalizedTitle { get; set; }
 
     public ICollection<VehicleTypeTranslation>? Translations { get; set; }
+    ICollection<Translation>? IHasTranslations.Translations
+    {
+        get => Translations?.Cast<Translation>().ToList();
+        set => Translations = value?.Cast<VehicleTypeTranslation>().ToList();
+    }
 }
