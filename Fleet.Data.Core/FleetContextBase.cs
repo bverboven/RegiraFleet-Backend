@@ -5,7 +5,7 @@ using Regira.Fleet.Models.InterventionOperators.Addresses;
 using Regira.Fleet.Models.InterventionOperators.ContactData;
 using Regira.Fleet.Models.InterventionOperators.Operators;
 using Regira.Fleet.Models.Interventions;
-using Regira.Fleet.Models.Interventions.Action;
+using Regira.Fleet.Models.Interventions.Actions;
 using Regira.Fleet.Models.Interventions.Invoices;
 using Regira.Fleet.Models.InterventionTypes;
 using Regira.Fleet.Models.Vehicles;
@@ -42,17 +42,10 @@ public abstract class FleetContextBase(DbContextOptions options) : DbContext(opt
             entity.HasIndex(e => new { e.ClientId, e.Title })
                 .IsUnique();
             entity.HasIndex(e => e.NormalizedTitle);
-            // Translations
-            entity.HasMany(e => e.Translations)
-                .WithOne()
-                .HasPrincipalKey(e => e.Id)
-                .HasForeignKey(e => e.ObjectId);
         });
         modelBuilder.Entity<InterventionTypeTranslation>(entity =>
         {
-            entity
-                .HasIndex(e => new { e.ObjectId, e.Culture })
-                .IsUnique();
+            entity.HasKey(e => new { e.ObjectId, e.Culture });
         });
         modelBuilder.Entity<Intervention>(entity =>
         {
@@ -117,10 +110,6 @@ public abstract class FleetContextBase(DbContextOptions options) : DbContext(opt
                 .IsUnique();
             entity.HasIndex(e => e.NormalizedTitle);
         });
-        modelBuilder.Entity<BrandTranslation>(entity =>
-        {
-            entity.HasKey(e => new { e.BrandId, e.Culture });
-        });
         modelBuilder.Entity<Vehicle>(entity =>
         {
             entity.HasIndex(e => e.ClientId);
@@ -142,17 +131,10 @@ public abstract class FleetContextBase(DbContextOptions options) : DbContext(opt
             entity.HasIndex(e => new { e.ClientId, e.Title })
                 .IsUnique();
             entity.HasIndex(e => e.NormalizedTitle);
-            // Translations
-            entity.HasMany(e => e.Translations)
-                .WithOne()
-                .HasPrincipalKey(e => e.Id)
-                .HasForeignKey(e => e.ObjectId);
         });
         modelBuilder.Entity<VehicleTypeTranslation>(entity =>
         {
-            entity
-                .HasIndex(e => new { e.ObjectId, e.Culture })
-                .IsUnique();
+            entity.HasKey(e => new { e.ObjectId, e.Culture });
         });
 
         // Decimals

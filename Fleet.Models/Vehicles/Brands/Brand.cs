@@ -25,6 +25,4 @@ public class Brand : IFleetEntity, IEntityWithSerial, IHasCode, IHasNormalizedTi
     [MaxLength(256)]
     [Normalized(SourceProperties = new[] { nameof(Title), nameof(Code) })]
     public string? NormalizedTitle { get; set; }
-
-    public ICollection<BrandTranslation>? Translations { get; set; }
 }

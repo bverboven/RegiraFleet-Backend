@@ -48,10 +48,6 @@ public class FleetMySqlContext(DbContextOptions<FleetMySqlContext> options) : Fl
         {
             entity.ToTable("vehicle_brands");
         });
-        modelBuilder.Entity<BrandTranslation>(entity =>
-        {
-            entity.ToTable("vehicle_brand_translations");
-        });
         modelBuilder.Entity<VehicleTypeTranslation>(entity =>
         {
             entity.ToTable("vehicle_type_translations");

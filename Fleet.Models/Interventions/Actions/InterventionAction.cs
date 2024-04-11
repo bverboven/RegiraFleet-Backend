@@ -6,7 +6,7 @@ using Regira.Fleet.Models.InterventionTypes;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace Regira.Fleet.Models.Interventions.Action;
+namespace Regira.Fleet.Models.Interventions.Actions;
 
 public class InterventionAction : IFleetEntity, IEntityWithSerial, IHasDescription, IHasNormalizedContent, IHasAttachments, IHasAttachments<InterventionActionAttachment>
 {

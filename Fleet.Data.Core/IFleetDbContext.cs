@@ -2,7 +2,7 @@
 using Regira.Entities.Attachments.Models;
 using Regira.Fleet.Models.InterventionOperators.Operators;
 using Regira.Fleet.Models.Interventions;
-using Regira.Fleet.Models.Interventions.Action;
+using Regira.Fleet.Models.Interventions.Actions;
 using Regira.Fleet.Models.InterventionTypes;
 using Regira.Fleet.Models.Vehicles;
 using Regira.Fleet.Models.Vehicles.Brands;

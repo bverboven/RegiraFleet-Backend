@@ -1,103 +1,164 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <ClassDiagram MajorVersion="1" MinorVersion="1" MembersFormat="NameAndType">
-  <Class Name="Regira.Fleet.Entities.Interventions.Maintenances.InterventionAction">
-    <Position X="11.5" Y="5.25" Width="2.25" />
-    <AssociationLine Name="Vehicle" Type="Regira.Fleet.Entities.Vehicles.Vehicle" FixedFromPoint="true">
-      <Path>
-        <Point X="13.75" Y="6.83" />
-        <Point X="15.75" Y="6.83" />
-      </Path>
-    </AssociationLine>
-    <AssociationLine Name="Invoices" Type="Regira.Fleet.Entities.Interventions.Invoices.Invoice" FixedFromPoint="true" FixedToPoint="true">
-      <Path>
-        <Point X="12.562" Y="9.238" />
-        <Point X="12.562" Y="10.312" />
-        <Point X="10.5" Y="10.312" />
-      </Path>
-    </AssociationLine>
+  <Class Name="Regira.Fleet.Models.Vehicles.Vehicle">
+    <Position X="15" Y="7.5" Width="2" />
     <TypeIdentifier>
-      <HashCode>AAIiAABAAAAtAAEAgAAAAAICBAAAhAQAAAAAACAAAAA=</HashCode>
-      <FileName>Entities\Interventions\Actions\InterventionAction.cs</FileName>
-    </TypeIdentifier>
-    <ShowAsAssociation>
-      <Property Name="Vehicle" />
-    </ShowAsAssociation>
-    <ShowAsCollectionAssociation>
-      <Property Name="InterventionTypes" />
-      <Property Name="Invoices" />
-    </ShowAsCollectionAssociation>
-    <Lollipop Position="0.2" />
-  </Class>
-  <Class Name="Regira.Fleet.Entities.InterventionOperators.InterventionOperator">
-    <Position X="5.25" Y="5" Width="2.25" />
-    <TypeIdentifier>
-      <HashCode>AAByAABBAAAkAEECgAAgQAACAAAABAQAAAAAACAAgAA=</HashCode>
-      <FileName>Entities\InterventionOperators\InterventionOperator.cs</FileName>
-    </TypeIdentifier>
-    <ShowAsCollectionAssociation>
-      <Property Name="InterventionTypes" />
-      <Property Name="Addresses" />
-      <Property Name="ContactData" />
-    </ShowAsCollectionAssociation>
-    <Lollipop Position="0.2" />
-  </Class>
-  <Class Name="Regira.Fleet.Entities.Vehicles.Vehicle">
-    <Position X="15.75" Y="5.5" Width="2" />
-    <TypeIdentifier>
-      <HashCode>AAAiAABAAAAEAEEAgAAgQAACAAgABAQAAAgAACATAAA=</HashCode>
-      <FileName>Entities\Vehicles\Vehicle.cs</FileName>
+      <HashCode>AAASAABAAAAkAEECgAAgQAACAAgABAQAAAgAACATgAA=</HashCode>
+      <FileName>Vehicles\Vehicle.cs</FileName>
     </TypeIdentifier>
     <ShowAsAssociation>
       <Property Name="Brand" />
       <Property Name="VehicleType" />
     </ShowAsAssociation>
+    <ShowAsCollectionAssociation>
+      <Property Name="InterventionTypes" />
+    </ShowAsCollectionAssociation>
     <Lollipop Position="0.2" />
   </Class>
-  <Class Name="Regira.Fleet.Entities.Vehicles.Brands.Brand">
-    <Position X="19.75" Y="5.75" Width="2" />
+  <Class Name="Regira.Fleet.Models.Vehicles.Brands.Brand">
+    <Position X="19" Y="11" Width="2" />
     <TypeIdentifier>
-      <HashCode>AAASAAAAAAAAAEAAgAAgQAACAAAABAQAAAAAAAAAAAA=</HashCode>
-      <FileName>Entities\Vehicles\Brands\Brand.cs</FileName>
+      <HashCode>AAASAAAAAAAgAEAAgAAgQAACAAAABAQAAAAAAAAAAAA=</HashCode>
+      <FileName>Vehicles\Brands\Brand.cs</FileName>
     </TypeIdentifier>
     <Lollipop Position="0.2" />
   </Class>
-  <Class Name="Regira.Fleet.Entities.Vehicles.VehicleTypes.VehicleType">
-    <Position X="15.75" Y="1" Width="2" />
+  <Class Name="Regira.Fleet.Models.Vehicles.VehicleTypes.VehicleType">
+    <Position X="19" Y="5.5" Width="2" />
     <TypeIdentifier>
-      <HashCode>AAASAAAAAAAAAEAAgAAgQAACAAAABAQAAAAAAAAAAAA=</HashCode>
-      <FileName>Entities\Vehicles\VehicleTypes\VehicleType.cs</FileName>
+      <HashCode>AAASAAAAAAAgIEACgAAgQAACAAAABAQAAAAAAAAAAAA=</HashCode>
+      <FileName>Vehicles\VehicleTypes\VehicleType.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsCollectionAssociation>
+      <Property Name="Translations" />
+    </ShowAsCollectionAssociation>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="Regira.Fleet.Models.InterventionOperators.ContactData.OperatorContactData">
+    <Position X="0.5" Y="10.25" Width="2" />
+    <TypeIdentifier>
+      <HashCode>AAACBAAAAAIgAEAAAAAAAAACAAAAAAQAAAAggAAAAAA=</HashCode>
+      <FileName>InterventionOperators\ContactData\OperatorContactData.cs</FileName>
     </TypeIdentifier>
     <Lollipop Position="0.2" />
   </Class>
-  <Class Name="Regira.Fleet.Entities.InterventionOperators.ContactData.InterventionOperatorContactData">
-    <Position X="1.25" Y="7.25" Width="2" />
+  <Class Name="Regira.Fleet.Models.InterventionTypes.InterventionType">
+    <Position X="10" Y="3.5" Width="2.25" />
     <TypeIdentifier>
-      <HashCode>AAAiBAAAAAIgAEAAAAAAAAACAAAAAAQAAAAggAAAAAA=</HashCode>
-      <FileName>Entities\InterventionOperators\ContactData\InterventionOperatorContactData.cs</FileName>
+      <HashCode>AAASAAAAAAAgIEACgAAgQAACAAAABAQAAAAAAAAAAAA=</HashCode>
+      <FileName>InterventionTypes\InterventionType.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsCollectionAssociation>
+      <Property Name="Translations" />
+    </ShowAsCollectionAssociation>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="Regira.Fleet.Models.Interventions.Invoices.Invoice">
+    <Position X="10" Y="13.25" Width="2.25" />
+    <TypeIdentifier>
+      <HashCode>AAACAAAAEAAgAAAACiAAAQABAAAAAACAAAAAAAAAAAA=</HashCode>
+      <FileName>Interventions\Invoices\Invoice.cs</FileName>
     </TypeIdentifier>
     <Lollipop Position="0.2" />
   </Class>
-  <Class Name="Regira.Fleet.Entities.InterventionOperators.Addresses.Address">
-    <Position X="1.25" Y="3.25" Width="2" />
+  <Class Name="Regira.Fleet.Models.InterventionOperators.Addresses.OperatorAddress">
+    <Position X="0.5" Y="8" Width="2" />
     <TypeIdentifier>
-      <HashCode>ACACBAAAAAAgBEgAIAAIAAAAAAAAAAAAAAIAACAAEAA=</HashCode>
-      <FileName>Entities\InterventionOperators\Addresses\Address.cs</FileName>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAIAAAAAAAAA=</HashCode>
+      <FileName>InterventionOperators\Addresses\OperatorAddress.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Regira.Fleet.Models.InterventionOperators.Operators.Operator">
+    <Position X="5.25" Y="7.75" Width="2" />
+    <TypeIdentifier>
+      <HashCode>AABSAABBAAAkAEECgAAgQAACAAAABAQAAAAAACAAgAA=</HashCode>
+      <FileName>InterventionOperators\Operators\Operator.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsCollectionAssociation>
+      <Property Name="Addresses" />
+      <Property Name="ContactData" />
+      <Property Name="InterventionTypes" />
+    </ShowAsCollectionAssociation>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="Regira.Fleet.Models.Addresses.Address">
+    <Position X="0.5" Y="3.25" Width="2" />
+    <TypeIdentifier>
+      <HashCode>ACACBAAAAAAgAEAIIEAAAAAAAAIAAAAAAAIAACIAAAA=</HashCode>
+      <FileName>Addresses\Address.cs</FileName>
     </TypeIdentifier>
     <Lollipop Position="0.2" />
   </Class>
-  <Class Name="Regira.Fleet.Entities.InterventionTypes.InterventionType">
-    <Position X="8.5" Y="1" Width="2" />
+  <Class Name="Regira.Fleet.Models.Interventions.Intervention">
+    <Position X="10" Y="8.25" Width="2.25" />
+    <AssociationLine Name="Invoice" Type="Regira.Fleet.Models.Interventions.Invoices.Invoice" FixedFromPoint="true">
+      <Path>
+        <Point X="11.125" Y="12.238" />
+        <Point X="11.125" Y="13.25" />
+      </Path>
+      <MemberNameLabel ManuallyPlaced="true" ManuallySized="true">
+        <Position X="-0.89" Y="0.46" Height="0.182" Width="0.77" />
+      </MemberNameLabel>
+    </AssociationLine>
+    <AssociationLine Name="InterventionType" Type="Regira.Fleet.Models.InterventionTypes.InterventionType" FixedFromPoint="true">
+      <Path>
+        <Point X="11.125" Y="8.25" />
+        <Point X="11.125" Y="6.526" />
+      </Path>
+    </AssociationLine>
     <TypeIdentifier>
-      <HashCode>AAASAAAAAAAAAEAAgAAgQAACAAAABAQAAAAAAAAAAAA=</HashCode>
-      <FileName>Entities\InterventionTypes\InterventionType.cs</FileName>
+      <HashCode>AAICAABAIAAkAAEAgAAAAAICBAAAhAQQAIAAAKAAIQA=</HashCode>
+      <FileName>Interventions\Intervention.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Property Name="Vehicle" />
+      <Property Name="Operator" />
+      <Property Name="Invoice" />
+      <Property Name="InterventionType" />
+    </ShowAsAssociation>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="Regira.Fleet.Models.InterventionOperators.Operators.OperatorInterventionType">
+    <Position X="5.25" Y="3.5" Width="2" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQAIAAAIAAIAA=</HashCode>
+      <FileName>InterventionOperators\Operators\OperatorInterventionType.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Property Name="InterventionType" />
+    </ShowAsAssociation>
+  </Class>
+  <Class Name="Regira.Fleet.Models.Vehicles.VehicleInterventionType">
+    <Position X="15" Y="3.5" Width="2" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAABAAAgAAQAAAAAIAAAAA=</HashCode>
+      <FileName>Vehicles\VehicleInterventionType.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Property Name="InterventionType" />
+    </ShowAsAssociation>
+  </Class>
+  <Class Name="Regira.Fleet.Models.InterventionTypes.InterventionTypeTranslation">
+    <Position X="10" Y="0.5" Width="2.25" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>InterventionTypes\InterventionTypeTranslation.cs</FileName>
     </TypeIdentifier>
     <Lollipop Position="0.2" />
   </Class>
-  <Class Name="Regira.Fleet.Entities.Interventions.Invoices.Invoice">
-    <Position X="8.5" Y="9" Width="2" />
+  <Class Name="Regira.Fleet.Models.Vehicles.VehicleTypes.VehicleTypeTranslation" Collapsed="true">
+    <Position X="19" Y="0.5" Width="2" />
     <TypeIdentifier>
-      <HashCode>AAAiAAAAEAAAAAAACiAAAQAAAAAAAACAAAAAAAAAAAA=</HashCode>
-      <FileName>Entities\Interventions\Invoices\Invoice.cs</FileName>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Vehicles\VehicleTypes\VehicleTypeTranslation.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="Regira.Fleet.Models.Translations.Translation">
+    <Position X="15" Y="0.5" Width="2" />
+    <TypeIdentifier>
+      <HashCode>QAASAAAAAAAAAEAAAAAAAAAAAQAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Translations\Translation.cs</FileName>
     </TypeIdentifier>
     <Lollipop Position="0.2" />
   </Class>

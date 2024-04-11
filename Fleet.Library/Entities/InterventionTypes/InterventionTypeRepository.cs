@@ -1,4 +1,5 @@
-﻿using Regira.Entities.EFcore.Extensions;
+﻿using Microsoft.EntityFrameworkCore;
+using Regira.Entities.EFcore.Extensions;
 using Regira.Entities.Keywords;
 using Regira.Entities.Models;
 using Regira.Fleet.Abstractions;
@@ -48,5 +49,22 @@ public class InterventionTypeRepository(FleetContextBase dbContext, IFleetAppCon
     public override IQueryable<InterventionType> SortBy(IQueryable<InterventionType> query, EntitySortBy? sortBy = null)
     {
         return query.OrderBy(x => x.Title);
+    }
+    public override IQueryable<InterventionType> AddIncludes(IQueryable<InterventionType> query, EntityIncludes? includes)
+    {
+        return query.Include(x => x.Translations);
+    }
+
+    public override void Modify(InterventionType item, InterventionType original)
+    {
+        base.Modify(item, original);
+
+        dbContext.UpdateEntityChildCollection(original, item, x => x.Translations, (x, collection) => x.Translations = collection);
+    }
+    public override void PrepareItem(InterventionType item)
+    {
+        base.PrepareItem(item);
+
+        item.Translations?.Prepare();
     }
 }

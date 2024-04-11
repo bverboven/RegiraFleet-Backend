@@ -2,18 +2,39 @@
 
 ## EF Core
 
-Supported [Type]:
+Supported Databases:
 - PostgreSQL
 - MySQL
+- SqlServer
 
 ### Migrations
 
-Add-Migration [MigrationName] -context Fleet[Type]Context -project 'Fleet.Data.[Type]'
-Update-Database -context Fleet[Type]Context
+Add-Migration [MigrationName] -context Fleet[Database]Context -project 'Fleet.Data.[Database]'
+Update-Database -context Fleet[Database]Context
+
+```
+Add-Migration [MigrationName] -context FleetMySqlContext -project 'Fleet.Data.MySQL'
+Add-Migration [MigrationName] -context FleetPostgresContext -project 'Fleet.Data.PostgreSQL'
+Add-Migration [MigrationName] -context FleetSqlServerContext -project 'Fleet.Data.SqlServer'
+```
+
+#### Statics views
+
+Add new (empty) migration. Insert following code.
+```cs
+    protected override void Up(MigrationBuilder migrationBuilder)
+    {
+        foreach (var sql in StatisticsViews.All)
+        {
+            migrationBuilder.Sql(sql);
+        }
+    }
+```
+
 
 #### Reverting
-Update-Database [MigrationName] -context Fleet[Type]Context
-Remove-Migration -context Fleet[Type]Context -project 'Fleet.Data.[Type]'
+Update-Database [MigrationName] -context Fleet[Database]Context
+Remove-Migration -context Fleet[Database]Context -project 'Fleet.Data.[Database]'
 
 
 # Accounts
@@ -22,11 +43,16 @@ Remove-Migration -context Fleet[Type]Context -project 'Fleet.Data.[Type]'
 
 ### Migrations
 
-Add-Migration [MigrationName] -context Accounts[Type]Context -project 'Fleet.Identity.Data.[Type]'
-Update-Database -context Accounts[Type]Context
+Add-Migration [MigrationName] -context Accounts[Database]Context -project 'Fleet.Identity.Data.[Database]'
+Update-Database -context Accounts[Database]Context
+
+```
+Add-Migration [MigrationName] -context AccountsMySqlContext -project 'Fleet.Identity.Data.MySQL'
+Add-Migration [MigrationName] -context AccountsPostgresContext -project 'Fleet.Identity.Data.PostgreSQL'
+Add-Migration [MigrationName] -context AccountsSqlServerContext -project 'Fleet.Identity.Data.SqlServer'
+```
 
 #### Reverting
-Update-Database [MigrationName] -context Accounts[Type]Context
-Remove-Migration -context Accounts[Type]Context -project 'Fleet.Identity.Data.[Type]'
-
+Update-Database [MigrationName] -context Accounts[Database]Context
+Remove-Migration -context Accounts[Database]Context -project 'Fleet.Identity.Data.[Database]'
 

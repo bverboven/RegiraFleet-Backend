@@ -2,7 +2,7 @@
 using Regira.Entities.Models.Abstractions;
 using Regira.Fleet.Models.Abstractions;
 using Regira.Fleet.Models.InterventionOperators.Operators;
-using Regira.Fleet.Models.Interventions.Action;
+using Regira.Fleet.Models.Interventions.Actions;
 using Regira.Fleet.Models.Interventions.Invoices;
 using Regira.Fleet.Models.InterventionTypes;
 using Regira.Fleet.Models.Vehicles;
