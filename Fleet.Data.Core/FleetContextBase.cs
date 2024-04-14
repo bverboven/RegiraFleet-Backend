@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Regira.DAL.EFcore.Extensions;
 using Regira.Entities.Attachments.Models;
+using Regira.Fleet.Models.EntityLabels;
 using Regira.Fleet.Models.InterventionOperators.Addresses;
 using Regira.Fleet.Models.InterventionOperators.ContactData;
 using Regira.Fleet.Models.InterventionOperators.Operators;
@@ -17,16 +18,19 @@ namespace Regira.Fleet.Data;
 public abstract class FleetContextBase(DbContextOptions options) : DbContext(options), IFleetDbContext
 {
     public DbSet<Attachment<int>> Attachments { get; set; }
-    public DbSet<Brand> Brands { get; set; }
-    public DbSet<InterventionAction> InterventionActions { get; set; }
-    public DbSet<InterventionAttachment> InterventionAttachments { get; set; }
-    public DbSet<OperatorAttachment> InterventionOperatorAttachments { get; set; }
-    public DbSet<Operator> InterventionOperators { get; set; }
     public DbSet<Intervention> Interventions { get; set; }
+    public DbSet<InterventionAction> InterventionActions { get; set; }
+    public DbSet<EntityLabel> InterventionLabels { get; set; }
+    public DbSet<InterventionAttachment> InterventionAttachments { get; set; }
     public DbSet<InterventionType> InterventionTypes { get; set; }
-    public DbSet<VehicleAttachment> VehicleAttachments { get; set; }
+    public DbSet<Operator> InterventionOperators { get; set; }
+    public DbSet<EntityLabel> InterventionOperatorLabels { get; set; }
+    public DbSet<OperatorAttachment> InterventionOperatorAttachments { get; set; }
     public DbSet<Vehicle> Vehicles { get; set; }
+    public DbSet<Brand> VehicleBrands { get; set; }
     public DbSet<VehicleType> VehicleTypes { get; set; }
+    public DbSet<EntityLabel> VehicleLabels { get; set; }
+    public DbSet<VehicleAttachment> VehicleAttachments { get; set; }
 
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -50,6 +54,12 @@ public abstract class FleetContextBase(DbContextOptions options) : DbContext(opt
         modelBuilder.Entity<Intervention>(entity =>
         {
             entity.HasIndex(e => e.ClientId);
+
+            // Labels
+            entity.HasMany(e => e.Labels)
+                .WithOne()
+                .HasForeignKey(e => e.ObjectId)
+                .HasPrincipalKey(e => e.Id);
 
             // Attachments
             entity.HasMany(e => e.Attachments)
@@ -93,6 +103,12 @@ public abstract class FleetContextBase(DbContextOptions options) : DbContext(opt
                 .WithOne()
                 .HasPrincipalKey(e => e.Id);
 
+            // Labels
+            entity.HasMany(e => e.Labels)
+                .WithOne()
+                .HasForeignKey(e => e.ObjectId)
+                .HasPrincipalKey(e => e.Id);
+
             // Attachments
             entity.HasMany(e => e.Attachments)
                 .WithOne()
@@ -116,6 +132,12 @@ public abstract class FleetContextBase(DbContextOptions options) : DbContext(opt
             entity.HasIndex(e => new { e.ClientId, e.Code })
                 .IsUnique();
             entity.HasIndex(cd => cd.NormalizedTitle);
+
+            // Labels
+            entity.HasMany(e => e.Labels)
+                .WithOne()
+                .HasForeignKey(e => e.ObjectId)
+                .HasPrincipalKey(e => e.Id);
 
             // Attachments
             entity.HasMany(e => e.Attachments)

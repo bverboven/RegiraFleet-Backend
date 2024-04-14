@@ -75,7 +75,7 @@ public class DataSeeder(FleetContextBase dbContext, IEntityService<Brand> brandS
 
     public async Task SeedBrands()
     {
-        var items = await dbContext.Brands.ToListAsync();
+        var items = await dbContext.VehicleBrands.ToListAsync();
         if (!items.Any())
         {
             items.AddRange(new Brand[]
@@ -230,7 +230,7 @@ public class DataSeeder(FleetContextBase dbContext, IEntityService<Brand> brandS
     }
     public async Task SeedVehicles(string clientId)
     {
-        var brands = await dbContext.Brands
+        var brands = await dbContext.VehicleBrands
             .Where(x => x.ClientId == clientId)
             .AsNoTracking()
             .ToArrayAsync();

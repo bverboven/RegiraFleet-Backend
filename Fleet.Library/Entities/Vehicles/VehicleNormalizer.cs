@@ -22,7 +22,7 @@ public class VehicleNormalizer(INormalizer normalizer, FleetContextBase dbContex
     public override void SetNormalizedContent(Vehicle item)
     {
         var brand = item.BrandId.HasValue
-            ? item.Brand ?? dbContext.Brands.Find(item.BrandId)
+            ? item.Brand ?? dbContext.VehicleBrands.Find(item.BrandId)
             : null;
         var type = item.VehicleTypeId.HasValue
             ? item.VehicleType ?? dbContext.VehicleTypes.Find(item.VehicleTypeId)
