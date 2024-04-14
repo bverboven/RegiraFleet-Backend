@@ -1,4 +1,5 @@
 ﻿using Regira.Entities.Web.Attachments.Models;
+using Regira.Fleet.Models.EntityLabels;
 using Regira.Fleet.Models.InterventionTypes;
 using Regira.Fleet.Models.Vehicles.Brands;
 using Regira.Fleet.Models.Vehicles.VehicleTypes;
@@ -23,6 +24,6 @@ public class VehicleDto
     public virtual BrandDto? Brand { get; set; }
     public virtual VehicleTypeDto? VehicleType { get; set; }
     public ICollection<InterventionTypeDto>? InterventionTypes { get; set; }
-    //public ICollection<InterventionDto>? Interventions { get; set; }
+    public ICollection<EntityLabelDto>? Labels { get; set; }
     public ICollection<EntityAttachmentDto>? Attachments { get; set; }
 }

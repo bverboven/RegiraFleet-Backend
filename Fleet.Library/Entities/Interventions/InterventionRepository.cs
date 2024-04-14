@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Regira.Entities.EFcore.Attachments;
+using Regira.Entities.EFcore.Extensions;
 using Regira.Entities.Keywords;
 using Regira.Fleet.Abstractions;
 using Regira.Fleet.Core.Abstractions;
@@ -99,6 +100,11 @@ public class InterventionRepository(FleetContextBase dbContext, IFleetAppContext
                 query = query
                     .Include(x => x.InterventionType);
             }
+            // Labels
+            if (includes.Value.HasFlag(InterventionIncludes.Labels))
+            {
+                query = query.Include(x => x.Labels!.OrderBy(a => a.SortOrder));
+            }
             // Attachments
             if (includes.Value.HasFlag(InterventionIncludes.Attachments))
             {
@@ -121,6 +127,8 @@ public class InterventionRepository(FleetContextBase dbContext, IFleetAppContext
         {
             DbContext.Entry(original.Invoice).State = EntityState.Deleted;
         }
+        
+        DbContext.UpdateEntityChildCollection(original, item, x => x.Labels, (x, collection) => x.Labels = collection);
 
         if (item.Attachments != null)
         {
@@ -137,5 +145,7 @@ public class InterventionRepository(FleetContextBase dbContext, IFleetAppContext
         {
             item.Invoice.InterventionId = item.Id;
         }
+        
+        item.Labels?.Prepare();
     }
 }

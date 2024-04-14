@@ -1,6 +1,7 @@
 ﻿using Regira.Entities.Attachments.Abstractions;
 using Regira.Entities.Models.Abstractions;
 using Regira.Fleet.Models.Abstractions;
+using Regira.Fleet.Models.EntityLabels;
 using Regira.Fleet.Models.Vehicles.Brands;
 using Regira.Fleet.Models.Vehicles.VehicleTypes;
 using Regira.Normalizing;
@@ -9,7 +10,8 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Regira.Fleet.Models.Vehicles;
 
-public class Vehicle : IFleetEntity, IEntityWithSerial, IHasCode, IArchivable, IHasAttachments<VehicleAttachment>, IHasAttachments, IHasDescription, IHasNormalizedTitle, IHasNormalizedContent
+public class Vehicle : IFleetEntity, IEntityWithSerial, IHasCode, IArchivable, IHasDescription, IHasNormalizedTitle, IHasNormalizedContent,
+    IHasLabels<EntityLabel>, IHasLabels, IHasAttachments, IHasAttachments<VehicleAttachment>
 {
     public int Id { get; set; }
     [StringLength(32)]
@@ -39,6 +41,14 @@ public class Vehicle : IFleetEntity, IEntityWithSerial, IHasCode, IArchivable, I
     public virtual VehicleType? VehicleType { get; set; }
     public ICollection<VehicleInterventionType>? InterventionTypes { get; set; }
     //public ICollection<Intervention>? Interventions { get; set; }
+
+    // Labels
+    public ICollection<EntityLabel>? Labels { get; set; }
+    ICollection<IEntityLabel>? IHasLabels.Labels
+    {
+        get => Labels?.Cast<IEntityLabel>().ToList();
+        set => Labels = value?.Cast<EntityLabel>().ToList();
+    }
 
 
     [NotMapped]

@@ -6,6 +6,7 @@ using Regira.Entities.Models;
 using Regira.Fleet.Abstractions;
 using Regira.Fleet.Core.Abstractions;
 using Regira.Fleet.Data;
+using Regira.Fleet.Extensions;
 using Regira.Fleet.Models.Vehicles;
 
 namespace Regira.Fleet.Entities.Vehicles;
@@ -97,12 +98,11 @@ public class VehicleRepository(FleetContextBase dbContext, IFleetAppContext appC
                     .Include(x => x.InterventionTypes!)
                     .ThenInclude(x => x.InterventionType);
             }
-            // Interventions
-            //if (includes.Value.HasFlag(VehicleIncludes.Interventions))
-            //{
-            //    query = query
-            //        .Include(x => x.Interventions!.OrderByDescending(i => i.InterventionDate).Take(10));
-            //}
+            // Labels
+            if (includes.Value.HasFlag(VehicleIncludes.Labels))
+            {
+                query = query.Include(x => x.Labels!.OrderBy(a => a.SortOrder));
+            }
             // Attachments
             if (includes.Value.HasFlag(VehicleIncludes.Attachments))
             {
@@ -140,9 +140,17 @@ public class VehicleRepository(FleetContextBase dbContext, IFleetAppContext appC
                 .ToList();
         }
 
+        DbContext.UpdateEntityChildCollection(original, item, x => x.Labels, (x, collection) => x.Labels = collection);
+
         if (item.Attachments != null)
         {
             DbContext.ModifyEntityAttachments(original, item);
         }
+    }
+    public override void PrepareItem(Vehicle item)
+    {
+        base.PrepareItem(item);
+
+        item.Labels?.Prepare();
     }
 }

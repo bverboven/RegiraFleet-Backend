@@ -1,6 +1,7 @@
 ﻿using Regira.Entities.Attachments.Abstractions;
 using Regira.Entities.Models.Abstractions;
 using Regira.Fleet.Models.Abstractions;
+using Regira.Fleet.Models.EntityLabels;
 using Regira.Fleet.Models.InterventionOperators.Addresses;
 using Regira.Fleet.Models.InterventionOperators.ContactData;
 using System.ComponentModel.DataAnnotations;
@@ -9,7 +10,8 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace Regira.Fleet.Models.InterventionOperators.Operators;
 
 // InterventionOperator ??
-public class Operator : IFleetEntity, IEntityWithSerial, IHasCode, IHasNormalizedTitle, IHasDescription, IHasNormalizedContent, IArchivable, IHasAttachments<OperatorAttachment>, IHasAttachments
+public class Operator : IFleetEntity, IEntityWithSerial, IHasCode, IHasNormalizedTitle, IHasDescription, IHasNormalizedContent, IArchivable, 
+    IHasLabels<EntityLabel>, IHasLabels, IHasAttachments<OperatorAttachment>, IHasAttachments
 {
     public int Id { get; set; }
     [StringLength(32)]
@@ -33,6 +35,14 @@ public class Operator : IFleetEntity, IEntityWithSerial, IHasCode, IHasNormalize
     public ICollection<OperatorAddress>? Addresses { get; set; }
     public ICollection<OperatorContactData>? ContactData { get; set; }
     public ICollection<OperatorInterventionType>? InterventionTypes { get; set; }
+
+    // Labels
+    public ICollection<EntityLabel>? Labels { get; set; }
+    ICollection<IEntityLabel>? IHasLabels.Labels
+    {
+        get => Labels?.Cast<IEntityLabel>().ToList();
+        set => Labels = value?.Cast<EntityLabel>().ToList();
+    }
 
     [NotMapped]
     public bool? HasAttachment { get; set; }

@@ -19,6 +19,7 @@ using Regira.Fleet.Data.MySQL;
 using Regira.Fleet.Data.PostgreSQL;
 using Regira.Fleet.Data.SqlServer;
 using Regira.Fleet.Entities.Countries;
+using Regira.Fleet.Entities.EntityLabels;
 using Regira.Fleet.Entities.InterventionOperators.Normalizers;
 using Regira.Fleet.Entities.InterventionOperators.Operators;
 using Regira.Fleet.Entities.Interventions;
@@ -201,15 +202,16 @@ public static class ServiceCollectionExtensions
            .AddNormalizers(o =>
            {
                o
-                   // simple normalizers
-                   .AddTransient<IFleetEntityNormalizer<Brand>, FleetEntityNormalizer<Brand>>()
-                   .AddTransient<IFleetEntityNormalizer<InterventionType>, FleetEntityNormalizer<InterventionType>>()
-                   .AddTransient<IFleetEntityNormalizer<VehicleType>, FleetEntityNormalizer<VehicleType>>()
                    // helpers
                    .AddTransient<AddressNormalizer>()
                    .AddTransient(p => new PhoneNumberFormatter(p.GetRequiredService<ICultureContext>().Culture))
                    .AddTransient<ContactDataNormalizer>()
+                   .AddTransient<EntityLabelNormalizer>()
                    .AddTransient<IdentificationNumberNormalizer>()
+                   // simple normalizers
+                   .AddTransient<IFleetEntityNormalizer<Brand>, FleetEntityNormalizer<Brand>>()
+                   .AddTransient<IFleetEntityNormalizer<InterventionType>, FleetEntityNormalizer<InterventionType>>()
+                   .AddTransient<IFleetEntityNormalizer<VehicleType>, FleetEntityNormalizer<VehicleType>>()
                    // custom normalizers
                    .AddTransient<IFleetEntityNormalizer<Intervention>, InterventionNormalizer>()
                    .AddTransient<IFleetEntityNormalizer<Operator>, OperatorNormalizer>()

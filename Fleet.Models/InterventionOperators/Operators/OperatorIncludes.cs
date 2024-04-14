@@ -7,6 +7,7 @@ public enum OperatorIncludes
     Addresses = 1 << 0,
     ContactData = 1 << 1,
     InterventionTypes = 1 << 2,
-    Attachments = 1 << 3,
-    All = Addresses | ContactData | InterventionTypes | Attachments
+    Labels = 1 << 3,
+    Attachments = 1 << 4,
+    All = Addresses | ContactData | InterventionTypes | Labels | Attachments
 }

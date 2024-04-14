@@ -100,6 +100,11 @@ public class OperatorRepository(FleetContextBase dbContext, IFleetAppContext app
                     .Include(x => x.InterventionTypes!)
                     .ThenInclude(x => x.InterventionType);
             }
+            // Labels
+            if (includes.Value.HasFlag(OperatorIncludes.Labels))
+            {
+                query = query.Include(x => x.Labels!.OrderBy(a => a.SortOrder));
+            }
             // Attachments
             if (includes.Value.HasFlag(OperatorIncludes.Attachments))
             {
@@ -114,9 +119,14 @@ public class OperatorRepository(FleetContextBase dbContext, IFleetAppContext app
 
     public override void Modify(Operator item, Operator original)
     {
+        // Addresses
         DbContext.UpdateEntityChildCollection(original, item, x => x.Addresses, (x, collection) => x.Addresses = collection);
+        // Contact Data
         DbContext.UpdateEntityChildCollection(original, item, x => x.ContactData, (x, collection) => x.ContactData = collection);
+        // Labels
+        DbContext.UpdateEntityChildCollection(original, item, x => x.Labels, (x, collection) => x.Labels = collection);
 
+        // Intervent Types
         if (item.InterventionTypes != null)
         {
             var itemsToRemove = original.InterventionTypes?
@@ -137,8 +147,8 @@ public class OperatorRepository(FleetContextBase dbContext, IFleetAppContext app
                 .Except(itemsToRemove)
                 .Concat(itemsToAdd)
                 .ToList();
-        }
-
+        }        
+        // Attachments
         if (item.Attachments != null)
         {
             DbContext.ModifyEntityAttachments(original, item);
@@ -148,9 +158,10 @@ public class OperatorRepository(FleetContextBase dbContext, IFleetAppContext app
     }
     public override void PrepareItem(Operator item)
     {
+        base.PrepareItem(item);
+
         item.Addresses?.Prepare();
         item.ContactData?.Prepare();
-
-        base.PrepareItem(item);
+        item.Labels?.Prepare();
     }
 }

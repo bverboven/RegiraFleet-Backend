@@ -1,4 +1,5 @@
 ﻿using Regira.Entities.Web.Attachments.Models;
+using Regira.Fleet.Models.EntityLabels;
 using Regira.Fleet.Models.InterventionOperators.Operators;
 using Regira.Fleet.Models.Interventions.Invoices;
 using Regira.Fleet.Models.InterventionTypes;
@@ -27,5 +28,6 @@ public class InterventionDto
     public OperatorDto? Operator { get; set; }
     public InvoiceDto? Invoice { get; set; }
     public InterventionTypeDto? InterventionType { get; set; }
+    public ICollection<EntityLabelDto>? Labels { get; set; }
     public ICollection<EntityAttachmentDto>? Attachments { get; set; }
 }

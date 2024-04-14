@@ -1,5 +1,6 @@
 ﻿using Regira.Entities.Web.Attachments.Models;
 using Regira.Fleet.Models.Addresses;
+using Regira.Fleet.Models.EntityLabels;
 using Regira.Fleet.Models.InterventionOperators.ContactData;
 using Regira.Fleet.Models.InterventionTypes;
 using System.ComponentModel.DataAnnotations;
@@ -21,5 +22,6 @@ public class OperatorInputDto
     public ICollection<AddressInputDto>? Addresses { get; set; }
     public ICollection<OperatorContactDataInputDto>? ContactData { get; set; }
     public ICollection<InterventionTypeInputDto>? InterventionTypes { get; set; }
+    public ICollection<EntityLabelInputDto>? Labels { get; set; }
     public ICollection<EntityAttachmentInputDto>? Attachments { get; set; }
 }

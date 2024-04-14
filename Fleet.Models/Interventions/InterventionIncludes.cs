@@ -8,6 +8,7 @@ public enum InterventionIncludes
     Vehicle = 1 << 1,
     Operator = 1 << 2,
     InterventionType = 1 << 3,
-    Attachments = 1 << 4,
-    All = Invoice | Vehicle | Operator | InterventionType | Attachments
+    Labels = 1 << 4,
+    Attachments = 1 << 5,
+    All = Invoice | Vehicle | Operator | InterventionType | Labels | Attachments
 }

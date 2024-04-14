@@ -1,12 +1,13 @@
 ﻿using Regira.Fleet.Core.Abstractions;
 using Regira.Fleet.Core.Normalizing;
+using Regira.Fleet.Entities.EntityLabels;
 using Regira.Fleet.Models.InterventionOperators.Operators;
 using Regira.Normalizing.Abstractions;
 
 namespace Regira.Fleet.Entities.InterventionOperators.Normalizers;
 
 public class OperatorNormalizer(INormalizer defaultNormalizer, IdentificationNumberNormalizer idNumberNormalizer,
-    ContactDataNormalizer contactDataNormalizer, AddressNormalizer addressNormalizer, ICultureContext cultureContext)
+    ContactDataNormalizer contactDataNormalizer, AddressNormalizer addressNormalizer, EntityLabelNormalizer labelNormalizer, ICultureContext cultureContext)
     : FleetEntityNormalizer<Operator>(defaultNormalizer)
 {
     public override void HandleNormalize(Operator? item)
@@ -37,6 +38,7 @@ public class OperatorNormalizer(INormalizer defaultNormalizer, IdentificationNum
             }
         }
 
+        labelNormalizer.NormalizeItem(item);
 
         // Title
         item.NormalizedTitle = DefaultNormalizer.Normalize(item.Title);
@@ -57,9 +59,15 @@ public class OperatorNormalizer(INormalizer defaultNormalizer, IdentificationNum
         {
             contentEntries.AddRange(item.ContactData.Select(a => a.NormalizedValue));
         }
+
         if (item.Addresses?.Any() == true)
         {
             contentEntries.AddRange(item.Addresses.Select(a => a.NormalizedContent));
+        }
+        
+        if (item.Labels?.Any() == true)
+        {
+            contentEntries.AddRange(item.Labels.Select(a => a.NormalizedContent));
         }
 
         item.NormalizedContent = string.Join(' ', contentEntries.Where(x => !string.IsNullOrWhiteSpace(x)));

@@ -1,4 +1,5 @@
 ﻿using Regira.Entities.Web.Attachments.Models;
+using Regira.Fleet.Models.EntityLabels;
 using Regira.Fleet.Models.Interventions.Invoices;
 using System.ComponentModel.DataAnnotations;
 
@@ -18,5 +19,6 @@ public class InterventionInputDto
 
 
     public InvoiceInputDto? Invoice { get; set; }
+    public ICollection<EntityLabelInputDto>? Labels { get; set; }
     public ICollection<EntityAttachmentInputDto>? Attachments { get; set; }
 }

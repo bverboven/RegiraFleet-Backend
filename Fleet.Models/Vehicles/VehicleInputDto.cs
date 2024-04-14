@@ -1,4 +1,5 @@
 ﻿using Regira.Entities.Web.Attachments.Models;
+using Regira.Fleet.Models.EntityLabels;
 using Regira.Fleet.Models.InterventionTypes;
 using System.ComponentModel.DataAnnotations;
 
@@ -19,5 +20,6 @@ public class VehicleInputDto
     public string? Description { get; set; }
     public bool IsArchived { get; set; }
     public ICollection<InterventionTypeInputDto>? InterventionTypes { get; set; }
+    public ICollection<EntityLabelInputDto>? Labels { get; set; }
     public ICollection<EntityAttachmentInputDto>? Attachments { get; set; }
 }

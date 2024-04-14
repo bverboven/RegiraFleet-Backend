@@ -1,6 +1,7 @@
 ﻿using Regira.Entities.Attachments.Abstractions;
 using Regira.Entities.Models.Abstractions;
 using Regira.Fleet.Models.Abstractions;
+using Regira.Fleet.Models.EntityLabels;
 using Regira.Fleet.Models.InterventionOperators.Operators;
 using Regira.Fleet.Models.Interventions.Actions;
 using Regira.Fleet.Models.Interventions.Invoices;
@@ -11,7 +12,8 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Regira.Fleet.Models.Interventions;
 
-public class Intervention : IFleetEntity, IEntityWithSerial, IHasDescription, IHasNormalizedContent, IHasAttachments, IHasAttachments<InterventionAttachment>
+public class Intervention : IFleetEntity, IEntityWithSerial, IHasDescription, IHasNormalizedContent, 
+    IHasLabels<EntityLabel>, IHasLabels, IHasAttachments, IHasAttachments<InterventionAttachment>
 {
     public int Id { get; set; }
     [StringLength(32)]
@@ -35,6 +37,14 @@ public class Intervention : IFleetEntity, IEntityWithSerial, IHasDescription, IH
     public Invoice? Invoice { get; set; }
     public InterventionType? InterventionType { get; set; }
     public ICollection<InterventionAction>? Actions { get; set; }
+
+    // Labels
+    public ICollection<EntityLabel>? Labels { get; set; }
+    ICollection<IEntityLabel>? IHasLabels.Labels
+    {
+        get => Labels?.Cast<IEntityLabel>().ToList();
+        set => Labels = value?.Cast<EntityLabel>().ToList();
+    }
 
     [NotMapped]
     public bool? HasAttachment { get; set; }

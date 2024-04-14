@@ -7,7 +7,7 @@ public enum VehicleIncludes
     Brand = 1 << 0,
     VehicleType = 1 << 1,
     InterventionTypes = 1 << 2,
-    Attachments = 1 << 3,
-    //Interventions = 1 << 4,
-    All = Brand | VehicleType | InterventionTypes | Attachments //| Interventions
+    Labels = 1 << 3,
+    Attachments = 1 << 4,
+    All = Brand | VehicleType | InterventionTypes | Labels | Attachments
 }
