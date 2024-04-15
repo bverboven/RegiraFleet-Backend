@@ -2,7 +2,7 @@
 using System.ComponentModel.DataAnnotations;
 
 namespace Regira.Fleet.Models.EntityLabels;
-public class EntityLabel : IEntityLabel, IEntityWithSerial, IHasNormalizedContent
+public abstract class EntityLabelBase : IEntityLabel, IEntityWithSerial, IHasNormalizedContent
 {
     public int Id { get; set; }
     public int ObjectId { get; set; }

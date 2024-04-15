@@ -1,11 +1,12 @@
 ﻿using AutoMapper;
+using Regira.Fleet.Models.EntityLabels;
 using Regira.Fleet.Models.Interventions.Invoices;
 
 namespace Regira.Fleet.Models.Interventions;
 
 public class InterventionProfile : Profile
 {
-	public InterventionProfile()
+    public InterventionProfile()
     {
         CreateMap<Intervention, InterventionDto>();
         CreateMap<InterventionInputDto, Intervention>()
@@ -22,5 +23,8 @@ public class InterventionProfile : Profile
             });
         CreateMap<Invoice, InvoiceDto>();
         CreateMap<InvoiceInputDto, Invoice>();
+
+        CreateMap<InterventionLabel, EntityLabelDto>();
+        CreateMap<EntityLabelInputDto, InterventionLabel>();
     }
 }

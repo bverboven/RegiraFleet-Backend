@@ -11,7 +11,7 @@ namespace Regira.Fleet.Models.InterventionOperators.Operators;
 
 // InterventionOperator ??
 public class Operator : IFleetEntity, IEntityWithSerial, IHasCode, IHasNormalizedTitle, IHasDescription, IHasNormalizedContent, IArchivable, 
-    IHasLabels<EntityLabel>, IHasLabels, IHasAttachments<OperatorAttachment>, IHasAttachments
+    IHasLabels<OperatorLabel>, IHasLabels, IHasAttachments<OperatorAttachment>, IHasAttachments
 {
     public int Id { get; set; }
     [StringLength(32)]
@@ -37,11 +37,11 @@ public class Operator : IFleetEntity, IEntityWithSerial, IHasCode, IHasNormalize
     public ICollection<OperatorInterventionType>? InterventionTypes { get; set; }
 
     // Labels
-    public ICollection<EntityLabel>? Labels { get; set; }
+    public ICollection<OperatorLabel>? Labels { get; set; }
     ICollection<IEntityLabel>? IHasLabels.Labels
     {
         get => Labels?.Cast<IEntityLabel>().ToList();
-        set => Labels = value?.Cast<EntityLabel>().ToList();
+        set => Labels = value?.Cast<OperatorLabel>().ToList();
     }
 
     [NotMapped]

@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using Regira.Fleet.Models.Addresses;
+using Regira.Fleet.Models.EntityLabels;
 using Regira.Fleet.Models.InterventionOperators.Addresses;
 using Regira.Fleet.Models.InterventionOperators.ContactData;
 using Regira.Fleet.Models.InterventionOperators.Operators;
@@ -35,9 +36,14 @@ public class OperatorProfile : Profile
                         .ToList();
                 }
             });
+
         CreateMap<OperatorAddress, AddressDto>();
         CreateMap<AddressInputDto, OperatorAddress>();
+
         CreateMap<OperatorContactData, OperatorContactDataDto>();
         CreateMap<OperatorContactDataInputDto, OperatorContactData>();
+
+        CreateMap<OperatorLabel, EntityLabelDto>();
+        CreateMap<EntityLabelInputDto, OperatorLabel>();
     }
 }

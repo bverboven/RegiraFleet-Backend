@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Regira.Fleet.Models.EntityLabels;
 using Regira.Fleet.Models.InterventionTypes;
 using Regira.Fleet.Models.Translations;
 using Regira.Fleet.Models.Vehicles.Brands;
@@ -34,6 +35,7 @@ public class VehicleProfile : Profile
                         .ToList();
                 }
             });
+
         CreateMap<VehicleType, VehicleTypeDto>();
         CreateMap<VehicleTypeInputDto, VehicleType>()
             .AfterMap((dto, model) =>
@@ -42,6 +44,10 @@ public class VehicleProfile : Profile
                     ?.Where(x => !string.IsNullOrWhiteSpace(x.Title))
                     .ToList();
             });
+
+        CreateMap<VehicleLabel, EntityLabelDto>();
+        CreateMap<EntityLabelInputDto, VehicleLabel>();
+
         CreateMap<VehicleTypeTranslation, TranslationDto>()
             .ReverseMap();
         CreateMap<Brand, BrandDto>();

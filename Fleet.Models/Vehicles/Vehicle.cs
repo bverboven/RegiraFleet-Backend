@@ -11,7 +11,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace Regira.Fleet.Models.Vehicles;
 
 public class Vehicle : IFleetEntity, IEntityWithSerial, IHasCode, IArchivable, IHasDescription, IHasNormalizedTitle, IHasNormalizedContent,
-    IHasLabels<EntityLabel>, IHasLabels, IHasAttachments, IHasAttachments<VehicleAttachment>
+    IHasLabels<VehicleLabel>, IHasLabels, IHasAttachments, IHasAttachments<VehicleAttachment>
 {
     public int Id { get; set; }
     [StringLength(32)]
@@ -43,11 +43,11 @@ public class Vehicle : IFleetEntity, IEntityWithSerial, IHasCode, IArchivable, I
     //public ICollection<Intervention>? Interventions { get; set; }
 
     // Labels
-    public ICollection<EntityLabel>? Labels { get; set; }
+    public ICollection<VehicleLabel>? Labels { get; set; }
     ICollection<IEntityLabel>? IHasLabels.Labels
     {
         get => Labels?.Cast<IEntityLabel>().ToList();
-        set => Labels = value?.Cast<EntityLabel>().ToList();
+        set => Labels = value?.Cast<VehicleLabel>().ToList();
     }
 
 

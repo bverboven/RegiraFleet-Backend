@@ -1,7 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Regira.DAL.EFcore.Extensions;
 using Regira.Entities.Attachments.Models;
-using Regira.Fleet.Models.EntityLabels;
 using Regira.Fleet.Models.InterventionOperators.Addresses;
 using Regira.Fleet.Models.InterventionOperators.ContactData;
 using Regira.Fleet.Models.InterventionOperators.Operators;
@@ -20,16 +19,16 @@ public abstract class FleetContextBase(DbContextOptions options) : DbContext(opt
     public DbSet<Attachment<int>> Attachments { get; set; }
     public DbSet<Intervention> Interventions { get; set; }
     public DbSet<InterventionAction> InterventionActions { get; set; }
-    public DbSet<EntityLabel> InterventionLabels { get; set; }
+    public DbSet<InterventionLabel> InterventionLabels { get; set; }
     public DbSet<InterventionAttachment> InterventionAttachments { get; set; }
     public DbSet<InterventionType> InterventionTypes { get; set; }
     public DbSet<Operator> InterventionOperators { get; set; }
-    public DbSet<EntityLabel> InterventionOperatorLabels { get; set; }
+    public DbSet<OperatorLabel> InterventionOperatorLabels { get; set; }
     public DbSet<OperatorAttachment> InterventionOperatorAttachments { get; set; }
     public DbSet<Vehicle> Vehicles { get; set; }
     public DbSet<Brand> VehicleBrands { get; set; }
     public DbSet<VehicleType> VehicleTypes { get; set; }
-    public DbSet<EntityLabel> VehicleLabels { get; set; }
+    public DbSet<VehicleLabel> VehicleLabels { get; set; }
     public DbSet<VehicleAttachment> VehicleAttachments { get; set; }
 
 

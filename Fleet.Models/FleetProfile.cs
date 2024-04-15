@@ -12,7 +12,6 @@ public class FleetProfile : Profile
     public FleetProfile()
     {
         var _ = new Profile[] {
-            new EntityLabelProfile(),
             new VehicleProfile(),
             new OperatorProfile(),
             new InterventionTypeProfile(),

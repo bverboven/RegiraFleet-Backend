@@ -13,7 +13,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace Regira.Fleet.Models.Interventions;
 
 public class Intervention : IFleetEntity, IEntityWithSerial, IHasDescription, IHasNormalizedContent, 
-    IHasLabels<EntityLabel>, IHasLabels, IHasAttachments, IHasAttachments<InterventionAttachment>
+    IHasLabels<InterventionLabel>, IHasLabels, IHasAttachments, IHasAttachments<InterventionAttachment>
 {
     public int Id { get; set; }
     [StringLength(32)]
@@ -39,11 +39,11 @@ public class Intervention : IFleetEntity, IEntityWithSerial, IHasDescription, IH
     public ICollection<InterventionAction>? Actions { get; set; }
 
     // Labels
-    public ICollection<EntityLabel>? Labels { get; set; }
+    public ICollection<InterventionLabel>? Labels { get; set; }
     ICollection<IEntityLabel>? IHasLabels.Labels
     {
         get => Labels?.Cast<IEntityLabel>().ToList();
-        set => Labels = value?.Cast<EntityLabel>().ToList();
+        set => Labels = value?.Cast<InterventionLabel>().ToList();
     }
 
     [NotMapped]
