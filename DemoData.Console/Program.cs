@@ -18,6 +18,10 @@ var host = CreateHostBuilder(args)
     .Build();
 
 var accountContext = host.Services.GetRequiredService<AccountsContextBase>();
+if (!accountContext.Database.GetDbConnection().Database.Contains("demo", StringComparison.OrdinalIgnoreCase))
+{
+    throw new Exception("Not a demo database?");
+}
 await accountContext.Database.EnsureDeletedAsync();
 //await accountContext.Database.EnsureCreatedAsync();
 await accountContext.Database.MigrateAsync();
@@ -26,9 +30,13 @@ var accountSeeder = host.Services.GetRequiredService<AccountSeeder>();
 var clients = await accountSeeder.Seed();
 
 var fleetContext = host.Services.GetRequiredService<FleetContextBase>();
+if (!fleetContext.Database.GetDbConnection().Database.Contains("demo", StringComparison.OrdinalIgnoreCase))
+{
+    throw new Exception("Not a demo database?");
+}
 await fleetContext.Database.EnsureDeletedAsync();
-await fleetContext.Database.EnsureCreatedAsync();
-//await fleetContext.Database.MigrateAsync();
+//await fleetContext.Database.EnsureCreatedAsync();
+await fleetContext.Database.MigrateAsync();
 
 var dataSeeder = host.Services.GetRequiredService<DataSeeder>();
 await dataSeeder.Seed(clients);

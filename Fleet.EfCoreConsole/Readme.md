@@ -14,8 +14,11 @@ Update-Database -context Fleet[Database]Context
 
 ```
 Add-Migration [MigrationName] -context FleetMySqlContext -project 'Fleet.Data.MySQL'
+Update-Database -context FleetMySqlContext
 Add-Migration [MigrationName] -context FleetPostgresContext -project 'Fleet.Data.PostgreSQL'
+Update-Database -context FleetPostgresContext
 Add-Migration [MigrationName] -context FleetSqlServerContext -project 'Fleet.Data.SqlServer'
+Update-Database -context FleetSqlServerContext
 ```
 
 #### Statics views

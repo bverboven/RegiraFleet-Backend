@@ -46,17 +46,25 @@ static void SetupConfig(HostBuilderContext context, IConfigurationBuilder builde
 static void ConfigureServices(HostBuilderContext context, IServiceCollection services)
 {
     var config = context.Configuration;
+    var accountsDbType = config["Database:Accounts:Type"];
     var accountsConnectionString = config["Database:Accounts:ConnectionString"];
+    var fleetDbType = config["Database:Fleet:Type"];
     var fleetConnectionString = config["Database:Fleet:ConnectionString"];
 
     // PostgreSQL
-    //services.AddDbContext<AccountsPostgresContext>(db => db.UseNpgsql(accountsConnectionString, o => o.MigrationsAssembly(typeof(AccountsPostgresContext).Assembly.GetName().Name)));
-    //services.AddDbContext<FleetPostgresContext>(db => db.UseNpgsql(fleetConnectionString, o => o.MigrationsAssembly(typeof(FleetPostgresContext).Assembly.GetName().Name)));
+    if (accountsDbType == "PostgreSQL")
+        services.AddDbContext<AccountsPostgresContext>(db => db.UseNpgsql(accountsConnectionString, o => o.MigrationsAssembly(typeof(AccountsPostgresContext).Assembly.GetName().Name)));
+    if (fleetDbType == "PostgreSQL")
+        services.AddDbContext<FleetPostgresContext>(db => db.UseNpgsql(fleetConnectionString, o => o.MigrationsAssembly(typeof(FleetPostgresContext).Assembly.GetName().Name)));
     // MySQL
-    //services.AddDbContext<AccountsMySqlContext>(db => db.UseMySql(accountsConnectionString, ServerVersion.AutoDetect(accountsConnectionString), o => o.MigrationsAssembly(typeof(AccountsMySqlContext).Assembly.GetName().Name)));
-    //services.AddDbContext<FleetMySqlContext>(db => db.UseMySql(fleetConnectionString, ServerVersion.AutoDetect(fleetConnectionString), o => o.MigrationsAssembly(typeof(FleetMySqlContext).Assembly.GetName().Name)));
+    if (accountsDbType == "MySQL")
+        services.AddDbContext<AccountsMySqlContext>(db => db.UseMySql(accountsConnectionString, ServerVersion.AutoDetect(accountsConnectionString), o => o.MigrationsAssembly(typeof(AccountsMySqlContext).Assembly.GetName().Name)));
+    if (fleetDbType == "MySQL")
+        services.AddDbContext<FleetMySqlContext>(db => db.UseMySql(fleetConnectionString, ServerVersion.AutoDetect(fleetConnectionString), o => o.MigrationsAssembly(typeof(FleetMySqlContext).Assembly.GetName().Name)));
     // SqlServer
-    services.AddDbContext<AccountsSqlServerContext>(db => db.UseSqlServer(accountsConnectionString, o => o.MigrationsAssembly(typeof(AccountsSqlServerContext).Assembly.GetName().Name)));
-    services.AddDbContext<FleetSqlServerContext>(db => db.UseSqlServer(fleetConnectionString, o => o.MigrationsAssembly(typeof(FleetSqlServerContext).Assembly.GetName().Name)));
+    if (accountsDbType == "SqlServer")
+        services.AddDbContext<AccountsSqlServerContext>(db => db.UseSqlServer(accountsConnectionString, o => o.MigrationsAssembly(typeof(AccountsSqlServerContext).Assembly.GetName().Name)));
+    if (fleetDbType == "SqlServer")
+        services.AddDbContext<FleetSqlServerContext>(db => db.UseSqlServer(fleetConnectionString, o => o.MigrationsAssembly(typeof(FleetSqlServerContext).Assembly.GetName().Name)));
 }
 #endregion
