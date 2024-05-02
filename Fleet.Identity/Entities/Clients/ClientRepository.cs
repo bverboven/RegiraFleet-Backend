@@ -4,6 +4,7 @@ using Regira.Entities.Models;
 using Regira.Fleet.Identity.Abstractions;
 using Regira.Fleet.Identity.Data;
 using Regira.Fleet.Identity.Models.Clients;
+using Regira.Fleet.Identity.Services;
 
 namespace Regira.Fleet.Identity.Entities.Clients;
 public class ClientRepository(AccountsContextBase dbContext) : IdentityRepositoryBase<Client, string, ClientSearchObject, EntitySortBy, ClientIncludes>(dbContext)
@@ -14,7 +15,8 @@ public class ClientRepository(AccountsContextBase dbContext) : IdentityRepositor
 
         if (so != null)
         {
-            var qHelper = QKeywordHelper.Create();
+            var normalizer = new IdentityNormalizer();
+            var qHelper = QKeywordHelper.Create(normalizer);
             if (!string.IsNullOrWhiteSpace(so.Id))
             {
                 query = query.Where(x => x.Id == so.Id);

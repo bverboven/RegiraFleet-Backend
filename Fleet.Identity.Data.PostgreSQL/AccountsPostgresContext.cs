@@ -22,5 +22,5 @@ public class AccountsPostgresContext(DbContextOptions<AccountsPostgresContext> o
     }
 
     public override bool ILike(string matchExpression, string pattern)
-        => EF.Functions.ILike(matchExpression, pattern);
+        => NpgsqlDbFunctionsExtensions.ILike(EF.Functions, matchExpression, pattern);
 }

@@ -1,14 +1,17 @@
 ﻿using AutoMapper;
+using IdentityModel;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Regira.DAL.Paging;
 using Regira.Entities.Abstractions;
 using Regira.Entities.EFcore.Extensions;
+using Regira.Entities.Keywords;
 using Regira.Entities.Models;
 using Regira.Entities.Models.Abstractions;
 using Regira.Fleet.Identity.Data;
 using Regira.Fleet.Identity.Models.Users;
 using Regira.Fleet.Identity.Models.Users.Claims;
+using Regira.Fleet.Identity.Services;
 using Regira.Utilities;
 
 namespace Regira.Fleet.Identity.Entities.Users;
@@ -47,6 +50,9 @@ public class FleetUserRepository(AccountsContextBase dbContext, UserManager<Flee
     {
         if (so != null)
         {
+            var normalizer = new IdentityNormalizer();
+            var qHelper = QKeywordHelper.Create(normalizer);
+
             query = query.FilterId(so.Id);
             //if (!string.IsNullOrWhiteSpace(so.Id))
             //{
@@ -56,6 +62,44 @@ public class FleetUserRepository(AccountsContextBase dbContext, UserManager<Flee
             if (!string.IsNullOrWhiteSpace(so.ClientId))
             {
                 query = query.Where(x => x.ClientClaims!.Any(c => c.ClientId == so.ClientId));
+            }
+
+            if (!string.IsNullOrWhiteSpace(so.UserName))
+            {
+                var username = normalizer.Normalize(so.UserName);
+                query = query.Where(x => x.NormalizedUserName == username);
+            }
+
+            if (!string.IsNullOrWhiteSpace(so.Name))
+            {
+                var qNames = qHelper.Parse(so.Name);
+                var nameClaims = new[] { JwtClaimTypes.FamilyName, JwtClaimTypes.GivenName };
+                foreach (var q in qNames)
+                {
+                    query = query.Where(x => x.GivenName!.ToUpper().Contains(q.Normalized!) || x.LastName!.ToUpper().Contains(q.Normalized!));
+                }
+            }
+
+            if (!string.IsNullOrWhiteSpace(so.Culture))
+            {
+                query = query.Where(x => x.Culture == so.Culture);
+            }
+
+            if (!string.IsNullOrWhiteSpace(so.Q))
+            {
+                var keywords = qHelper.Parse(so.Q);
+                foreach (var q in keywords)
+                {
+                    // ToDo: why can't EF translate ILike in this repo?
+                    //query = query.Where(x =>
+                    //    dbContext.ILike(x.NormalizedUserName!, q.Keyword!) || dbContext.ILike(x.NormalizedEmail!, q.QW!)
+                    //    || dbContext.ILike(x.GivenName!, q.Keyword!) || dbContext.ILike(x.LastName!, q.QW!)
+                    //);
+                    query = query.Where(x =>
+                        x.NormalizedUserName!.Contains(q.Normalized!) || x.NormalizedEmail!.Contains(q.Normalized!)
+                        || x.GivenName!.ToUpper().Contains(q.Normalized!) || x.LastName!.ToUpper().Contains(q.Normalized!)
+                    );
+                }
             }
         }
         return query;

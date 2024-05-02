@@ -49,18 +49,18 @@ public static class ServiceCollectionExtensions
             .UseEntities<AccountsContextBase>(c => c.ProfileAssemblies.Add(typeof(IdentityProfile).Assembly));
 
         builder.Entities
-           // Entity context
-           .For<Client, string, ClientRepository, ClientSearchObject, EntitySortBy, ClientIncludes>(e =>
-           {
-               e.HasRepository<ClientRepository>();
-           })
-          .For<ClientSubscription, int, ClientSubscriptionSearchObject>(e =>
-           {
-           })
-          .For<FleetUserModel, string, FleetUserRepository, FleetUserSearchObject, EntitySortBy, FleetUserIncludes>(e =>
-          {
-              e.HasRepository<FleetUserRepository>();
-          });
+            // Entity context
+            .For<Client, string, ClientRepository, ClientSearchObject, EntitySortBy, ClientIncludes>(e =>
+            {
+                e.HasRepository<ClientRepository>();
+            })
+            .For<ClientSubscription, int, ClientSubscriptionSearchObject>(e =>
+            {
+            })
+            .For<FleetUserModel, string, FleetUserRepository, FleetUserSearchObject, EntitySortBy, FleetUserIncludes>(e =>
+            {
+                e.HasRepository<FleetUserRepository>();
+            });
 
         builder
             // Attachments
