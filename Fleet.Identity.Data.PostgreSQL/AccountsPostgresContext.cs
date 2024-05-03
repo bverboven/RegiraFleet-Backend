@@ -20,7 +20,4 @@ public class AccountsPostgresContext(DbContextOptions<AccountsPostgresContext> o
             entity.ToTable("client_languages");
         });
     }
-
-    public override bool ILike(string matchExpression, string pattern)
-        => NpgsqlDbFunctionsExtensions.ILike(EF.Functions, matchExpression, pattern);
 }

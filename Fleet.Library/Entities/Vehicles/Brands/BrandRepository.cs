@@ -20,9 +20,9 @@ public class BrandRepository(FleetContextBase dbContext, IFleetAppContext appCon
             // Code
             query = query.FilterCode(so.Code);
             // Title
-            query = dbContext.FilterILikeTitle(query, qHelper.Parse(so.Title));
+            query = query.FilterILikeTitle(qHelper.Parse(so.Title));
             // Q
-            query = dbContext.FilterILikeTitleQ(query, qHelper.Parse(so.Q));
+            query = query.FilterILikeTitleQ(qHelper.Parse(so.Q));
         }
         return query;
     }

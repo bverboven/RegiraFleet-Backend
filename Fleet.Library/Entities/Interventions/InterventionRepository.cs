@@ -56,7 +56,7 @@ public class InterventionRepository(FleetContextBase dbContext, IFleetAppContext
                 query = query.Where(x => so.MaxDate >= x.InterventionDate);
             }
             // Q
-            query = dbContext.FilterILikeQ(query, qHelper.Parse(so.Q));
+            query = query.FilterILikeQ(qHelper.Parse(so.Q));
         }
 
         return query;
@@ -127,7 +127,7 @@ public class InterventionRepository(FleetContextBase dbContext, IFleetAppContext
         {
             DbContext.Entry(original.Invoice).State = EntityState.Deleted;
         }
-        
+
         DbContext.UpdateEntityChildCollection(original, item, x => x.Labels, (x, collection) => x.Labels = collection);
 
         if (item.Attachments != null)
@@ -145,7 +145,7 @@ public class InterventionRepository(FleetContextBase dbContext, IFleetAppContext
         {
             item.Invoice.InterventionId = item.Id;
         }
-        
+
         item.Labels?.Prepare();
     }
 }

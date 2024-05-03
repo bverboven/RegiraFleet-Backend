@@ -16,7 +16,7 @@
     </ItemGroup>
 
     <ItemGroup>
-        <PackageReference Include="Regira.Globalization.LibPhoneNumber" Version="4.0.4" />
+        <PackageReference Include="Regira.Globalization.LibPhoneNumber" Version="4.0.5" />
     </ItemGroup>
 
     <ItemGroup>

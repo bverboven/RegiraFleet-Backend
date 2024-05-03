@@ -22,9 +22,9 @@ public class InterventionTypeRepository(FleetContextBase dbContext, IFleetAppCon
             // Code
             query = query.FilterCode(so.Code);
             // Title
-            query = dbContext.FilterILikeTitle(query, qHelper.Parse(so.Title));
+            query = query.FilterILikeTitle(qHelper.Parse(so.Title));
             // Q
-            query = dbContext.FilterILikeTitleQ(query, qHelper.Parse(so.Q));
+            query = query.FilterILikeTitleQ(qHelper.Parse(so.Q));
 
             // Operator
             if (so.OperatorId?.Any() == true)

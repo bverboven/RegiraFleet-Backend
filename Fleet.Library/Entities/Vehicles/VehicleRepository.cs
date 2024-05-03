@@ -40,8 +40,8 @@ public class VehicleRepository(FleetContextBase dbContext, IFleetAppContext appC
             // Brand
             if (!string.IsNullOrWhiteSpace(so.Brand))
             {
-                query = query.Where(x => dbContext.ILike(x.Brand!.Code!, so.Brand) ||
-                    dbContext.ILike(x.Brand!.Title!, so.Brand));
+                query = query.Where(x => EF.Functions.Like(x.Brand!.Code!, so.Brand) ||
+                    EF.Functions.Like(x.Brand!.Title!, so.Brand));
             }
             // VehicleTypeId
             if (so.VehicleTypeId?.Any() == true)
@@ -51,14 +51,14 @@ public class VehicleRepository(FleetContextBase dbContext, IFleetAppContext appC
             // VehicleType
             if (!string.IsNullOrWhiteSpace(so.VehicleType))
             {
-                query = query.Where(x => dbContext.ILike(x.VehicleType!.Code!, so.VehicleType) ||
-                    dbContext.ILike(x.VehicleType!.Title!, so.VehicleType));
+                query = query.Where(x => EF.Functions.Like(x.VehicleType!.Code!, so.VehicleType) ||
+                    EF.Functions.Like(x.VehicleType!.Title!, so.VehicleType));
             }
             // Title
             if (!string.IsNullOrWhiteSpace(so.Title))
             {
                 var kw = qHelper.ParseKeyword(so.Title.ToUpper());
-                query = query.Where(x => dbContext.ILike(x.NormalizedTitle!, kw.Q!));
+                query = query.Where(x => EF.Functions.Like(x.NormalizedTitle!, kw.Q!));
             }
             // HasIntervention
             if (so.HasIntervention.HasValue)

@@ -87,7 +87,4 @@ public abstract class AccountsContextBase(DbContextOptions options) : IdentityDb
             entity.Property(e => e.Name).HasMaxLength(256);
         });
     }
-
-    public virtual bool ILike(string matchExpression, string pattern)
-        => EF.Functions.Like(matchExpression, pattern);
 }

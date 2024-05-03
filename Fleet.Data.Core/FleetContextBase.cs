@@ -183,8 +183,4 @@ public abstract class FleetContextBase(DbContextOptions options) : DbContext(opt
         this.AutoTruncateStringsToMaxLengthForEntries();
         return base.SaveChangesAsync(acceptAllChangesOnSuccess, cancellationToken);
     }
-
-
-    public virtual bool ILike(string matchExpression, string pattern)
-        => EF.Functions.Like(matchExpression, pattern);
 }

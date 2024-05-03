@@ -1,5 +1,4 @@
 ﻿using AutoMapper;
-using IdentityModel;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Regira.DAL.Paging;
@@ -7,7 +6,6 @@ using Regira.Entities.Abstractions;
 using Regira.Entities.EFcore.Extensions;
 using Regira.Entities.Keywords;
 using Regira.Entities.Models;
-using Regira.Entities.Models.Abstractions;
 using Regira.Fleet.Identity.Data;
 using Regira.Fleet.Identity.Models.Users;
 using Regira.Fleet.Identity.Models.Users.Claims;
@@ -17,6 +15,8 @@ using Regira.Utilities;
 namespace Regira.Fleet.Identity.Entities.Users;
 public class FleetUserRepository(AccountsContextBase dbContext, UserManager<FleetUser> userManager, IMapper mapper) : IEntityRepository<FleetUserModel, string, FleetUserSearchObject, EntitySortBy, FleetUserIncludes>
 {
+    protected AccountsContextBase DbContext => dbContext;
+
     public async Task<FleetUserModel?> Details(string id)
     {
         var item = await GetItem(id);
@@ -53,48 +53,40 @@ public class FleetUserRepository(AccountsContextBase dbContext, UserManager<Flee
             var normalizer = new IdentityNormalizer();
             var qHelper = QKeywordHelper.Create(normalizer);
 
+            // ID
             query = query.FilterId(so.Id);
-            //if (!string.IsNullOrWhiteSpace(so.Id))
-            //{
-            //    query = query.Where(x => x.Id == so.Id);
-            //}
             query = query.FilterIds(so.Ids);
+            // Client
             if (!string.IsNullOrWhiteSpace(so.ClientId))
             {
                 query = query.Where(x => x.ClientClaims!.Any(c => c.ClientId == so.ClientId));
             }
-
+            // Username
             if (!string.IsNullOrWhiteSpace(so.UserName))
             {
-                var username = normalizer.Normalize(so.UserName);
-                query = query.Where(x => x.NormalizedUserName == username);
+                var q = qHelper.ParseKeyword(so.UserName);
+                query = query.Where(x => EF.Functions.Like(x.NormalizedUserName, q.Q));
             }
-
-            if (!string.IsNullOrWhiteSpace(so.Name))
+            // Title
+            if (!string.IsNullOrWhiteSpace(so.Title))
             {
-                var qNames = qHelper.Parse(so.Name);
-                var nameClaims = new[] { JwtClaimTypes.FamilyName, JwtClaimTypes.GivenName };
+                var qNames = qHelper.Parse(so.Title);
                 foreach (var q in qNames)
                 {
-                    query = query.Where(x => x.GivenName!.ToUpper().Contains(q.Normalized!) || x.LastName!.ToUpper().Contains(q.Normalized!));
+                    query = query.Where(x => EF.Functions.Like(x.GivenName!.ToUpper(), q.Q) || EF.Functions.Like(x.LastName!.ToUpper(), q.Q));
                 }
             }
-
+            // Culture
             if (!string.IsNullOrWhiteSpace(so.Culture))
             {
                 query = query.Where(x => x.Culture == so.Culture);
             }
-
+            // Q
             if (!string.IsNullOrWhiteSpace(so.Q))
             {
                 var keywords = qHelper.Parse(so.Q);
                 foreach (var q in keywords)
                 {
-                    // ToDo: why can't EF translate ILike in this repo?
-                    //query = query.Where(x =>
-                    //    dbContext.ILike(x.NormalizedUserName!, q.Keyword!) || dbContext.ILike(x.NormalizedEmail!, q.QW!)
-                    //    || dbContext.ILike(x.GivenName!, q.Keyword!) || dbContext.ILike(x.LastName!, q.QW!)
-                    //);
                     query = query.Where(x =>
                         x.NormalizedUserName!.Contains(q.Normalized!) || x.NormalizedEmail!.Contains(q.Normalized!)
                         || x.GivenName!.ToUpper().Contains(q.Normalized!) || x.LastName!.ToUpper().Contains(q.Normalized!)
@@ -256,48 +248,4 @@ public class FleetUserRepository(AccountsContextBase dbContext, UserManager<Flee
         => so == default ? default
             : so is FleetUserSearchObject tso ? tso
             : ObjectUtility.Create<FleetUserSearchObject>(so);
-}
-public static class Extensions
-{
-    public static void UpdateEntityChildCollection<TEntity, TEntityKey, TChild, TChildKey>(this DbContext dbContext, TEntity original, TEntity modified, Func<TEntity, ICollection<TChild>?> childrenGetter, Action<TEntity, ICollection<TChild>> childrenSetter, Action<TChild?, TChild>? processExtra = null)
-    where TChild : class, IEntity<TChildKey>
-    {
-        var originalChildCollection = childrenGetter(original);
-        var modifiedChildCollection = childrenGetter(modified);
-        // ignore when no child collection is passed for either original OR modified entity
-        if (originalChildCollection == null || modifiedChildCollection == null)
-        {
-            return;
-        }
-
-        var childrenToRemove = originalChildCollection!.Where(oc => modifiedChildCollection.All(c => !oc.Id!.Equals(c.Id)));
-        var childrenToAdd = modifiedChildCollection!.Where(c => originalChildCollection.All(oc => !oc.Id!.Equals(c.Id)));
-        var childrenToUpdate = originalChildCollection.Except(childrenToRemove);
-
-        if (childrenToRemove.Any())
-        {
-            dbContext.RemoveRange(childrenToRemove);
-        }
-        if (childrenToAdd.Any())
-        {
-            foreach (var child in childrenToAdd)
-            {
-                processExtra?.Invoke(null, child);
-                dbContext.Add(child);
-            }
-        }
-        if (childrenToUpdate?.Any() == true)
-        {
-            foreach (var originalChild in childrenToUpdate)
-            {
-                var modifiedChild = modifiedChildCollection.First(c => c.Id!.Equals(originalChild.Id));
-                processExtra?.Invoke(originalChild, modifiedChild);
-                var childEntry = dbContext.Entry(originalChild);
-                childEntry.CurrentValues.SetValues(modifiedChild);
-                childEntry.State = EntityState.Modified;
-            }
-        }
-
-        childrenSetter(original, modifiedChildCollection);
-    }
 }

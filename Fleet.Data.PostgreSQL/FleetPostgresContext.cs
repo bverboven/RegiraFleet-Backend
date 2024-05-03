@@ -59,7 +59,4 @@ public class FleetPostgresContext(DbContextOptions<FleetPostgresContext> options
             entity.ToTable("vehicle_intervention_types");
         });
     }
-
-    public override bool ILike(string matchExpression, string pattern)
-        => EF.Functions.ILike(matchExpression, pattern);
 }

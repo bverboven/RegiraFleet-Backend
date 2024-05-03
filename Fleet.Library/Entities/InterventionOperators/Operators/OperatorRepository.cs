@@ -36,20 +36,20 @@ public class OperatorRepository(FleetContextBase dbContext, IFleetAppContext app
                 var keywords = qHelper.Parse(so.Title);
                 foreach (var kw in keywords)
                 {
-                    query = query.Where(x => x.Code == so.Title || dbContext.ILike(x.Title, kw.Q!));
+                    query = query.Where(x => x.Code == so.Title || EF.Functions.Like(x.Title, kw.Q!));
                 }
             }
             // Phone
             if (!string.IsNullOrWhiteSpace(so.Phone))
             {
                 var q = contactDataNormalizer.Normalize(so.Phone, ContactDataTypes.Phone);
-                query = query.Where(x => x.ContactData!.Any(cd => cd.DataType == ContactDataTypes.Phone && dbContext.ILike(cd.NormalizedValue!, $"%{q}%")));
+                query = query.Where(x => x.ContactData!.Any(cd => cd.DataType == ContactDataTypes.Phone && EF.Functions.Like(cd.NormalizedValue!, $"%{q}%")));
             }
             // Email
             if (!string.IsNullOrWhiteSpace(so.Email))
             {
                 var q = contactDataNormalizer.Normalize(so.Email, ContactDataTypes.Email);
-                query = query.Where(x => x.ContactData!.Any(cd => cd.DataType == ContactDataTypes.Email && dbContext.ILike(cd.NormalizedValue!, $"%{q}%")));
+                query = query.Where(x => x.ContactData!.Any(cd => cd.DataType == ContactDataTypes.Email && EF.Functions.Like(cd.NormalizedValue!, $"%{q}%")));
             }
             // Address
             if (!string.IsNullOrWhiteSpace(so.Address))
@@ -57,7 +57,7 @@ public class OperatorRepository(FleetContextBase dbContext, IFleetAppContext app
                 var keywords = qHelper.Parse(so.Address);
                 foreach (var kw in keywords)
                 {
-                    query = query.Where(x => x.Addresses!.Any(a => dbContext.ILike(a.NormalizedContent!, kw.QW!)));
+                    query = query.Where(x => x.Addresses!.Any(a => EF.Functions.Like(a.NormalizedContent!, kw.QW!)));
                 }
             }
             // InterventionTypeId
@@ -71,7 +71,7 @@ public class OperatorRepository(FleetContextBase dbContext, IFleetAppContext app
                 query = query.Where(x => DbContext.Interventions.Any(i => i.OperatorId == x.Id));
             }
             // Q
-            query = dbContext.FilterILikeQ(query, qHelper.Parse(so.Q));
+            query = query.FilterILikeQ(qHelper.Parse(so.Q));
         }
 
         return query;
