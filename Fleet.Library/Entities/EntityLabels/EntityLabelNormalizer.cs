@@ -7,9 +7,18 @@ namespace Regira.Fleet.Entities.EntityLabels;
 
 public class EntityLabelNormalizer(INormalizer defaultNormalizer, PhoneNumberFormatter phoneNumberNormalizer) : IObjectNormalizer
 {
-    public INormalizer DefaultNormalizer => throw new NotImplementedException();
+    public bool IsExclusive => false;
+    public INormalizer DefaultNormalizer => defaultNormalizer;
 
-    public void HandleNormalize(object? instance, bool recursive = true)
+    public Task HandleNormalizeMany(IEnumerable<object?> instances, bool recursive = false)
+    {
+        foreach (var item in instances)
+        {
+            HandleNormalize(item, recursive);
+        }
+        return Task.CompletedTask;
+    }
+    public void HandleNormalize(object? instance, bool recursive = false)
     {
         if (instance is IEntityLabel label)
         {

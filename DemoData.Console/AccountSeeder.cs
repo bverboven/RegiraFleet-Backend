@@ -85,7 +85,7 @@ public class AccountSeeder(FleetUserIdentityManager userManager, RoleManager<Ide
                 new() { Code = "AMB", Title = "Ambulance", Id = "f64a75e938b64dfaae5eab03fe541972" }
             });
             accountsContext.Clients.AddRange(items);
-            accountsContext.ApplyNormalizers();
+            await accountsContext.ApplyNormalizers();
             await accountsContext.ApplyPrimers();
             await accountsContext.SaveChangesAsync();
         }

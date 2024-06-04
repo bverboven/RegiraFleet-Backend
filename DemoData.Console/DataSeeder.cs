@@ -21,6 +21,7 @@ public class DataSeeder(FleetContextBase dbContext, IEntityService<Brand> brandS
     IEntityService<InterventionType> interventionTypeService, IEntityService<VehicleType> vehicleTypeService,
     IEntityService<Operator> operatorService, IEntityService<Vehicle> vehicleService)
 {
+    const int FACTOR = 100;
     Dictionary<string, string> CarBrands => new()
     {
         {"ALF", "Alfa Romeo"},
@@ -220,7 +221,7 @@ public class DataSeeder(FleetContextBase dbContext, IEntityService<Brand> brandS
                 .Select(_ => new OperatorInterventionType { InterventionTypeId = f.PickRandom(interventionTypes).Id })
                 .DistinctBy(x => x.InterventionTypeId).ToList()
             )
-            .Generate(100)!;
+            .Generate(100 * FACTOR)!;
 
         foreach (var item in items)
         {
@@ -239,7 +240,7 @@ public class DataSeeder(FleetContextBase dbContext, IEntityService<Brand> brandS
             .AsNoTracking()
             .ToArrayAsync();
 
-        var codes = new Queue<int>(Enumerable.Range(0, 1000).Select((_, i) => i + 1).Shuffle().Take(100));
+        var codes = new Queue<int>(Enumerable.Range(0, 1000 * FACTOR).Select((_, i) => i + 1).Shuffle().Take(100 * FACTOR));
 
         var items = new Faker<Vehicle>()
             .RuleFor(x => x.ClientId, _ => clientId)
@@ -247,7 +248,7 @@ public class DataSeeder(FleetContextBase dbContext, IEntityService<Brand> brandS
             .RuleFor(x => x.BrandId, f => f.PickRandom(brands).Id)
             .RuleFor(x => x.Model, (f, x) => f.Vehicle.Model())
             .RuleFor(x => x.VehicleTypeId, f => f.PickRandom(types).Id)
-            .Generate(100);
+            .Generate(100 * FACTOR);
 
         foreach (var item in items)
         {
@@ -257,34 +258,34 @@ public class DataSeeder(FleetContextBase dbContext, IEntityService<Brand> brandS
     }
     public async Task SeedInterventions(string clientId)
     {
-        var vehicles = await dbContext.Vehicles
+        var vehicleIds = await dbContext.Vehicles
             .Where(x => x.ClientId == clientId)
-            .AsNoTracking()
+            .Select(x => x.Id)
             .ToArrayAsync();
         var suppliers = await dbContext.InterventionOperators
             .Include(x => x.InterventionTypes)
             .Where(x => x.ClientId == clientId && x.InterventionTypes!.Any())
-            .AsNoTrackingWithIdentityResolution()
+            .Select(x => new { x.Id, InterventionTypeIds = x.InterventionTypes!.Select(y => y.InterventionTypeId) })
             .ToArrayAsync();
-        var types = await dbContext.InterventionTypes
+        var typeIds = await dbContext.InterventionTypes
             .Where(x => x.ClientId == clientId)
-            .AsNoTracking()
+            .Select(x => x.Id)
             .ToArrayAsync();
 
         var items = new Faker<Intervention>()
             .RuleFor(x => x.ClientId, _ => clientId)
-            .RuleFor(x => x.VehicleId, (f) => f.PickRandom(vehicles).Id)
+            .RuleFor(x => x.VehicleId, (f) => f.PickRandom(vehicleIds))
             .RuleFor(x => x.OperatorId, (f) => f.PickRandom(suppliers).Id)
             .RuleFor(x => x.InterventionTypeId, (f, x) => (suppliers.FirstOrDefault(s => s.Id == x.OperatorId)
-                ?.InterventionTypes
+                ?.InterventionTypeIds
                 ?.Shuffle()
-                .FirstOrDefault())?.InterventionTypeId
-                ?? f.PickRandom(types).Id
+                .FirstOrDefault())
+                ?? f.PickRandom(typeIds)
             )
             .RuleFor(x => x.Mileage, (f) => (int)(Math.Floor((decimal)f.Random.Number(0, 999_999) / 1000) * 1000))
             .RuleFor(x => x.InterventionDate, f => f.Date.Between(DateTime.Today.AddYears(-5), DateTime.Today))
             .RuleFor(x => x.Invoice, (f, x) => GenerateInvoice(x))
-            .Generate(vehicles.Length * 5);
+            .Generate(vehicleIds.Length * 5);
 
         foreach (var item in items)
         {

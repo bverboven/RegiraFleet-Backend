@@ -6,9 +6,18 @@ namespace Regira.Fleet.Entities.InterventionOperators.Normalizers;
 
 public class ContactDataNormalizer(INormalizer defaultNormalizer, PhoneNumberFormatter phoneNumberNormalizer) : IObjectNormalizer
 {
+    public bool IsExclusive => false;
     public INormalizer DefaultNormalizer => defaultNormalizer;
 
-    public void HandleNormalize(object? instance, bool recursive = true)
+    public Task HandleNormalizeMany(IEnumerable<object?> instances, bool recursive = false)
+    {
+        foreach (var item in instances)
+        {
+            HandleNormalize(item, recursive);
+        }
+        return Task.CompletedTask;
+    }
+    public void HandleNormalize(object? instance, bool recursive = false)
     {
         if (instance is OperatorContactData data)
         {

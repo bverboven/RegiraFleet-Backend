@@ -47,7 +47,7 @@ public abstract class IdentityRepositoryBase<TEntity, TKey, TSearchObject, TSort
 
     public override async Task<int> SaveChanges(CancellationToken token = new())
     {
-        DbContext.ApplyNormalizers();
+        await DbContext.ApplyNormalizers();
         await DbContext.ApplyPrimers();
 
         return await base.SaveChanges(token);

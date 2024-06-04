@@ -12,7 +12,6 @@ using Regira.Entities.Models.Abstractions;
 using Regira.Fleet.Core.Abstractions;
 using Regira.Fleet.Core.DependencyInjection;
 using Regira.Fleet.Core.Normalizing;
-using Regira.Fleet.Core.Normalizing.Abstractions;
 using Regira.Fleet.Core.Primers;
 using Regira.Fleet.Identity.Data;
 using Regira.Fleet.Identity.Data.MySQL;
@@ -67,7 +66,7 @@ public static class ServiceCollectionExtensions
             .AddAttachmentServices(options.FileServiceFactory ?? throw new InvalidOperationException($"No implementation for {nameof(IFileService)} configured"));
 
         builder
-            .AddNormalizers(o => o.AddTransient<IFleetEntityNormalizer<Client>, FleetEntityNormalizer<Client>>())
+            .AddNormalizers(o => o.AddTransient<IObjectNormalizer<Client>, FleetEntityNormalizer<Client>>())
             .AddPrimers();
 
         return builder;
@@ -171,7 +170,8 @@ public static class ServiceCollectionExtensions
     {
         builder.Services
             .AddTransient<INormalizer>(_ => new DefaultNormalizer(new NormalizeOptions { Transform = TextTransform.ToUpperCase }))
-            .AddTransient<IObjectNormalizer>(p => new FleetEntityNormalizer(p.GetRequiredService<INormalizer>()));
+            //.AddTransient<IObjectNormalizer>(p => new FleetEntityNormalizer(p.GetRequiredService<INormalizer>()))
+            ;
 
         // configure entity normalizers
         configure?.Invoke(builder.Services);

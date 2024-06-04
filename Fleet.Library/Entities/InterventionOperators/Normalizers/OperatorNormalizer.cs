@@ -10,7 +10,7 @@ public class OperatorNormalizer(INormalizer defaultNormalizer, IdentificationNum
     ContactDataNormalizer contactDataNormalizer, AddressNormalizer addressNormalizer, EntityLabelNormalizer labelNormalizer, ICultureContext cultureContext)
     : FleetEntityNormalizer<Operator>(defaultNormalizer)
 {
-    public override void HandleNormalize(Operator? item)
+    public override void HandleNormalize(Operator? item, bool recursive = false)
     {
         if (item == null)
         {
@@ -44,11 +44,6 @@ public class OperatorNormalizer(INormalizer defaultNormalizer, IdentificationNum
         item.NormalizedTitle = DefaultNormalizer.Normalize(item.Title);
 
         // NormalizedContent
-        SetNormalizedContent(item);
-    }
-
-    public override void SetNormalizedContent(Operator item)
-    {
         var contentEntries = GetDefaultNormalizedContentEntries(item);
         contentEntries.AddRange(new[]
         {
@@ -64,7 +59,7 @@ public class OperatorNormalizer(INormalizer defaultNormalizer, IdentificationNum
         {
             contentEntries.AddRange(item.Addresses.Select(a => a.NormalizedContent));
         }
-        
+
         if (item.Labels?.Any() == true)
         {
             contentEntries.AddRange(item.Labels.Select(a => a.NormalizedContent));

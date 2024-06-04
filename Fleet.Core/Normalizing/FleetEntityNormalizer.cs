@@ -7,21 +7,29 @@ using Regira.Normalizing.Models;
 
 namespace Regira.Fleet.Core.Normalizing;
 
-public class FleetEntityNormalizer(INormalizer normalizer)
-    : ObjectNormalizer(new NormalizingOptions { DefaultNormalizer = normalizer }), IFleetEntityNormalizer
+//public class FleetEntityNormalizer(INormalizer normalizer)
+//    : ObjectNormalizer(new NormalizingOptions { DefaultNormalizer = normalizer }), IFleetEntityNormalizer
+//{
+//    void IObjectNormalizer.HandleNormalize(object? item, bool recursive) => HandleNormalize(item, recursive);
+//    public override void HandleNormalize(object? item, bool recursive = true)
+//    {
+//        if (item == null)
+//        {
+//            return;
+//        }
+
+//        base.HandleNormalize(item, recursive);
+
+//        SetNormalizedContent(item);
+//    }
+
+//}
+
+public class FleetEntityNormalizer<T>(INormalizer normalizer)
+    : ObjectNormalizer<T>
+    where T : class
 {
-    void IObjectNormalizer.HandleNormalize(object? item, bool recursive) => HandleNormalize(item, recursive);
-    public override void HandleNormalize(object? item, bool recursive = true)
-    {
-        if (item == null)
-        {
-            return;
-        }
-
-        base.HandleNormalize(item, recursive);
-
-        SetNormalizedContent(item);
-    }
+    public new INormalizer DefaultNormalizer => normalizer;
 
     /// <summary>
     /// Gets entries for
@@ -78,34 +86,4 @@ public class FleetEntityNormalizer(INormalizer normalizer)
 
         return entries;
     }
-    public virtual void SetNormalizedContent(object item)
-    {
-        if (item is not IHasNormalizedContent normalizedContentItem)
-        {
-            return;
-        }
-
-        var entries = GetDefaultNormalizedContentEntries(item);
-        normalizedContentItem.NormalizedContent = string.Join(' ', entries.Where(x => !string.IsNullOrWhiteSpace(x)));
-    }
-}
-
-public class FleetEntityNormalizer<T>(INormalizer normalizer)
-    : FleetEntityNormalizer(normalizer), IFleetEntityNormalizer<T>
-    where T : class
-{
-    public override void HandleNormalize(object? item, bool recursive = true)
-        => HandleNormalize(item as T);
-    public virtual void HandleNormalize(T? item)
-    {
-        base.HandleNormalize(item);
-    }
-
-    void IFleetEntityNormalizer.SetNormalizedContent(object item)
-        => SetNormalizedContent((T)item);
-
-    public override void SetNormalizedContent(object item)
-        => SetNormalizedContent((T)item);
-    public virtual void SetNormalizedContent(T item)
-        => base.SetNormalizedContent(item);
 }

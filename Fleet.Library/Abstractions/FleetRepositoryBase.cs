@@ -77,7 +77,7 @@ public abstract class FleetRepositoryBase<TEntity, TSearchObject, TSortBy, TIncl
     }
     public override async Task<int> SaveChanges(CancellationToken token = new())
     {
-        DbContext.ApplyNormalizers();
+        await DbContext.ApplyNormalizers();
         await DbContext.ApplyPrimers();
 
         return await base.SaveChanges(token);

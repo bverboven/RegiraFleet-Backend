@@ -209,13 +209,13 @@ public static class ServiceCollectionExtensions
                    .AddTransient<EntityLabelNormalizer>()
                    .AddTransient<IdentificationNumberNormalizer>()
                    // simple normalizers
-                   .AddTransient<IFleetEntityNormalizer<Brand>, FleetEntityNormalizer<Brand>>()
-                   .AddTransient<IFleetEntityNormalizer<InterventionType>, FleetEntityNormalizer<InterventionType>>()
-                   .AddTransient<IFleetEntityNormalizer<VehicleType>, FleetEntityNormalizer<VehicleType>>()
+                   .AddTransient<IObjectNormalizer<Brand>, FleetEntityNormalizer<Brand>>()
+                   .AddTransient<IObjectNormalizer<InterventionType>, FleetEntityNormalizer<InterventionType>>()
+                   .AddTransient<IObjectNormalizer<VehicleType>, FleetEntityNormalizer<VehicleType>>()
                    // custom normalizers
-                   .AddTransient<IFleetEntityNormalizer<Intervention>, InterventionNormalizer>()
-                   .AddTransient<IFleetEntityNormalizer<Operator>, OperatorNormalizer>()
-                   .AddTransient<IFleetEntityNormalizer<Vehicle>, VehicleNormalizer>();
+                   .AddTransient<IObjectNormalizer<Intervention>, InterventionNormalizer>()
+                   .AddTransient<IObjectNormalizer<Operator>, OperatorNormalizer>()
+                   .AddTransient<IObjectNormalizer<Vehicle>, VehicleNormalizer>();
            })
            // Primers
            .AddPrimers();
@@ -239,14 +239,14 @@ public static class ServiceCollectionExtensions
     {
         builder.Services
             .AddTransient<INormalizer>(_ => new DefaultNormalizer(new NormalizeOptions { Transform = TextTransform.ToUpperCase }))
-            .AddTransient<IObjectNormalizer>(p => new FleetEntityNormalizer(p.GetRequiredService<INormalizer>()));
+            //.AddTransient<IObjectNormalizer>(p => new FleetEntityNormalizer(p.GetRequiredService<INormalizer>()))
+            ;
 
         // configure entity normalizers
         configure?.Invoke(builder.Services);
 
         // finally (put last)
-        builder.Services
-                    .AddObjectNormalizingContainer((_, c) => c.ExtractFromServiceCollection(builder.Services));
+        builder.Services.AddObjectNormalizingContainer();
 
         return builder;
     }
