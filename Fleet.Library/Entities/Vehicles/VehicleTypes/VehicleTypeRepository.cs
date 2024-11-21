@@ -38,7 +38,7 @@ public class VehicleTypeRepository(FleetContextBase dbContext, IFleetAppContext 
     {
         base.Modify(item, original);
 
-        dbContext.UpdateEntityChildCollection(original, item, x => x.Translations, (x, collection) => x.Translations = collection);
+        DbContext.UpdateEntityChildCollection(original, item, x => x.Translations, (x, collection) => x.Translations = collection);
     }
     public override void PrepareItem(VehicleType item)
     {

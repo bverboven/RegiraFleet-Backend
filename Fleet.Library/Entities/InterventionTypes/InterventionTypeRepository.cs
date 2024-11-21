@@ -59,7 +59,7 @@ public class InterventionTypeRepository(FleetContextBase dbContext, IFleetAppCon
     {
         base.Modify(item, original);
 
-        dbContext.UpdateEntityChildCollection(original, item, x => x.Translations, (x, collection) => x.Translations = collection);
+        DbContext.UpdateEntityChildCollection(original, item, x => x.Translations, (x, collection) => x.Translations = collection);
     }
     public override void PrepareItem(InterventionType item)
     {

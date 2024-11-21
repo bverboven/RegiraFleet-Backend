@@ -204,7 +204,7 @@ public class FleetUserRepository(AccountsContextBase dbContext, UserManager<Flee
             throw new Exception(result.Errors?.FirstOrDefault()?.Code);
         }
     }
-    public async Task Modify(FleetUserModel item, FleetUser original)
+    public Task Modify(FleetUserModel item, FleetUser original)
     {
         if (item.UserClaims != null)
         {
@@ -237,6 +237,8 @@ public class FleetUserRepository(AccountsContextBase dbContext, UserManager<Flee
 
         var originalModel = mapper.Map<FleetUserModel>(original);
         dbContext.UpdateEntityChildCollection<FleetUserModel, string, ClientUserClaim, int>(originalModel, item, item => item.ClientClaims, (item, collection) => item.ClientClaims = collection);
+
+        return Task.CompletedTask;
     }
 
 
