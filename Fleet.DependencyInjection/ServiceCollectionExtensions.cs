@@ -12,7 +12,6 @@ using Regira.Fleet.Core.Abstractions;
 using Regira.Fleet.Core.DependencyInjection;
 using Regira.Fleet.Core.Models;
 using Regira.Fleet.Core.Normalizing;
-using Regira.Fleet.Core.Normalizing.Abstractions;
 using Regira.Fleet.Core.Primers;
 using Regira.Fleet.Data;
 using Regira.Fleet.Data.MySQL;
@@ -226,12 +225,12 @@ public static class ServiceCollectionExtensions
     {
         builder.Entities
             .ConfigureAttachmentService(configure)
-            .ConfigureTypedAttachmentService(db => (new[]
-            {
+            .ConfigureTypedAttachmentService(db => (
+            [
                 db.InterventionAttachments.ToDescriptor<Intervention>(),
                 db.InterventionOperatorAttachments.ToDescriptor<Operator>(),
-                db.VehicleAttachments.ToDescriptor<Vehicle>(),
-            }));
+                db.VehicleAttachments.ToDescriptor<Vehicle>()
+            ]));
 
         return builder;
     }
@@ -243,7 +242,7 @@ public static class ServiceCollectionExtensions
             ;
 
         // configure entity normalizers
-        configure?.Invoke(builder.Services);
+        configure.Invoke(builder.Services);
 
         // finally (put last)
         builder.Services.AddObjectNormalizingContainer();

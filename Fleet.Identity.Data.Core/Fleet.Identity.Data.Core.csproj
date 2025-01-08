@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <TargetFramework>net8.0</TargetFramework>
+        <TargetFramework>net9.0</TargetFramework>
         <RootNamespace>Regira.Fleet.Identity.Data</RootNamespace>
         <AssemblyName>Regira.Fleet.Identity.Data</AssemblyName>
         <Authors>B.Verboven</Authors>
@@ -11,12 +11,13 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="8.0.6" />
-        <PackageReference Include="Microsoft.Extensions.Identity.Core" Version="8.0.6" />
+	    <PackageReference Include="EFCore.NamingConventions" Version="9.0.0" />
+        <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="9.0.0" />
+        <PackageReference Include="Microsoft.Extensions.Identity.Core" Version="9.0.0" />
     </ItemGroup>
 
     <ItemGroup>
-        <PackageReference Include="Regira.DAL.EFcore" Version="4.0.7" />
+        <PackageReference Include="Regira.DAL.EFcore" Version="4.0.14" />
     </ItemGroup>
 
     <ItemGroup>

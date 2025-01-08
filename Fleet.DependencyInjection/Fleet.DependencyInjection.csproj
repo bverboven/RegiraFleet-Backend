@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <TargetFramework>net8.0</TargetFramework>
+        <TargetFramework>net9.0</TargetFramework>
         <RootNamespace>Regira.Fleet.DependencyInjection</RootNamespace>
         <AssemblyName>Regira.Fleet.DependencyInjection</AssemblyName>
         <Authors>B.Verboven</Authors>
@@ -11,7 +11,7 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="Regira.Entities.DependencyInjection" Version="4.0.11" />
+        <PackageReference Include="Regira.Entities.DependencyInjection" Version="4.0.20" />
     </ItemGroup>
 
     <ItemGroup>

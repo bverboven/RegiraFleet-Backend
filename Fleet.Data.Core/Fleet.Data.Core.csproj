@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <TargetFramework>net8.0</TargetFramework>
+        <TargetFramework>net9.0</TargetFramework>
         <RootNamespace>Regira.Fleet.Data</RootNamespace>
         <AssemblyName>Regira.Fleet.Data</AssemblyName>
         <Authors>B.Verboven</Authors>
@@ -11,8 +11,8 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="Regira.DAL.EFcore" Version="4.0.7" />
-        <PackageReference Include="EFCore.NamingConventions" Version="8.0.3" />
+        <PackageReference Include="Regira.DAL.EFcore" Version="4.0.14" />
+        <PackageReference Include="EFCore.NamingConventions" Version="9.0.0" />
     </ItemGroup>
 
     <ItemGroup>

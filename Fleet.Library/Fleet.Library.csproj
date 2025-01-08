@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <TargetFramework>net8.0</TargetFramework>
+        <TargetFramework>net9.0</TargetFramework>
         <RootNamespace>Regira.Fleet</RootNamespace>
         <AssemblyName>Regira.Fleet</AssemblyName>
         <Authors>B.Verboven</Authors>
@@ -16,7 +16,7 @@
     </ItemGroup>
 
     <ItemGroup>
-        <PackageReference Include="Regira.Globalization.LibPhoneNumber" Version="4.0.7" />
+        <PackageReference Include="Regira.Globalization.LibPhoneNumber" Version="4.0.14" />
     </ItemGroup>
 
     <ItemGroup>
