@@ -38,7 +38,7 @@ public class VehicleProfile : Profile
 
         CreateMap<VehicleType, VehicleTypeDto>();
         CreateMap<VehicleTypeInputDto, VehicleType>()
-            .AfterMap((dto, model) =>
+            .AfterMap((_, model) =>
             {
                 model.Translations = model.Translations
                     ?.Where(x => !string.IsNullOrWhiteSpace(x.Title))

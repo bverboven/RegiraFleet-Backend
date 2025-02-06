@@ -12,11 +12,11 @@
 
     <ItemGroup>
         <PackageReference Include="AutoMapper" Version="13.0.1" />
-        <PackageReference Include="Dapper" Version="2.1.35" />
+        <PackageReference Include="Dapper" Version="2.1.66" />
     </ItemGroup>
 
     <ItemGroup>
-        <PackageReference Include="Regira.Globalization.LibPhoneNumber" Version="4.0.14" />
+        <PackageReference Include="Regira.Globalization.LibPhoneNumber" Version="4.1.0" />
     </ItemGroup>
 
     <ItemGroup>

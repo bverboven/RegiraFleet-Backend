@@ -4,16 +4,15 @@ using Microsoft.EntityFrameworkCore;
 using Regira.DAL.Paging;
 using Regira.Entities.Abstractions;
 using Regira.Entities.EFcore.Extensions;
-using Regira.Entities.Keywords;
+using Regira.Entities.Keywords.Abstractions;
 using Regira.Entities.Models;
 using Regira.Fleet.Identity.Data;
 using Regira.Fleet.Identity.Models.Users;
 using Regira.Fleet.Identity.Models.Users.Claims;
-using Regira.Fleet.Identity.Services;
 using Regira.Utilities;
 
 namespace Regira.Fleet.Identity.Entities.Users;
-public class FleetUserRepository(AccountsContextBase dbContext, UserManager<FleetUser> userManager, IMapper mapper) : IEntityRepository<FleetUserModel, string, FleetUserSearchObject, EntitySortBy, FleetUserIncludes>
+public class FleetUserRepository(AccountsContextBase dbContext, UserManager<FleetUser> userManager, IQKeywordHelper qHelper, IMapper mapper) : IEntityRepository<FleetUserModel, string, FleetUserSearchObject, EntitySortBy, FleetUserIncludes>
 {
     protected AccountsContextBase DbContext => dbContext;
 
@@ -31,14 +30,14 @@ public class FleetUserRepository(AccountsContextBase dbContext, UserManager<Flee
         return mapper.Map<List<FleetUserModel>>(items);
     }
     public Task<IList<FleetUserModel>> List(object? so = null, PagingInfo? pagingInfo = null)
-        => List(Convert(so), pagingInfo);
+        => List([Convert(so)], [], FleetUserIncludes.None, pagingInfo);
     public Task<int> Count(IList<FleetUserSearchObject?> searchObjects)
     {
         var query = Filter(dbContext.Users, searchObjects.Select(Convert).ToList());
         return query.CountAsync();
     }
     public Task<int> Count(object? so)
-        => Count(new[] { Convert(so) });
+        => Count([Convert(so)]);
 
     public Task<FleetUser?> GetItem(string id)
     {
@@ -50,9 +49,6 @@ public class FleetUserRepository(AccountsContextBase dbContext, UserManager<Flee
     {
         if (so != null)
         {
-            var normalizer = new IdentityNormalizer();
-            var qHelper = QKeywordHelper.Create(normalizer);
-
             // ID
             query = query.FilterId(so.Id);
             query = query.FilterIds(so.Ids);
@@ -167,7 +163,11 @@ public class FleetUserRepository(AccountsContextBase dbContext, UserManager<Flee
 
     public void PrepareItem(FleetUserModel model, FleetUser? original)
     {
-        model.Id ??= Guid.NewGuid().ToString();
+        if (string.IsNullOrWhiteSpace(model.Id))
+        {
+            model.Id = Guid.NewGuid().ToString();
+        }
+
         if (original != null)
         {
             dbContext.Entry(original).CurrentValues.SetValues(model);
@@ -201,17 +201,22 @@ public class FleetUserRepository(AccountsContextBase dbContext, UserManager<Flee
         var result = await userManager.UpdateAsync(item);
         if (!result.Succeeded)
         {
-            throw new Exception(result.Errors?.FirstOrDefault()?.Code);
+            throw new Exception(result.Errors.FirstOrDefault()?.Code);
         }
     }
-    public async Task Modify(FleetUserModel item, FleetUser original)
+    public Task Modify(FleetUserModel item, FleetUser original)
     {
         if (item.UserClaims != null)
         {
             var originalClaims = original.UserClaims!;
-            var claimsToRemove = originalClaims.Where(oc => item.UserClaims.All(c => c.Id != oc.Id));
-            var claimsToAdd = item.UserClaims.Where(c => originalClaims.All(oc => c.Id != oc.Id));
-            var claimsToUpdate = originalClaims.Except(claimsToRemove);
+            var claimsToRemove = originalClaims
+                .Where(oc => item.UserClaims.All(c => c.Id != oc.Id))
+                .ToArray();
+            var claimsToAdd = item.UserClaims
+                .Where(c => originalClaims.All(oc => c.Id != oc.Id))
+                .ToArray();
+            var claimsToUpdate = originalClaims.Except(claimsToRemove)
+                .ToArray();
 
             if (claimsToRemove.Any())
             {
@@ -219,9 +224,9 @@ public class FleetUserRepository(AccountsContextBase dbContext, UserManager<Flee
             }
             if (claimsToAdd.Any())
             {
-                dbContext.AddRange(claimsToAdd);
+                dbContext.UserClaims.AddRange(claimsToAdd);
             }
-            if (claimsToUpdate?.Any() == true)
+            if (claimsToUpdate.Any())
             {
                 foreach (var claim in claimsToUpdate)
                 {
@@ -236,7 +241,8 @@ public class FleetUserRepository(AccountsContextBase dbContext, UserManager<Flee
         }
 
         var originalModel = mapper.Map<FleetUserModel>(original);
-        dbContext.UpdateEntityChildCollection<FleetUserModel, string, ClientUserClaim, int>(originalModel, item, item => item.ClientClaims, (item, collection) => item.ClientClaims = collection);
+        dbContext.UpdateEntityChildCollection<FleetUserModel, string, ClientUserClaim, int>(originalModel, item, model => model.ClientClaims, (model, collection) => model.ClientClaims = collection);
+        return Task.CompletedTask;
     }
 
 
@@ -245,7 +251,7 @@ public class FleetUserRepository(AccountsContextBase dbContext, UserManager<Flee
 
 
     protected FleetUserSearchObject? Convert(object? so)
-        => so == default ? default
+        => so == null ? null
             : so is FleetUserSearchObject tso ? tso
             : ObjectUtility.Create<FleetUserSearchObject>(so);
 }

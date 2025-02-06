@@ -16,7 +16,7 @@ public class FleetExcelManager : IExcelManager
 
     public IMemoryFile Create(ExcelSheet sheet)
     {
-        return Create(new[] { sheet });
+        return Create([sheet]);
     }
     public IMemoryFile Create(IEnumerable<ExcelSheet> sheets)
     {

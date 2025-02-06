@@ -12,7 +12,7 @@
 
     <ItemGroup>
         <ProjectReference Include="..\Fleet.Data.Core\Fleet.Data.Core.csproj" />
-        <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="9.0.0" />
+        <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="9.0.1" />
     </ItemGroup>
 
 </Project>

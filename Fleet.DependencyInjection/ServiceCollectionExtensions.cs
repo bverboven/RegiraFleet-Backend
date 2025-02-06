@@ -4,6 +4,7 @@ using Regira.DAL.EFcore.Normalizing;
 using Regira.Entities.DependencyInjection.Extensions;
 using Regira.Entities.EFcore.Abstractions;
 using Regira.Entities.EFcore.Attachments;
+using Regira.Entities.EFcore.QueryBuilders.Abstractions;
 using Regira.Entities.EFcore.Services;
 using Regira.Entities.Models;
 using Regira.Entities.Models.Abstractions;
@@ -27,6 +28,7 @@ using Regira.Fleet.Entities.InterventionTypes;
 using Regira.Fleet.Entities.Vehicles;
 using Regira.Fleet.Entities.Vehicles.Brands;
 using Regira.Fleet.Entities.Vehicles.VehicleTypes;
+using Regira.Fleet.GlobalQueryFilters;
 using Regira.Fleet.Models;
 using Regira.Fleet.Models.Countries;
 using Regira.Fleet.Models.InterventionOperators.Operators;
@@ -171,7 +173,13 @@ public static class ServiceCollectionExtensions
     {
         builder.Services
             //Entity context
-            .UseEntities<FleetContextBase>(c => c.ProfileAssemblies.Add(typeof(FleetProfile).Assembly));
+            .UseEntities<FleetContextBase>(c =>
+            {
+                c.ProfileAssemblies.Add(typeof(FleetProfile).Assembly);
+                c.AddDefaultGlobalQueryFilters();
+            })
+            // make sure only allowed clientId items are loaded
+            .AddTransient<IGlobalFilteredQueryBuilder, FilterClientQueryBuilder>();
 
         // Entity Items
         builder.Entities
@@ -182,17 +190,26 @@ public static class ServiceCollectionExtensions
                e.HasRepository<InterventionRepository>();
                e.HasAttachments<FleetContextBase, Intervention, InterventionAttachment>();
            })
-           .For<Brand, BrandRepository, BrandSearchObject, EntitySortBy, EntityIncludes>()
+           .For<Brand, BrandRepository, BrandSearchObject, EntitySortBy, EntityIncludes>(e =>
+           {
+               e.AddQueryFilter<BrandFilteredQueryBuilder>();
+           })
            .For<Vehicle, VehicleRepository, VehicleSearchObject, EntitySortBy, VehicleIncludes>(e =>
            {
                e.HasRepository<VehicleRepository>();
+               e.AddQueryBuilder<VehicleQueryBuilder>();
                e.HasAttachments<FleetContextBase, Vehicle, VehicleAttachment>();
            })
            .For<VehicleType, VehicleTypeRepository, VehicleTypeSearchObject, EntitySortBy, EntityIncludes>()
-           .For<InterventionType, InterventionTypeRepository, InterventionTypeSearchObject, EntitySortBy, EntityIncludes>()
+           .For<InterventionType, InterventionTypeRepository, InterventionTypeSearchObject, EntitySortBy, EntityIncludes>(e =>
+           {
+               e.HasRepository<InterventionTypeRepository>();
+               e.AddQueryFilter<InterventionTypeQueryBuilder>();
+           })
            .For<Operator, OperatorRepository, OperatorSearchObject, EntitySortBy, OperatorIncludes>(e =>
            {
                e.HasRepository<OperatorRepository>();
+               e.AddQueryBuilder<OperatorQueryBuilder>();
                e.HasAttachments<FleetContextBase, Operator, OperatorAttachment>();
            });
 

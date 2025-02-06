@@ -56,7 +56,7 @@ public class CountryRepository : IEntityService<CountryEntity, string>
         => (await List(Convert(so))).Count;
 
 
-    public int CalculateWeight(Globalization.Country item, SearchObject<string>? so)
+    public int CalculateWeight(Country item, SearchObject<string>? so)
     {
         var weight = 0;
         if (!string.IsNullOrWhiteSpace(so?.Q))
@@ -100,7 +100,7 @@ public class CountryRepository : IEntityService<CountryEntity, string>
 
         return weight;
     }
-    public CountryEntity Convert(Globalization.Country item)
+    public CountryEntity Convert(Country item)
     {
         return new CountryEntity
         {

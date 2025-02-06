@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using System.Security.Claims;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
@@ -13,7 +14,6 @@ using Regira.Fleet.Identity.Web.Models;
 using Regira.Fleet.Manager.Api.Models;
 using Regira.Serializing.Abstractions;
 using Regira.Utilities;
-using System.Security.Claims;
 
 namespace Regira.Fleet.Manager.Api.Controllers;
 
@@ -22,7 +22,7 @@ namespace Regira.Fleet.Manager.Api.Controllers;
 //public class UserController(UserManager<FleetUser> userManager, AccountsContextBase dbContext, ISerializer serializer, IClientContext clientContext) : ControllerBase
 public class UserController(UserManager<FleetUser> userManager, IAccountsDbContext dbContext, ISerializer serializer, IClientContext clientContext) : ControllerBase
 {
-    static string[] ALLOWED_PERMISSIONS = { ClientPermissions.CanRead, ClientPermissions.CanWrite };
+    static string[] ALLOWED_PERMISSIONS = [ClientPermissions.CanRead, ClientPermissions.CanWrite];
 
     [HttpPost("personal-data")]
     public async Task<IActionResult> ChangePersonalData(ChangePersonalDataInput model)
@@ -65,7 +65,7 @@ public class UserController(UserManager<FleetUser> userManager, IAccountsDbConte
                 HasPassword = !string.IsNullOrWhiteSpace(x.PasswordHash),
                 DisplayName = $"{x.GivenName} {x.LastName}".Trim(),
                 Permissions = x.ClientClaims!
-                    .Where(x => x.ClientId == clientId)
+                    .Where(claim => claim.ClientId == clientId)
                     .Select(c => c.ClaimValue)
                     .ToList()!
             });
@@ -89,7 +89,7 @@ public class UserController(UserManager<FleetUser> userManager, IAccountsDbConte
                 return BadRequest(ModelState);
             }
             var confirmToken = await userManager.GenerateEmailConfirmationTokenAsync(user);
-            var token = serializer.Serialize(new UserTokenModel { Token = confirmToken, Username = user.UserName! }).Base64Encode();
+            var token = serializer.Serialize(new UserTokenModel { Token = confirmToken, Username = user.UserName }).Base64Encode();
             if (string.IsNullOrWhiteSpace(model.SiteUrl))
             {
                 ModelState.AddModelError(nameof(model.SiteUrl), "Required for new user");
@@ -198,7 +198,9 @@ Token: {token}
             {
                 dbContext.ClientUserClaims.AddRange(claimsToAdd);
             }
-            var claimsToRemove = currentClaims.Where(c => inputPermissions.All(p => p != c.ClaimValue));
+            var claimsToRemove = currentClaims
+                .Where(c => inputPermissions.All(p => p != c.ClaimValue))
+                .ToArray();
             if (claimsToRemove.Any())
             {
                 dbContext.ClientUserClaims.RemoveRange(claimsToRemove);

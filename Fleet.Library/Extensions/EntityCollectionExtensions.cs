@@ -8,10 +8,10 @@ namespace Regira.Fleet.Extensions;
 
 public static class EntityCollectionExtensions
 {
-    public static IQueryable<T> FilterILikeTitle<T>(this IQueryable<T> query, IEnumerable<QKeyword> keywords)
+    public static IQueryable<T> FilterILikeTitle<T>(this IQueryable<T> query, IEnumerable<QKeyword>? keywords)
         where T : class, IHasNormalizedTitle, IHasCode
     {
-        if (keywords?.Any() == true)
+        if (keywords != null)
         {
             foreach (var kw in keywords)
             {
@@ -22,10 +22,10 @@ public static class EntityCollectionExtensions
 
         return query;
     }
-    public static IQueryable<T> FilterILikeTitleQ<T>(this IQueryable<T> query, IEnumerable<QKeyword> keywords)
+    public static IQueryable<T> FilterILikeTitleQ<T>(this IQueryable<T> query, IEnumerable<QKeyword>? keywords)
         where T : class, IHasNormalizedTitle, IHasCode
     {
-        if (keywords?.Any() == true)
+        if (keywords != null)
         {
             foreach (var kw in keywords)
             {
@@ -35,10 +35,10 @@ public static class EntityCollectionExtensions
 
         return query;
     }
-    public static IQueryable<T> FilterILikeQ<T>(this IQueryable<T> query, IEnumerable<QKeyword> keywords)
+    public static IQueryable<T> FilterILikeQ<T>(this IQueryable<T> query, IEnumerable<QKeyword>? keywords)
         where T : class, IHasNormalizedContent
     {
-        if (keywords?.Any() == true)
+        if (keywords != null)
         {
             foreach (var kw in keywords)
             {

@@ -1,8 +1,8 @@
-﻿using Regira.Entities.Models.Abstractions;
+﻿using System.ComponentModel.DataAnnotations;
+using Regira.Entities.Models.Abstractions;
 using Regira.Fleet.Models.Abstractions;
 using Regira.Fleet.Models.Translations;
 using Regira.Normalizing;
-using System.ComponentModel.DataAnnotations;
 
 namespace Regira.Fleet.Models.InterventionTypes;
 
@@ -17,6 +17,7 @@ public class InterventionType : IFleetEntity, IEntityWithSerial, IHasCode, IHasN
     public string? Code { get; set; }
     [MaxLength(64)]
     public string Title { get; set; } = null!;
+    // ReSharper disable once EntityFramework.ModelValidation.UnlimitedStringLength
     public string? Description { get; set; }
 
     public DateTime Created { get; set; } = DateTime.Now;
@@ -24,7 +25,7 @@ public class InterventionType : IFleetEntity, IEntityWithSerial, IHasCode, IHasN
     public bool IsArchived { get; set; }
 
     [MaxLength(256)]
-    [Normalized(SourceProperties = new[] { nameof(Title), nameof(Code) })]
+    [Normalized(SourceProperties = [nameof(Title), nameof(Code)])]
     public string? NormalizedTitle { get; set; }
 
     public ICollection<InterventionTypeTranslation>? Translations { get; set; }

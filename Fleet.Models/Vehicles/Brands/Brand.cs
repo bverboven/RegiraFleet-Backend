@@ -16,6 +16,7 @@ public class Brand : IFleetEntity, IEntityWithSerial, IHasCode, IHasNormalizedTi
     public string? Code { get; set; }
     [MaxLength(64)]
     public string Title { get; set; } = null!;
+    // ReSharper disable once EntityFramework.ModelValidation.UnlimitedStringLength
     public string? Description { get; set; }
 
     public DateTime Created { get; set; } = DateTime.Now;
@@ -23,6 +24,6 @@ public class Brand : IFleetEntity, IEntityWithSerial, IHasCode, IHasNormalizedTi
     public bool IsArchived { get; set; }
 
     [MaxLength(256)]
-    [Normalized(SourceProperties = new[] { nameof(Title), nameof(Code) })]
+    [Normalized(SourceProperties = [nameof(Title), nameof(Code)])]
     public string? NormalizedTitle { get; set; }
 }

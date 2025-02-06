@@ -45,10 +45,9 @@ public class OperatorNormalizer(INormalizer defaultNormalizer, IdentificationNum
 
         // NormalizedContent
         var contentEntries = GetDefaultNormalizedContentEntries(item);
-        contentEntries.AddRange(new[]
-        {
+        contentEntries.AddRange([
             item.NormalizedIdentificationNumber?.ToUpper()
-        });
+        ]);
 
         if (item.ContactData?.Any() == true)
         {

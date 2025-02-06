@@ -70,10 +70,10 @@ public abstract class FleetContextBase(DbContextOptions options) : DbContext(opt
         {
             entity.HasIndex(e => e.InvoiceNumber);
         });
-        modelBuilder.Entity<InterventionAction>(entity =>
+        modelBuilder.Entity<InterventionAction>(_ =>
         {
         });
-        modelBuilder.Entity<OperatorAddress>(entity =>
+        modelBuilder.Entity<OperatorAddress>(_ =>
         {
             // causes error in MySQL
             //entity.HasIndex(cd => cd.NormalizedContent);

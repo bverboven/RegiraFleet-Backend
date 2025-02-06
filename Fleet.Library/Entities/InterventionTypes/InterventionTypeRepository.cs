@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Regira.DAL.Paging;
 using Regira.Entities.EFcore.Extensions;
-using Regira.Entities.Keywords;
+using Regira.Entities.EFcore.QueryBuilders.Abstractions;
 using Regira.Entities.Models;
 using Regira.Fleet.Abstractions;
 using Regira.Fleet.Core.Abstractions;
@@ -10,56 +11,26 @@ using Regira.Fleet.Models.InterventionTypes;
 
 namespace Regira.Fleet.Entities.InterventionTypes;
 
-public class InterventionTypeRepository(FleetContextBase dbContext, IFleetAppContext appContext) : FleetRepositoryBase<InterventionType, InterventionTypeSearchObject>(dbContext, appContext)
+public class InterventionTypeRepository(FleetContextBase dbContext,
+    IQueryBuilder<InterventionType, InterventionTypeSearchObject, EntitySortBy, EntityIncludes> queryBuilder, IFleetAppContext appContext)
+    : FleetRepositoryBase<InterventionType, InterventionTypeSearchObject>(dbContext, queryBuilder, appContext)
 {
-    public override IQueryable<InterventionType> Filter(IQueryable<InterventionType> query, InterventionTypeSearchObject? so)
-    {
-        query = base.Filter(query, so);
-        if (so != null)
-        {
-            var qHelper = QKeywordHelper.Create();
+    private readonly FleetContextBase _dbContext1 = dbContext;
 
-            // Code
-            query = query.FilterCode(so.Code);
-            // Title
-            query = query.FilterILikeTitle(qHelper.Parse(so.Title));
-            // Q
-            query = query.FilterILikeTitleQ(qHelper.Parse(so.Q));
-
-            // Operator
-            if (so.OperatorId?.Any() == true)
-            {
-                query = query.Where(x => DbContext.InterventionOperators
-                    .Where(o => so.OperatorId.Contains(o.Id))
-                    .Any(o => o.InterventionTypes!.Any(ot => ot.InterventionTypeId == x.Id))
-                );
-            }
-            // Vehicle
-            if (so.VehicleId?.Any() == true)
-            {
-                query = query.Where(x => DbContext.Vehicles
-                    .Where(o => so.VehicleId.Contains(o.Id))
-                    .Any(o => o.InterventionTypes!.Any(ot => ot.InterventionTypeId == x.Id))
-                );
-            }
-        }
-        return query;
-    }
-
-    public override IQueryable<InterventionType> SortBy(IQueryable<InterventionType> query, EntitySortBy? sortBy = null)
+    public override IQueryable<InterventionType> Query(IQueryable<InterventionType> query, IList<InterventionTypeSearchObject?> searchObjects, IList<EntitySortBy> sortBy, EntityIncludes? includes, PagingInfo? pagingInfo)
     {
-        return query.OrderBy(x => x.Title);
-    }
-    public override IQueryable<InterventionType> AddIncludes(IQueryable<InterventionType> query, EntityIncludes? includes)
-    {
-        return query.Include(x => x.Translations);
+        query = query
+            .Include(x => x.Translations)
+            .OrderBy(x => x.Title);
+
+        return base.Query(query, searchObjects, sortBy, includes, pagingInfo);
     }
 
     public override void Modify(InterventionType item, InterventionType original)
     {
         base.Modify(item, original);
 
-        dbContext.UpdateEntityChildCollection(original, item, x => x.Translations, (x, collection) => x.Translations = collection);
+        _dbContext1.UpdateEntityChildCollection(original, item, x => x.Translations, (x, collection) => x.Translations = collection);
     }
     public override void PrepareItem(InterventionType item)
     {

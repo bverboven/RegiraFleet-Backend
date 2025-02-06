@@ -5,7 +5,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Regira.DAL.EFcore.Normalizing;
 using Regira.Entities.DependencyInjection.Extensions;
 using Regira.Entities.EFcore.Abstractions;
-using Regira.Entities.EFcore.Attachments;
 using Regira.Entities.EFcore.Services;
 using Regira.Entities.Models;
 using Regira.Entities.Models.Abstractions;
@@ -53,7 +52,7 @@ public static class ServiceCollectionExtensions
             {
                 e.HasRepository<ClientRepository>();
             })
-            .For<ClientSubscription, int, ClientSubscriptionSearchObject>(e =>
+            .For<ClientSubscription, int, ClientSubscriptionSearchObject>(_ =>
             {
             })
             .For<FleetUserModel, string, FleetUserRepository, FleetUserSearchObject, EntitySortBy, FleetUserIncludes>(e =>
@@ -160,13 +159,13 @@ public static class ServiceCollectionExtensions
     {
         builder.Entities
             .ConfigureAttachmentService(configure)
-            .ConfigureTypedAttachmentService(db => (new IAttachmentQuerySetDescriptor[]
-            {
-            }));
+            .ConfigureTypedAttachmentService(_ => (
+            [
+            ]));
 
         return builder;
     }
-    public static FleetServiceBuilder AddNormalizers(this FleetServiceBuilder builder, Action<IServiceCollection> configure)
+    public static FleetServiceBuilder AddNormalizers(this FleetServiceBuilder builder, Action<IServiceCollection>? configure = null)
     {
         builder.Services
             .AddTransient<INormalizer>(_ => new DefaultNormalizer(new NormalizeOptions { Transform = TextTransform.ToUpperCase }))
@@ -220,7 +219,7 @@ public static class ServiceCollectionExtensions
         if (options.MailerFactory != null)
         {
             services.AddTransient(options.MailerFactory);
-            services.AddTransient<IEmailSender, Services.IdentityMailer>();
+            services.AddTransient<IEmailSender, IdentityMailer>();
         }
 
         return builder;
