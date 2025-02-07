@@ -19,6 +19,8 @@ public class OperatorQueryBuilder(FleetContextBase dbContext, IQKeywordHelper qH
 {
     public override IQueryable<Operator> Filter(IQueryable<Operator> query, OperatorSearchObject? so)
     {
+        query = base.Filter(query, so);
+
         if (so != null)
         {
             // Code

@@ -11,7 +11,7 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="Regira.Entities" Version="4.2.4" />
+        <PackageReference Include="Regira.Entities" Version="4.2.5" />
     </ItemGroup>
 
     <ItemGroup>

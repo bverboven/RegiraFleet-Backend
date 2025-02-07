@@ -4,13 +4,14 @@ using Regira.DAL.EFcore.Normalizing;
 using Regira.Entities.DependencyInjection.Extensions;
 using Regira.Entities.EFcore.Abstractions;
 using Regira.Entities.EFcore.Attachments;
-using Regira.Entities.EFcore.QueryBuilders.Abstractions;
+using Regira.Entities.EFcore.QueryBuilders.GlobalFilterBuilders;
 using Regira.Entities.EFcore.Services;
 using Regira.Entities.Models;
 using Regira.Entities.Models.Abstractions;
 using Regira.Fleet.Clients;
 using Regira.Fleet.Core.Abstractions;
 using Regira.Fleet.Core.DependencyInjection;
+using Regira.Fleet.Core.GlobalQueryFilters;
 using Regira.Fleet.Core.Models;
 using Regira.Fleet.Core.Normalizing;
 using Regira.Fleet.Core.Primers;
@@ -28,7 +29,6 @@ using Regira.Fleet.Entities.InterventionTypes;
 using Regira.Fleet.Entities.Vehicles;
 using Regira.Fleet.Entities.Vehicles.Brands;
 using Regira.Fleet.Entities.Vehicles.VehicleTypes;
-using Regira.Fleet.GlobalQueryFilters;
 using Regira.Fleet.Models;
 using Regira.Fleet.Models.Countries;
 using Regira.Fleet.Models.InterventionOperators.Operators;
@@ -176,7 +176,6 @@ public static class ServiceCollectionExtensions
             .UseEntities<FleetContextBase>(c =>
             {
                 c.ProfileAssemblies.Add(typeof(FleetProfile).Assembly);
-                c.AddDefaultGlobalQueryFilters();
                 c.AddDefaultQKeywordHelper(_ => new DefaultNormalizer(
                     new NormalizeOptions
                     {
@@ -184,9 +183,11 @@ public static class ServiceCollectionExtensions
                         Transform = TextTransform.ToUpperCase
                     }
                 ));
-            })
-            // make sure only allowed clientId items are loaded
-            .AddTransient<IGlobalFilteredQueryBuilder, FilterClientQueryBuilder>();
+                c.AddDefaultGlobalQueryFilters();
+                // make sure only allowed clientId items are loaded
+                c.AddGlobalFilterQueryBuilder<FilterHasClientQueryBuilder>();
+                c.AddGlobalFilterQueryBuilder<FilterHasNormalizedContentQueryBuilder>();
+            });
 
         // Entity Items
         builder.Entities
@@ -208,6 +209,7 @@ public static class ServiceCollectionExtensions
            {
                e.HasRepository<VehicleRepository>();
                e.AddQueryBuilder<VehicleQueryBuilder>();
+               e.AddQueryFilter<VehicleLikeFilterBuilder>();
                e.HasAttachments<FleetContextBase, Vehicle, VehicleAttachment>();
            })
            .For<VehicleType, VehicleTypeRepository, VehicleTypeSearchObject, EntitySortBy, EntityIncludes>(e =>

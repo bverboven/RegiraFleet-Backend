@@ -1,4 +1,5 @@
-﻿using IdentityModel;
+﻿using System.Security.Claims;
+using IdentityModel;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
@@ -8,17 +9,15 @@ using Regira.Fleet.Core.Constants;
 using Regira.Fleet.Identity.Models.Users;
 using Regira.Fleet.Identity.Services;
 using Regira.Fleet.Identity.Web.Models;
+using Regira.Security.Authentication.Jwt.Abstraction;
 using Regira.Security.Authentication.Jwt.Extensions;
-using Regira.Security.Authentication.Jwt.Services;
-using Regira.Utilities;
 using Regira.Web.Utilities;
-using System.Security.Claims;
 
 namespace Regira.Fleet.Identity.Web.Controllers;
 
 [ApiController]
 [Route("auth")]
-public class AccountController(JwtTokenHelper tokenHelper, FleetUserIdentityManager userManager, IUserClaimsPrincipalFactory<FleetUser> claimsFactory, ILogger<AccountController> logger) : ControllerBase
+public class AccountController(ITokenHelper tokenHelper, FleetUserIdentityManager userManager, IUserClaimsPrincipalFactory<FleetUser> claimsFactory, ILogger<AccountController> logger) : ControllerBase
 {
     [AllowAnonymous]
     [HttpPost]
@@ -28,13 +27,13 @@ public class AccountController(JwtTokenHelper tokenHelper, FleetUserIdentityMana
         bool? isLockedOut = null;
         DateTimeOffset? lockedOutEnd = null;
 
-        var user = await userManager.FindByNameAsync(model.Username!);
+        var user = await userManager.FindByNameAsync(model.Username);
         if (user != null)
         {
             isLockedOut = await userManager.IsLockedOutAsync(user);
             if (isLockedOut == false)
             {
-                bool isAuthenticated = await userManager.CheckPasswordAsync(user, model.Password ?? string.Empty);
+                bool isAuthenticated = await userManager.CheckPasswordAsync(user, model.Password);
                 if (isAuthenticated)
                 {
                     var principal = await claimsFactory.CreateAsync(user);

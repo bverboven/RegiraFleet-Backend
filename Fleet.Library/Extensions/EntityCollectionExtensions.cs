@@ -29,7 +29,7 @@ public static class EntityCollectionExtensions
         {
             foreach (var kw in keywords)
             {
-                query = query.Where(x => EF.Functions.Like(x.Code!.ToUpper(), kw.QW!) || EF.Functions.Like(x.NormalizedTitle!, kw.Q!));
+                query = query.Where(x => EF.Functions.Like(x.Code!.ToUpper(), kw.QW!) || EF.Functions.Like(x.NormalizedTitle!.ToUpper(), kw.Q!));
             }
         }
 

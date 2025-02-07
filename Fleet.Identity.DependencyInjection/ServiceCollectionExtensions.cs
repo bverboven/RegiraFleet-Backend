@@ -5,6 +5,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Regira.DAL.EFcore.Normalizing;
 using Regira.Entities.DependencyInjection.Extensions;
 using Regira.Entities.EFcore.Abstractions;
+using Regira.Entities.EFcore.QueryBuilders.GlobalFilterBuilders;
 using Regira.Entities.EFcore.Services;
 using Regira.Entities.Models;
 using Regira.Entities.Models.Abstractions;
@@ -47,8 +48,9 @@ public static class ServiceCollectionExtensions
             .UseEntities<AccountsContextBase>(c =>
             {
                 c.ProfileAssemblies.Add(typeof(IdentityProfile).Assembly);
-                c.AddDefaultGlobalQueryFilters();
                 c.AddDefaultQKeywordHelper(_ => new IdentityNormalizer());
+                c.AddDefaultGlobalQueryFilters();
+                c.AddGlobalFilterQueryBuilder<FilterHasNormalizedContentQueryBuilder>();
             });
 
         builder.Entities
@@ -56,13 +58,16 @@ public static class ServiceCollectionExtensions
             .For<Client, string, ClientRepository, ClientSearchObject, EntitySortBy, ClientIncludes>(e =>
             {
                 e.HasRepository<ClientRepository>();
+                e.AddDefaultQueryBuilders();
             })
-            .For<ClientSubscription, int, ClientSubscriptionSearchObject>(_ =>
+            .For<ClientSubscription, int, ClientSubscriptionSearchObject>(e =>
             {
+                e.AddDefaultQueryBuilders();
             })
             .For<FleetUserModel, string, FleetUserRepository, FleetUserSearchObject, EntitySortBy, FleetUserIncludes>(e =>
             {
                 e.HasRepository<FleetUserRepository>();
+                e.AddDefaultQueryBuilders();
             });
 
         builder
