@@ -19,17 +19,17 @@ public class ClientRepository(AccountsContextBase dbContext,
 
         return base.Add(item);
     }
-    public override void Modify(Client item, Client original)
-    {
-        base.Modify(item, original);
+    //public override void Modify(Client item, Client original)
+    //{
+    //    base.Modify(item, original);
 
-        //DbContext.UpdateEntityChildCollection(original, item, x => x.Languages, (x, collection) => x.Languages = collection);
-        //DbContext.UpdateEntityChildCollection(original, item, x => x.Subscriptions, (x, collection) => x.Subscriptions = collection);
-    }
-    public override void PrepareItem(Client item)
-    {
-        base.PrepareItem(item);
+    //    //DbContext.UpdateEntityChildCollection(original, item, x => x.Languages, (x, collection) => x.Languages = collection);
+    //    //DbContext.UpdateEntityChildCollection(original, item, x => x.Subscriptions, (x, collection) => x.Subscriptions = collection);
+    //}
+    //public override void PrepareItem(Client item)
+    //{
+    //    base.PrepareItem(item);
 
-        //item.Subscriptions?.Prepare();
-    }
+    //    //item.Subscriptions?.Prepare();
+    //}
 }

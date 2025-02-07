@@ -1,13 +1,13 @@
 ﻿using Regira.Entities.EFcore.Extensions;
 using Regira.Entities.EFcore.QueryBuilders.Abstractions;
-using Regira.Entities.Keywords;
+using Regira.Entities.Keywords.Abstractions;
 using Regira.Fleet.Data;
 using Regira.Fleet.Extensions;
 using Regira.Fleet.Models.InterventionTypes;
 
 namespace Regira.Fleet.Entities.InterventionTypes;
 
-public class InterventionTypeQueryBuilder(FleetContextBase dbContext, QKeywordHelper qHelper)
+public class InterventionTypeQueryFilter(FleetContextBase dbContext, IQKeywordHelper qHelper)
     : FilteredQueryBuilderBase<InterventionType, InterventionTypeSearchObject>
 {
     public override IQueryable<InterventionType> Build(IQueryable<InterventionType> query, InterventionTypeSearchObject? so)

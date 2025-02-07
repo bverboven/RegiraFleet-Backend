@@ -57,6 +57,10 @@ public static class EntityCollectionExtensions
             items.Cast<IEntity<int>>().AdjustIdForEfCore();
         }
 
+        if (items is ICollection<ISortable> sortableItems)
+        {
+            sortableItems.SetSortOrder();
+        }
         if (TypeUtility.ImplementsInterface<ISortable>(entityType))
         {
             items.Cast<ISortable>().SetSortOrder();

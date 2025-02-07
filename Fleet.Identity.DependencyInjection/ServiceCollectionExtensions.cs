@@ -44,7 +44,12 @@ public static class ServiceCollectionExtensions
 
         builder.Services
             // Entity context
-            .UseEntities<AccountsContextBase>(c => c.ProfileAssemblies.Add(typeof(IdentityProfile).Assembly));
+            .UseEntities<AccountsContextBase>(c =>
+            {
+                c.ProfileAssemblies.Add(typeof(IdentityProfile).Assembly);
+                c.AddDefaultGlobalQueryFilters();
+                c.AddDefaultQKeywordHelper(_ => new IdentityNormalizer());
+            });
 
         builder.Entities
             // Entity context

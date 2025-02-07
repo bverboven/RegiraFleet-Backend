@@ -177,6 +177,13 @@ public static class ServiceCollectionExtensions
             {
                 c.ProfileAssemblies.Add(typeof(FleetProfile).Assembly);
                 c.AddDefaultGlobalQueryFilters();
+                c.AddDefaultQKeywordHelper(_ => new DefaultNormalizer(
+                    new NormalizeOptions
+                    {
+                        RemoveDiacritics = true,
+                        Transform = TextTransform.ToUpperCase
+                    }
+                ));
             })
             // make sure only allowed clientId items are loaded
             .AddTransient<IGlobalFilteredQueryBuilder, FilterClientQueryBuilder>();
@@ -188,11 +195,14 @@ public static class ServiceCollectionExtensions
            .For<Intervention, InterventionRepository, InterventionSearchObject, InterventionSortBy, InterventionIncludes>(e =>
            {
                e.HasRepository<InterventionRepository>();
+               e.AddQueryFilter<InterventionQueryFilter>();
+               e.AddQueryBuilder<InterventionQueryBuilder>();
                e.HasAttachments<FleetContextBase, Intervention, InterventionAttachment>();
            })
            .For<Brand, BrandRepository, BrandSearchObject, EntitySortBy, EntityIncludes>(e =>
            {
-               e.AddQueryFilter<BrandFilteredQueryBuilder>();
+               e.AddDefaultQueryBuilders();
+               e.AddQueryFilter<BrandQueryFilter>();
            })
            .For<Vehicle, VehicleRepository, VehicleSearchObject, EntitySortBy, VehicleIncludes>(e =>
            {
@@ -200,11 +210,15 @@ public static class ServiceCollectionExtensions
                e.AddQueryBuilder<VehicleQueryBuilder>();
                e.HasAttachments<FleetContextBase, Vehicle, VehicleAttachment>();
            })
-           .For<VehicleType, VehicleTypeRepository, VehicleTypeSearchObject, EntitySortBy, EntityIncludes>()
+           .For<VehicleType, VehicleTypeRepository, VehicleTypeSearchObject, EntitySortBy, EntityIncludes>(e =>
+           {
+               e.AddDefaultQueryBuilders();
+               e.AddQueryFilter<VehicleQueryFilter>();
+           })
            .For<InterventionType, InterventionTypeRepository, InterventionTypeSearchObject, EntitySortBy, EntityIncludes>(e =>
            {
-               e.HasRepository<InterventionTypeRepository>();
-               e.AddQueryFilter<InterventionTypeQueryBuilder>();
+               e.AddDefaultQueryBuilders();
+               e.AddQueryFilter<InterventionTypeQueryFilter>();
            })
            .For<Operator, OperatorRepository, OperatorSearchObject, EntitySortBy, OperatorIncludes>(e =>
            {

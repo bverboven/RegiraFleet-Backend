@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Regira.DAL.Paging;
 using Regira.Entities.EFcore.Extensions;
-using Regira.Entities.Keywords;
+using Regira.Entities.EFcore.QueryBuilders.Abstractions;
 using Regira.Entities.Models;
 using Regira.Fleet.Abstractions;
 using Regira.Fleet.Core.Abstractions;
@@ -10,35 +11,23 @@ using Regira.Fleet.Models.Vehicles.VehicleTypes;
 
 namespace Regira.Fleet.Entities.Vehicles.VehicleTypes;
 
-public class VehicleTypeRepository(FleetContextBase dbContext, IFleetAppContext appContext) : FleetRepositoryBase<VehicleType, VehicleTypeSearchObject>(dbContext, appContext)
+public class VehicleTypeRepository(FleetContextBase dbContext, IFleetAppContext appContext,
+    IQueryBuilder<VehicleType, VehicleTypeSearchObject, EntitySortBy, EntityIncludes> queryBuilder)
+    : FleetRepositoryBase<VehicleType, VehicleTypeSearchObject>(dbContext, queryBuilder, appContext)
 {
-    public override IQueryable<VehicleType> Filter(IQueryable<VehicleType> query, VehicleTypeSearchObject? so)
-    {
-        query = base.Filter(query, so);
-        if (so != null)
-        {
-            var qHelper = QKeywordHelper.Create();
+    private readonly FleetContextBase _dbContext1 = dbContext;
 
-            // Code
-            query = query.FilterCode(so.Code);
-            // Title
-            query = query.FilterILikeTitle(qHelper.Parse(so.Title));
-            // Q
-            query = query.FilterILikeTitleQ(qHelper.Parse(so.Q));
-        }
-        return query;
-    }
-
-    public override IQueryable<VehicleType> AddIncludes(IQueryable<VehicleType> query, EntityIncludes? includes)
+    public override IQueryable<VehicleType> Query(IQueryable<VehicleType> query, IList<VehicleTypeSearchObject?> searchObjects, IList<EntitySortBy> sortBy, EntityIncludes? includes, PagingInfo? pagingInfo)
     {
-        return query.Include(x => x.Translations);
+        query = query.Include(x => x.Translations);
+        return base.Query(query, searchObjects, sortBy, includes, pagingInfo);
     }
 
     public override void Modify(VehicleType item, VehicleType original)
     {
         base.Modify(item, original);
 
-        dbContext.UpdateEntityChildCollection(original, item, x => x.Translations, (x, collection) => x.Translations = collection);
+        _dbContext1.UpdateEntityChildCollection(original, item, x => x.Translations, (x, collection) => x.Translations = collection);
     }
     public override void PrepareItem(VehicleType item)
     {

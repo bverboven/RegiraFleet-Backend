@@ -10,4 +10,4 @@ namespace Regira.Fleet.Entities.Vehicles.Brands;
 public class BrandRepository(
     FleetContextBase dbContext, IFleetAppContext appContext,
     IQueryBuilder<Brand, BrandSearchObject, EntitySortBy, EntityIncludes> queryBuilder)
-    : FleetRepositoryBase<Brand, BrandSearchObject>(dbContext, queryBuilder, appContext);
+    : FleetRepositoryBase<Brand, BrandSearchObject, EntitySortBy, EntityIncludes>(dbContext, queryBuilder, appContext);

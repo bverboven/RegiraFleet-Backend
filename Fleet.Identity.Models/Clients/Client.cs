@@ -16,6 +16,7 @@ public class Client : IEntity<string>, IHasCode, IHasNormalizedTitle, IHasDescri
     public string Title { get; set; } = null!;
     [MaxLength(8)]
     public string? DefaultCulture { get; set; }
+    // ReSharper disable once EntityFramework.ModelValidation.UnlimitedStringLength
     public string? Description { get; set; }
     public DateTime Created { get; set; } = DateTime.Now;
     public DateTime? LastModified { get; set; }

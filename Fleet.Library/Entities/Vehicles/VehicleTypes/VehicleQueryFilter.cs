@@ -2,13 +2,14 @@
 using Regira.Entities.EFcore.QueryBuilders.Abstractions;
 using Regira.Entities.Keywords.Abstractions;
 using Regira.Fleet.Extensions;
-using Regira.Fleet.Models.Vehicles.Brands;
+using Regira.Fleet.Models.Vehicles.VehicleTypes;
 
-namespace Regira.Fleet.Entities.Vehicles.Brands;
+namespace Regira.Fleet.Entities.Vehicles.VehicleTypes;
 
-public class BrandFilteredQueryBuilder(IQKeywordHelper qHelper) : FilteredQueryBuilderBase<Brand, BrandSearchObject>
+public class VehicleQueryFilter(IQKeywordHelper qHelper)
+    : FilteredQueryBuilderBase<VehicleType, VehicleTypeSearchObject>
 {
-    public override IQueryable<Brand> Build(IQueryable<Brand> query, BrandSearchObject? so)
+    public override IQueryable<VehicleType> Build(IQueryable<VehicleType> query, VehicleTypeSearchObject? so)
     {
         if (so != null)
         {
