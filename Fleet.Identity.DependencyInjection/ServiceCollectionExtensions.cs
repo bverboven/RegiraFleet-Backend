@@ -10,6 +10,7 @@ using Regira.Entities.EFcore.Services;
 using Regira.Entities.Models;
 using Regira.Entities.Models.Abstractions;
 using Regira.Fleet.Core.Abstractions;
+using Regira.Fleet.Core.Constants;
 using Regira.Fleet.Core.DependencyInjection;
 using Regira.Fleet.Core.Normalizing;
 using Regira.Fleet.Core.Primers;
@@ -55,19 +56,16 @@ public static class ServiceCollectionExtensions
 
         builder.Entities
             // Entity context
-            .For<Client, string, ClientRepository, ClientSearchObject, EntitySortBy, ClientIncludes>(e =>
+            .For<Client, string, ClientSearchObject, EntitySortBy, ClientIncludes>(e =>
             {
+                e.UseEntityService<ClientRepository>();
                 e.HasRepository<ClientRepository>();
-                e.AddDefaultQueryBuilders();
             })
-            .For<ClientSubscription, int, ClientSubscriptionSearchObject>(e =>
+            .For<ClientSubscription, int, ClientSubscriptionSearchObject>()
+            .For<FleetUserModel, string, FleetUserSearchObject, EntitySortBy, FleetUserIncludes>(e =>
             {
-                e.AddDefaultQueryBuilders();
-            })
-            .For<FleetUserModel, string, FleetUserRepository, FleetUserSearchObject, EntitySortBy, FleetUserIncludes>(e =>
-            {
+                e.UseEntityService<FleetUserRepository>();
                 e.HasRepository<FleetUserRepository>();
-                e.AddDefaultQueryBuilders();
             });
 
         builder
@@ -75,7 +73,10 @@ public static class ServiceCollectionExtensions
             .AddAttachmentServices(options.FileServiceFactory ?? throw new InvalidOperationException($"No implementation for {nameof(IFileService)} configured"));
 
         builder
-            .AddNormalizers(o => o.AddTransient<IObjectNormalizer<Client>, FleetEntityNormalizer<Client>>())
+            .AddNormalizers(o =>
+            {
+                o.AddTransient<IObjectNormalizer<Client>, FleetEntityNormalizer<Client>>();
+            })
             .AddPrimers();
 
         return builder;
@@ -85,9 +86,9 @@ public static class ServiceCollectionExtensions
     {
         return type switch
         {
-            "PostgreSQL" => services.AddPgContext(connectionString),
-            "MySQL" => services.AddMySqlContext(connectionString),
-            "SqlServer" => services.AddSqlServerContext(connectionString),
+            DataBaseTypes.PostgreSQL => services.AddPgContext(connectionString),
+            DataBaseTypes.MySQL => services.AddMySqlContext(connectionString),
+            DataBaseTypes.SqlServer => services.AddSqlServerContext(connectionString),
             _ => throw new NotSupportedException($"Type {type} not supported"),
         };
     }

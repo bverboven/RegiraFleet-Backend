@@ -10,6 +10,7 @@ using Regira.Entities.Models;
 using Regira.Entities.Models.Abstractions;
 using Regira.Fleet.Clients;
 using Regira.Fleet.Core.Abstractions;
+using Regira.Fleet.Core.Constants;
 using Regira.Fleet.Core.DependencyInjection;
 using Regira.Fleet.Core.GlobalQueryFilters;
 using Regira.Fleet.Core.Models;
@@ -79,9 +80,9 @@ public static class ServiceCollectionExtensions
     {
         return builder.Options.DatabaseType switch
         {
-            "PostgreSQL" => builder.AddPgContext(builder.Options.ConnectionString),
-            "MySQL" => builder.AddMySqlContext(builder.Options.ConnectionString),
-            "SqlServer" => builder.AddSqlServerContext(builder.Options.ConnectionString),
+            DataBaseTypes.PostgreSQL => builder.AddPgContext(builder.Options.ConnectionString),
+            DataBaseTypes.MySQL => builder.AddMySqlContext(builder.Options.ConnectionString),
+            DataBaseTypes.SqlServer => builder.AddSqlServerContext(builder.Options.ConnectionString),
             _ => throw new NotSupportedException($"Type {builder.Options.DatabaseType} not supported"),
         };
     }
@@ -192,45 +193,52 @@ public static class ServiceCollectionExtensions
         // Entity Items
         builder.Entities
            // Country
-           .For<Country, string, CountryRepository>(e => e.AddMapping<CountryDto, CountryDto>())
-           .For<Intervention, InterventionRepository, InterventionSearchObject, InterventionSortBy, InterventionIncludes>(e =>
+           .For<Country, string>(e =>
            {
+               e.UseEntityService<CountryRepository>();
+               e.AddMapping<CountryDto, CountryDto>();
+           })
+           .For<Intervention, InterventionSearchObject, InterventionSortBy, InterventionIncludes>(e =>
+           {
+               e.UseEntityService<InterventionRepository>();
                e.HasRepository<InterventionRepository>();
                e.AddQueryFilter<InterventionQueryFilter>();
-               e.AddQueryBuilder<InterventionQueryBuilder>();
+               e.UseQueryBuilder<InterventionQueryBuilder>();
                e.HasAttachments<FleetContextBase, Intervention, InterventionAttachment>();
            })
-           .For<Brand, BrandRepository, BrandSearchObject, EntitySortBy, EntityIncludes>(e =>
+           .For<Brand, BrandSearchObject, EntitySortBy, EntityIncludes>(e =>
            {
-               e.AddDefaultQueryBuilders();
+               e.UseEntityService<BrandRepository>();
                e.AddQueryFilter<BrandQueryFilter>();
            })
-           .For<Vehicle, VehicleRepository, VehicleSearchObject, EntitySortBy, VehicleIncludes>(e =>
+           .For<Vehicle, VehicleSearchObject, EntitySortBy, VehicleIncludes>(e =>
            {
+               e.UseEntityService<VehicleRepository>();
                e.HasRepository<VehicleRepository>();
-               e.AddQueryBuilder<VehicleQueryBuilder>();
+               e.UseQueryBuilder<VehicleQueryBuilder>();
                e.AddQueryFilter<VehicleLikeFilterBuilder>();
                e.HasAttachments<FleetContextBase, Vehicle, VehicleAttachment>();
            })
-           .For<VehicleType, VehicleTypeRepository, VehicleTypeSearchObject, EntitySortBy, EntityIncludes>(e =>
+           .For<VehicleType, VehicleTypeSearchObject, EntitySortBy, EntityIncludes>(e =>
            {
-               e.AddDefaultQueryBuilders();
+               e.UseEntityService<VehicleTypeRepository>();
                e.AddQueryFilter<VehicleQueryFilter>();
            })
-           .For<InterventionType, InterventionTypeRepository, InterventionTypeSearchObject, EntitySortBy, EntityIncludes>(e =>
+           .For<InterventionType, InterventionTypeSearchObject, EntitySortBy, EntityIncludes>(e =>
            {
-               e.AddDefaultQueryBuilders();
+               e.UseEntityService<InterventionTypeRepository>();
                e.AddQueryFilter<InterventionTypeQueryFilter>();
            })
-           .For<Operator, OperatorRepository, OperatorSearchObject, EntitySortBy, OperatorIncludes>(e =>
+           .For<Operator, OperatorSearchObject, EntitySortBy, OperatorIncludes>(e =>
            {
+               e.UseEntityService<OperatorRepository>();
                e.HasRepository<OperatorRepository>();
-               e.AddQueryBuilder<OperatorQueryBuilder>();
+               e.UseQueryBuilder<OperatorQueryBuilder>();
                e.HasAttachments<FleetContextBase, Operator, OperatorAttachment>();
            });
 
         builder
-           // Normalizers
+           // Entity Normalizers
            .AddNormalizers(o =>
            {
                o

@@ -12,7 +12,8 @@ using Regira.Fleet.Identity.Models.Users.Claims;
 using Regira.Utilities;
 
 namespace Regira.Fleet.Identity.Entities.Users;
-public class FleetUserRepository(AccountsContextBase dbContext, UserManager<FleetUser> userManager, IQKeywordHelper qHelper, IMapper mapper) : IEntityRepository<FleetUserModel, string, FleetUserSearchObject, EntitySortBy, FleetUserIncludes>
+public class FleetUserRepository(AccountsContextBase dbContext, UserManager<FleetUser> userManager, IQKeywordHelper qHelper, IMapper mapper)
+    : IEntityRepository<FleetUserModel, string, FleetUserSearchObject, EntitySortBy, FleetUserIncludes>
 {
     protected AccountsContextBase DbContext => dbContext;
 
@@ -29,8 +30,10 @@ public class FleetUserRepository(AccountsContextBase dbContext, UserManager<Flee
             .ToListAsync();
         return mapper.Map<List<FleetUserModel>>(items);
     }
+    public Task<IList<FleetUserModel>> List(FleetUserSearchObject? so = null, PagingInfo? pagingInfo = null)
+        => List([so], [], null, pagingInfo);
     public Task<IList<FleetUserModel>> List(object? so = null, PagingInfo? pagingInfo = null)
-        => List([Convert(so)], [], FleetUserIncludes.None, pagingInfo);
+        => List([Convert(so)], [], null, pagingInfo);
     public Task<int> Count(IList<FleetUserSearchObject?> searchObjects)
     {
         var query = Filter(dbContext.Users, searchObjects.Select(Convert).ToList());

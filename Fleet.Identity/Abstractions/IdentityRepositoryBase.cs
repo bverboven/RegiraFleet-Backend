@@ -1,5 +1,5 @@
-﻿using Regira.Entities.EFcore.Abstractions;
-using Regira.Entities.EFcore.QueryBuilders.Abstractions;
+﻿using Regira.Entities.EFcore.QueryBuilders.Abstractions;
+using Regira.Entities.EFcore.Services;
 using Regira.Entities.Models;
 using Regira.Entities.Models.Abstractions;
 using Regira.Fleet.Identity.Data;
@@ -15,7 +15,7 @@ public abstract class IdentityRepositoryBase<TEntity, TSearchObject>(
 public abstract class IdentityRepositoryBase<TEntity, TKey, TSearchObject, TSortBy, TInclude>(
     AccountsContextBase dbContext,
     IQueryBuilder<TEntity, TKey, TSearchObject, TSortBy, TInclude> queryBuilder)
-    : EntityRepositoryBase<AccountsContextBase, TEntity, TKey, TSearchObject, TSortBy, TInclude>(dbContext, queryBuilder)
+    : EntityRepository<AccountsContextBase, TEntity, TKey, TSearchObject, TSortBy, TInclude>(dbContext, queryBuilder)
     where TEntity : class, IEntity<TKey>, new()
     where TSearchObject : class, ISearchObject<TKey>, new()
     where TSortBy : struct, Enum
