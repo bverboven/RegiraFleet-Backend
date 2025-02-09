@@ -26,6 +26,7 @@ public class Operator : IFleetEntity, IEntityWithSerial, IHasCode, IHasNormalize
     [MaxLength(64)]
     public string? IdentificationNumber { get; set; }
 
+    // ReSharper disable once EntityFramework.ModelValidation.UnlimitedStringLength
     public string? Description { get; set; }
 
     public DateTime Created { get; set; } = DateTime.Now;

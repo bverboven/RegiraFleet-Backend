@@ -9,9 +9,9 @@ public class InterventionInputDto
 {
     public int Id { get; set; }
     [Required]
-    public int VehicleId { get; set; }
+    public int? VehicleId { get; set; }
     [Required]
-    public int OperatorId { get; set; }
+    public int? OperatorId { get; set; }
     public int? InterventionTypeId { get; set; }
     public DateTime? InterventionDate { get; set; }
     public int? Mileage { get; set; }

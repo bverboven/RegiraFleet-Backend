@@ -32,6 +32,7 @@ public class Vehicle : IFleetEntity, IEntityWithSerial, IHasCode, IArchivable, I
     [Normalized(SourceProperty = nameof(IdentificationNumber))]
     public string? NormalizedIdentificationNumber { get; set; }
 
+    // ReSharper disable once EntityFramework.ModelValidation.UnlimitedStringLength
     public string? Description { get; set; }
     public DateTime Created { get; set; } = DateTime.Now;
     public DateTime? LastModified { get; set; }

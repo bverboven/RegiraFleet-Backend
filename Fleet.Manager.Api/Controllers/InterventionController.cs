@@ -3,6 +3,7 @@ using Regira.Entities.Models;
 using Regira.Entities.Web.Attachments.Abstractions;
 using Regira.Entities.Web.Attachments.Models;
 using Regira.Entities.Web.Controllers.Abstractions;
+using Regira.Entities.Web.Models;
 using Regira.Fleet.Models.Interventions;
 
 namespace Regira.Fleet.Manager.Api.Controllers;
@@ -11,6 +12,10 @@ namespace Regira.Fleet.Manager.Api.Controllers;
 [Route("interventions")]
 public class InterventionController : EntityControllerBase<Intervention, InterventionSearchObject, InterventionSortBy, InterventionIncludes, InterventionDto, InterventionInputDto>
 {
+    public override Task<ActionResult<SaveResult<InterventionDto>>> Create(InterventionInputDto model)
+    {
+        return base.Create(model);
+    }
 }
 
 [ApiController]

@@ -15,6 +15,7 @@ public class InterventionQueryBuilder(
             .OrderByDescending(x => x.InterventionDate ?? x.Created)
             //.OrderByDescending(x => x.Invoices!.Max(i => i.InvoiceDate))
             .ThenByDescending(x => x.Id);
+
     public override IQueryable<Intervention> AddIncludes(IQueryable<Intervention> query, IList<InterventionSearchObject?>? so, IList<InterventionSortBy>? sortByList, InterventionIncludes? includes)
     {
         if (includes.HasValue)

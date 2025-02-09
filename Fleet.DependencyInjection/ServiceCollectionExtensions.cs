@@ -4,7 +4,6 @@ using Regira.DAL.EFcore.Normalizing;
 using Regira.Entities.DependencyInjection.Extensions;
 using Regira.Entities.EFcore.Abstractions;
 using Regira.Entities.EFcore.Attachments;
-using Regira.Entities.EFcore.QueryBuilders.GlobalFilterBuilders;
 using Regira.Entities.EFcore.Services;
 using Regira.Entities.Models;
 using Regira.Entities.Models.Abstractions;
@@ -43,6 +42,8 @@ using Regira.IO.Storage.Abstractions;
 using Regira.Normalizing;
 using Regira.Normalizing.Abstractions;
 using Regira.Normalizing.Models;
+using FilterHasNormalizedContentQueryBuilder = Regira.Entities.EFcore.QueryBuilders.GlobalFilterBuilders.FilterHasNormalizedContentQueryBuilder;
+using PgFilterHasNormalizedContentQueryBuilder = Regira.Fleet.Data.PostgreSQL.QueryBuilders.FilterHasNormalizedContentQueryBuilder;
 
 
 namespace Regira.Fleet.DependencyInjection;
@@ -187,7 +188,14 @@ public static class ServiceCollectionExtensions
                 c.AddDefaultGlobalQueryFilters();
                 // make sure only allowed clientId items are loaded
                 c.AddGlobalFilterQueryBuilder<FilterHasClientQueryBuilder>();
-                c.AddGlobalFilterQueryBuilder<FilterHasNormalizedContentQueryBuilder>();
+                if (options.DatabaseType == DataBaseTypes.PostgreSQL)
+                {
+                    c.AddGlobalFilterQueryBuilder<PgFilterHasNormalizedContentQueryBuilder>();
+                }
+                else
+                {
+                    c.AddGlobalFilterQueryBuilder<FilterHasNormalizedContentQueryBuilder>();
+                }
             });
 
         // Entity Items
