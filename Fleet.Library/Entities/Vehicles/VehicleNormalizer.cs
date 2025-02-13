@@ -13,22 +13,18 @@ public class VehicleNormalizer(INormalizer normalizer, FleetContextBase dbContex
     private List<Brand> _brands = null!;
     private List<VehicleType> _vehicleTypes = null!;
 
-    public override async Task HandleNormalizeMany(IEnumerable<Vehicle?> items, bool recursive = false)
+    public override async Task HandleNormalizeMany(IEnumerable<Vehicle> items)
     {
-        var brandIds = items.Select(x => x?.BrandId).Where(id => id.HasValue).Distinct().ToArray();
+        var itemList = items as Vehicle[] ?? items.ToArray();
+        var brandIds = itemList.Select(x => x.BrandId).Where(id => id.HasValue).Distinct().ToArray();
         _brands = await dbContext.VehicleBrands.Where(x => brandIds.Contains(x.Id)).ToListAsync();
-        var typeIds = items.Select(x => x?.VehicleTypeId).Where(id => id.HasValue).Distinct().ToArray();
+        var typeIds = itemList.Select(x => x.VehicleTypeId).Where(id => id.HasValue).Distinct().ToArray();
         _vehicleTypes = await dbContext.VehicleTypes.Where(x => typeIds.Contains(x.Id)).ToListAsync();
 
-        await base.HandleNormalizeMany(items, recursive);
+        await base.HandleNormalizeMany(itemList);
     }
-    public override void HandleNormalize(Vehicle? item, bool recursive = false)
+    public override Task HandleNormalize(Vehicle item)
     {
-        if (item == null)
-        {
-            return;
-        }
-
         base.HandleNormalize(item);
 
         var brand = item.BrandId.HasValue
@@ -61,5 +57,7 @@ public class VehicleNormalizer(INormalizer normalizer, FleetContextBase dbContex
             item.Description
         };
         item.NormalizedContent = string.Join(' ', contentEntries.Where(x => !string.IsNullOrWhiteSpace(x)).Distinct());
+
+        return Task.CompletedTask;
     }
 }

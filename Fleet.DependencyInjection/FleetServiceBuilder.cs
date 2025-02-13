@@ -5,6 +5,7 @@ using Regira.Fleet.Data;
 
 namespace Regira.Fleet.DependencyInjection;
 
-public class FleetServiceBuilder(IServiceCollection services, FleetHostingOptions options) : FleetServiceBuilder<FleetContextBase>(services, options)
+public class FleetServiceBuilder(IServiceCollection services, FleetHostingOptions options) 
+    : FleetServiceBuilder<FleetContextBase>(services, options)
 {
 }

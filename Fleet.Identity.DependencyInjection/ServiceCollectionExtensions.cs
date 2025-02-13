@@ -2,17 +2,13 @@
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
-using Regira.DAL.EFcore.Normalizing;
 using Regira.Entities.DependencyInjection.Extensions;
 using Regira.Entities.EFcore.Abstractions;
 using Regira.Entities.EFcore.QueryBuilders.GlobalFilterBuilders;
-using Regira.Entities.EFcore.Services;
-using Regira.Entities.Models;
 using Regira.Entities.Models.Abstractions;
 using Regira.Fleet.Core.Abstractions;
 using Regira.Fleet.Core.Constants;
 using Regira.Fleet.Core.DependencyInjection;
-using Regira.Fleet.Core.Normalizing;
 using Regira.Fleet.Core.Primers;
 using Regira.Fleet.Identity.Data;
 using Regira.Fleet.Identity.Data.MySQL;
@@ -21,14 +17,10 @@ using Regira.Fleet.Identity.Data.SqlServer;
 using Regira.Fleet.Identity.Entities.Clients;
 using Regira.Fleet.Identity.Entities.Users;
 using Regira.Fleet.Identity.Models;
-using Regira.Fleet.Identity.Models.Clients;
-using Regira.Fleet.Identity.Models.Clients.Subscriptions;
 using Regira.Fleet.Identity.Models.Users;
 using Regira.Fleet.Identity.Services;
 using Regira.IO.Storage.Abstractions;
-using Regira.Normalizing;
-using Regira.Normalizing.Abstractions;
-using Regira.Normalizing.Models;
+using PgFilterHasNormalizedContentQueryBuilder = Regira.Fleet.Identity.Data.PostgreSQL.QueryBuilders.FilterHasNormalizedContentQueryBuilder;
 
 namespace Regira.Fleet.Identity.DependencyInjection;
 public static class ServiceCollectionExtensions
@@ -44,40 +36,35 @@ public static class ServiceCollectionExtensions
 
         var builder = new FleetServiceBuilder(services, options);
 
+        builder.Services.AddProblemDetails();
+
         builder.Services
             // Entity context
             .UseEntities<AccountsContextBase>(c =>
             {
                 c.ProfileAssemblies.Add(typeof(IdentityProfile).Assembly);
                 c.AddDefaultQKeywordHelper(_ => new IdentityNormalizer());
+                c.AddDefaultPrimers();
+                c.AddDefaultEntityNormalizer();
                 c.AddDefaultGlobalQueryFilters();
-                c.AddGlobalFilterQueryBuilder<FilterHasNormalizedContentQueryBuilder>();
+                if (options.DatabaseType == DataBaseTypes.PostgreSQL)
+                {
+                    c.AddGlobalFilterQueryBuilder<PgFilterHasNormalizedContentQueryBuilder>();
+                }
+                else
+                {
+                    c.AddGlobalFilterQueryBuilder<FilterHasNormalizedContentQueryBuilder>();
+                }
             });
 
         builder.Entities
             // Entity context
-            .For<Client, string, ClientSearchObject, EntitySortBy, ClientIncludes>(e =>
-            {
-                e.UseEntityService<ClientRepository>();
-                e.HasRepository<ClientRepository>();
-            })
-            .For<ClientSubscription, int, ClientSubscriptionSearchObject>()
-            .For<FleetUserModel, string, FleetUserSearchObject, EntitySortBy, FleetUserIncludes>(e =>
-            {
-                e.UseEntityService<FleetUserRepository>();
-                e.HasRepository<FleetUserRepository>();
-            });
+            .AddClients()
+            .AddFleetUsers();
 
         builder
             // Attachments
             .AddAttachmentServices(options.FileServiceFactory ?? throw new InvalidOperationException($"No implementation for {nameof(IFileService)} configured"));
-
-        builder
-            .AddNormalizers(o =>
-            {
-                o.AddTransient<IObjectNormalizer<Client>, FleetEntityNormalizer<Client>>();
-            })
-            .AddPrimers();
 
         return builder;
     }
@@ -176,28 +163,12 @@ public static class ServiceCollectionExtensions
 
         return builder;
     }
-    public static FleetServiceBuilder AddNormalizers(this FleetServiceBuilder builder, Action<IServiceCollection>? configure = null)
-    {
-        builder.Services
-            .AddTransient<INormalizer>(_ => new DefaultNormalizer(new NormalizeOptions { Transform = TextTransform.ToUpperCase }))
-            //.AddTransient<IObjectNormalizer>(p => new FleetEntityNormalizer(p.GetRequiredService<INormalizer>()))
-            ;
 
-        // configure entity normalizers
-        configure?.Invoke(builder.Services);
-
-        // finally (put last)
-        builder.Services
-                    .AddObjectNormalizingContainer((_, c) => c.ExtractFromServiceCollection(builder.Services));
-
-        return builder;
-    }
     public static FleetServiceBuilder AddPrimers(this FleetServiceBuilder builder)
     {
         builder.Services
             .AddTransient<IEntityPrimer<IHasCreated>, HasCreatedDbPrimer>()
-            .AddTransient<IEntityPrimer<IHasLastModified>, HasLastModifiedDbPrimer>()
-            .RegisterPrimerContainer<AccountsContextBase>();
+            .AddTransient<IEntityPrimer<IHasLastModified>, HasLastModifiedDbPrimer>();
 
         return builder;
     }

@@ -1,28 +1,25 @@
-﻿using Regira.Fleet.Models.InterventionOperators.ContactData;
+﻿using Regira.Fleet.Core.Normalizing;
+using Regira.Fleet.Models.InterventionOperators.ContactData;
 using Regira.Globalization.LibPhoneNumber;
 using Regira.Normalizing.Abstractions;
 
 namespace Regira.Fleet.Entities.InterventionOperators.Normalizers;
 
-public class ContactDataNormalizer(INormalizer defaultNormalizer, PhoneNumberFormatter phoneNumberNormalizer) : IObjectNormalizer
+public class ContactDataNormalizer(INormalizer defaultNormalizer, PhoneNumberFormatter phoneNumberNormalizer)
+    : FleetEntityNormalizer<OperatorContactData>(defaultNormalizer)
 {
-    public bool IsExclusive => false;
-    public INormalizer DefaultNormalizer => defaultNormalizer;
-
-    public Task HandleNormalizeMany(IEnumerable<object?> instances, bool recursive = false)
+    public override Task HandleNormalizeMany(IEnumerable<OperatorContactData> items)
     {
-        foreach (var item in instances)
+        foreach (var item in items)
         {
-            HandleNormalize(item, recursive);
+            HandleNormalize(item);
         }
         return Task.CompletedTask;
     }
-    public void HandleNormalize(object? instance, bool recursive = false)
+    public override Task HandleNormalize(OperatorContactData item)
     {
-        if (instance is OperatorContactData data)
-        {
-            data.NormalizedValue = Normalize(data);
-        }
+        item.NormalizedValue = Normalize(item);
+        return Task.CompletedTask;
     }
 
     public string? Normalize(string? input, ContactDataTypes dataType)
@@ -48,16 +45,11 @@ public class ContactDataNormalizer(INormalizer defaultNormalizer, PhoneNumberFor
             case ContactDataTypes.Website:
                 return input.ToUpper();
             default: //case ContactDataTypes.Other
-                return defaultNormalizer.Normalize(input);
+                return DefaultPropertyNormalizer.Normalize(input);
         }
     }
     public string? Normalize(OperatorContactData data)
     {
-        if (data == null)
-        {
-            return null;
-        }
-
         data.NormalizedValue = Normalize(data.Value, data.DataType);
         return data.NormalizedValue;
     }

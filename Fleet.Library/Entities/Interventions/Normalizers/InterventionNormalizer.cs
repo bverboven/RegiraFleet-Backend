@@ -1,7 +1,8 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Regira.Entities.EFcore.Normalizing.Abstractions;
 using Regira.Fleet.Core.Normalizing;
 using Regira.Fleet.Data;
-using Regira.Fleet.Entities.EntityLabels;
+using Regira.Fleet.Models.EntityLabels;
 using Regira.Fleet.Models.InterventionOperators.Operators;
 using Regira.Fleet.Models.Interventions;
 using Regira.Fleet.Models.InterventionTypes;
@@ -10,33 +11,33 @@ using Regira.Normalizing.Abstractions;
 
 namespace Regira.Fleet.Entities.Interventions.Normalizers;
 
-public class InterventionNormalizer(INormalizer normalizer, EntityLabelNormalizer labelNormalizer, FleetContextBase dbContext) : FleetEntityNormalizer<Intervention>(normalizer)
+public class InterventionNormalizer(INormalizer normalizer, IEntityNormalizer<IEntityLabel> labelNormalizer, FleetContextBase dbContext)
+    : FleetEntityNormalizer<Intervention>(normalizer)
 {
     private List<Vehicle> _vehicles = null!;
     private List<Operator> _suppliers = null!;
     private List<InterventionType> _interventionTypes = null!;
 
-    public override async Task HandleNormalizeMany(IEnumerable<Intervention?> items, bool recursive = false)
+    public override async Task HandleNormalizeMany(IEnumerable<Intervention> items)
     {
-        var vehicleIds = items.Select(x => x?.VehicleId).Where(id => id.HasValue).Distinct().ToArray();
+        var itemList = items as Intervention[] ?? items.ToArray();
+        var vehicleIds = itemList.Select(x => x.VehicleId).Distinct().ToArray();
         _vehicles = await dbContext.Vehicles.Where(x => vehicleIds.Contains(x.Id)).ToListAsync();
-        var supplierIds = items.Select(x => x?.OperatorId).Where(id => id.HasValue).Distinct().ToArray();
+        var supplierIds = itemList.Select(x => x.OperatorId).Distinct().ToArray();
         _suppliers = await dbContext.InterventionOperators.Where(x => supplierIds.Contains(x.Id)).ToListAsync();
-        var typeIds = items.Select(x => x?.InterventionTypeId).Where(id => id.HasValue).Distinct().ToArray();
+        var typeIds = itemList.Select(x => x.InterventionTypeId).Where(id => id.HasValue).Distinct().ToArray();
         _interventionTypes = await dbContext.InterventionTypes.Where(x => typeIds.Contains(x.Id)).ToListAsync();
 
-        await base.HandleNormalizeMany(items, recursive);
+        await base.HandleNormalizeMany(itemList);
     }
-    public override void HandleNormalize(Intervention? item, bool recursive = false)
+    public override async Task HandleNormalize(Intervention item)
     {
-        if (item == null)
+        if (item.Labels?.Any() == true)
         {
-            return;
+            await labelNormalizer.HandleNormalizeMany(item.Labels);
         }
 
-        labelNormalizer.NormalizeItem(item);
-
-        base.HandleNormalize(item);
+        await base.HandleNormalize(item);
 
         var contentEntries = GetDefaultNormalizedContentEntries(item);
 
@@ -52,7 +53,7 @@ public class InterventionNormalizer(INormalizer normalizer, EntityLabelNormalize
         if (item.Invoice != null)
         {
             contentEntries.Add(item.Invoice.InvoiceNumber);
-            contentEntries.Add(DefaultNormalizer.Normalize(item.Invoice.Description));
+            contentEntries.Add(DefaultPropertyNormalizer.Normalize(item.Invoice.Description));
         }
 
         if (item.Labels?.Any() == true)

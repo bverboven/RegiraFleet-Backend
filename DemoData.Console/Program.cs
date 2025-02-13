@@ -72,6 +72,9 @@ static void ConfigureServices(HostBuilderContext context, IServiceCollection ser
 
     services.AddAuthentication();
     services.AddFleetAuthentication();
+    
+    // Problem details
+    services.AddProblemDetails();
 
     services.AddIdentityWithAdmin(c =>
     {

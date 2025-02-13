@@ -1,46 +1,29 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
-using Regira.DAL.EFcore.Normalizing;
 using Regira.Entities.DependencyInjection.Extensions;
-using Regira.Entities.EFcore.Abstractions;
 using Regira.Entities.EFcore.Attachments;
-using Regira.Entities.EFcore.Services;
-using Regira.Entities.Models;
-using Regira.Entities.Models.Abstractions;
 using Regira.Fleet.Clients;
 using Regira.Fleet.Core.Abstractions;
 using Regira.Fleet.Core.Constants;
 using Regira.Fleet.Core.DependencyInjection;
 using Regira.Fleet.Core.GlobalQueryFilters;
 using Regira.Fleet.Core.Models;
-using Regira.Fleet.Core.Normalizing;
-using Regira.Fleet.Core.Primers;
 using Regira.Fleet.Data;
 using Regira.Fleet.Data.MySQL;
 using Regira.Fleet.Data.PostgreSQL;
 using Regira.Fleet.Data.SqlServer;
 using Regira.Fleet.Entities.Countries;
 using Regira.Fleet.Entities.EntityLabels;
-using Regira.Fleet.Entities.InterventionOperators.Normalizers;
-using Regira.Fleet.Entities.InterventionOperators.Operators;
+using Regira.Fleet.Entities.InterventionOperators;
 using Regira.Fleet.Entities.Interventions;
-using Regira.Fleet.Entities.Interventions.Normalizers;
-using Regira.Fleet.Entities.InterventionTypes;
 using Regira.Fleet.Entities.Vehicles;
-using Regira.Fleet.Entities.Vehicles.Brands;
-using Regira.Fleet.Entities.Vehicles.VehicleTypes;
 using Regira.Fleet.Models;
-using Regira.Fleet.Models.Countries;
+using Regira.Fleet.Models.EntityLabels;
 using Regira.Fleet.Models.InterventionOperators.Operators;
 using Regira.Fleet.Models.Interventions;
-using Regira.Fleet.Models.InterventionTypes;
 using Regira.Fleet.Models.Vehicles;
-using Regira.Fleet.Models.Vehicles.Brands;
-using Regira.Fleet.Models.Vehicles.VehicleTypes;
-using Regira.Globalization.LibPhoneNumber;
 using Regira.IO.Storage.Abstractions;
 using Regira.Normalizing;
-using Regira.Normalizing.Abstractions;
 using Regira.Normalizing.Models;
 using FilterHasNormalizedContentQueryBuilder = Regira.Entities.EFcore.QueryBuilders.GlobalFilterBuilders.FilterHasNormalizedContentQueryBuilder;
 using PgFilterHasNormalizedContentQueryBuilder = Regira.Fleet.Data.PostgreSQL.QueryBuilders.FilterHasNormalizedContentQueryBuilder;
@@ -185,6 +168,9 @@ public static class ServiceCollectionExtensions
                         Transform = TextTransform.ToUpperCase
                     }
                 ));
+                c.AddDefaultPrimers();
+                c.AddDefaultEntityNormalizer();
+                c.AddNormalizer<EntityLabelNormalizer, IEntityLabel>();
                 c.AddDefaultGlobalQueryFilters();
                 // make sure only allowed clientId items are loaded
                 c.AddGlobalFilterQueryBuilder<FilterHasClientQueryBuilder>();
@@ -200,73 +186,10 @@ public static class ServiceCollectionExtensions
 
         // Entity Items
         builder.Entities
-           // Country
-           .For<Country, string>(e =>
-           {
-               e.UseEntityService<CountryRepository>();
-               e.AddMapping<CountryDto, CountryDto>();
-           })
-           .For<Intervention, InterventionSearchObject, InterventionSortBy, InterventionIncludes>(e =>
-           {
-               e.UseEntityService<InterventionRepository>();
-               e.HasRepository<InterventionRepository>();
-               e.AddQueryFilter<InterventionQueryFilter>();
-               e.UseQueryBuilder<InterventionQueryBuilder>();
-               e.HasAttachments<FleetContextBase, Intervention, InterventionAttachment>();
-           })
-           .For<Brand, BrandSearchObject, EntitySortBy, EntityIncludes>(e =>
-           {
-               e.UseEntityService<BrandRepository>();
-               e.AddQueryFilter<BrandQueryFilter>();
-           })
-           .For<Vehicle, VehicleSearchObject, EntitySortBy, VehicleIncludes>(e =>
-           {
-               e.UseEntityService<VehicleRepository>();
-               e.HasRepository<VehicleRepository>();
-               e.UseQueryBuilder<VehicleQueryBuilder>();
-               e.AddQueryFilter<VehicleLikeFilterBuilder>();
-               e.HasAttachments<FleetContextBase, Vehicle, VehicleAttachment>();
-           })
-           .For<VehicleType, VehicleTypeSearchObject, EntitySortBy, EntityIncludes>(e =>
-           {
-               e.UseEntityService<VehicleTypeRepository>();
-               e.AddQueryFilter<VehicleQueryFilter>();
-           })
-           .For<InterventionType, InterventionTypeSearchObject, EntitySortBy, EntityIncludes>(e =>
-           {
-               e.UseEntityService<InterventionTypeRepository>();
-               e.AddQueryFilter<InterventionTypeQueryFilter>();
-           })
-           .For<Operator, OperatorSearchObject, EntitySortBy, OperatorIncludes>(e =>
-           {
-               e.UseEntityService<OperatorRepository>();
-               e.HasRepository<OperatorRepository>();
-               e.UseQueryBuilder<OperatorQueryBuilder>();
-               e.HasAttachments<FleetContextBase, Operator, OperatorAttachment>();
-           });
-
-        builder
-           // Entity Normalizers
-           .AddNormalizers(o =>
-           {
-               o
-                   // helpers
-                   .AddTransient<AddressNormalizer>()
-                   .AddTransient(p => new PhoneNumberFormatter(p.GetRequiredService<ICultureContext>().Culture))
-                   .AddTransient<ContactDataNormalizer>()
-                   .AddTransient<EntityLabelNormalizer>()
-                   .AddTransient<IdentificationNumberNormalizer>()
-                   // simple normalizers
-                   .AddTransient<IObjectNormalizer<Brand>, FleetEntityNormalizer<Brand>>()
-                   .AddTransient<IObjectNormalizer<InterventionType>, FleetEntityNormalizer<InterventionType>>()
-                   .AddTransient<IObjectNormalizer<VehicleType>, FleetEntityNormalizer<VehicleType>>()
-                   // custom normalizers
-                   .AddTransient<IObjectNormalizer<Intervention>, InterventionNormalizer>()
-                   .AddTransient<IObjectNormalizer<Operator>, OperatorNormalizer>()
-                   .AddTransient<IObjectNormalizer<Vehicle>, VehicleNormalizer>();
-           })
-           // Primers
-           .AddPrimers();
+           .AddCountries()
+           .AddInterventions()
+           .AddVehicles()
+           .AddOperators();
 
         return builder;
     }
@@ -280,30 +203,6 @@ public static class ServiceCollectionExtensions
                 db.InterventionOperatorAttachments.ToDescriptor<Operator>(),
                 db.VehicleAttachments.ToDescriptor<Vehicle>()
             ]));
-
-        return builder;
-    }
-    public static FleetServiceBuilder AddNormalizers(this FleetServiceBuilder builder, Action<IServiceCollection> configure)
-    {
-        builder.Services
-            .AddTransient<INormalizer>(_ => new DefaultNormalizer(new NormalizeOptions { Transform = TextTransform.ToUpperCase }))
-            //.AddTransient<IObjectNormalizer>(p => new FleetEntityNormalizer(p.GetRequiredService<INormalizer>()))
-            ;
-
-        // configure entity normalizers
-        configure.Invoke(builder.Services);
-
-        // finally (put last)
-        builder.Services.AddObjectNormalizingContainer();
-
-        return builder;
-    }
-    public static FleetServiceBuilder AddPrimers(this FleetServiceBuilder builder)
-    {
-        builder.Services
-            .AddTransient<IEntityPrimer<IHasCreated>, HasCreatedDbPrimer>()
-            .AddTransient<IEntityPrimer<IHasLastModified>, HasLastModifiedDbPrimer>()
-            .RegisterPrimerContainer<FleetContextBase>();
 
         return builder;
     }

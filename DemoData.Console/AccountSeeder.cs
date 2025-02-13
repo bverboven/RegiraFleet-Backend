@@ -1,7 +1,5 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using Regira.DAL.EFcore.Normalizing;
-using Regira.Entities.EFcore.Extensions;
 using Regira.Fleet.Core.Constants;
 using Regira.Fleet.Identity.Data;
 using Regira.Fleet.Identity.Models.Clients;
@@ -85,8 +83,6 @@ public class AccountSeeder(FleetUserIdentityManager userManager, RoleManager<Ide
                 new() { Code = "AMB", Title = "Ambulance", Id = "f64a75e938b64dfaae5eab03fe541972" }
             ]);
             accountsContext.Clients.AddRange(items);
-            await accountsContext.ApplyNormalizers();
-            await accountsContext.ApplyPrimers();
             await accountsContext.SaveChangesAsync();
         }
 
