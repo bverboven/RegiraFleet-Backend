@@ -1,7 +1,13 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using Regira.DAL.EFcore.Services;
 using Regira.Entities.DependencyInjection.Extensions;
+using Regira.Entities.DependencyInjection.Mapping;
+using Regira.Entities.DependencyInjection.Normalizers;
+using Regira.Entities.DependencyInjection.QueryBuilders;
 using Regira.Entities.EFcore.Attachments;
+using Regira.Entities.EFcore.Normalizing;
+using Regira.Entities.EFcore.Primers;
 using Regira.Fleet.Clients;
 using Regira.Fleet.Core.Abstractions;
 using Regira.Fleet.Core.Constants;
@@ -74,7 +80,13 @@ public static class ServiceCollectionExtensions
         where TContext : FleetContextBase
     {
         builder.Services
-            .AddDbContext<TContext>(configureDb)
+            .AddDbContext<TContext>((sp, db) =>
+            {
+                configureDb(db);
+                db.AddPrimerInterceptors(sp);
+                db.AddNormalizerInterceptors(sp);
+                db.AddAutoTruncateInterceptors();
+            })
             .AddScoped<FleetContextBase, TContext>()
             .AddScoped<IFleetDbContext, TContext>();
 
@@ -90,7 +102,7 @@ public static class ServiceCollectionExtensions
                      .UseNpgsql(connectionString, o =>
                      {
                          o
-                             .MigrationsAssembly(typeof(FleetPostgresContext).Assembly.GetName().Name)
+                             .MigrationsAssembly(typeof(FleetPostgresContext).Assembly)
                              .UseQuerySplittingBehavior(QuerySplittingBehavior.SplitQuery);
                      })
                      //.UseQueryTrackingBehavior(QueryTrackingBehavior.NoTrackingWithIdentityResolution)
@@ -108,7 +120,7 @@ public static class ServiceCollectionExtensions
                 db.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString), o =>
                     {
                         o
-                            .MigrationsAssembly(typeof(FleetMySqlContext).Assembly.GetName().Name)
+                            .MigrationsAssembly(typeof(FleetMySqlContext).Assembly)
                             .UseQuerySplittingBehavior(QuerySplittingBehavior.SplitQuery);
                     })
 #if DEBUG
@@ -125,7 +137,7 @@ public static class ServiceCollectionExtensions
             db.UseSqlServer(connectionString, o =>
             {
                 o
-                    .MigrationsAssembly(typeof(FleetSqlServerContext).Assembly.GetName().Name)
+                    .MigrationsAssembly(typeof(FleetSqlServerContext).Assembly)
                     .UseQuerySplittingBehavior(QuerySplittingBehavior.SplitQuery);
             })
 #if DEBUG
@@ -160,7 +172,8 @@ public static class ServiceCollectionExtensions
             //Entity context
             .UseEntities<FleetContextBase>(c =>
             {
-                c.ProfileAssemblies.Add(typeof(FleetProfile).Assembly);
+                //c.ProfileAssemblies.Add(typeof(FleetProfile).Assembly);
+                c.UseDefaults();
                 c.AddDefaultQKeywordHelper(_ => new DefaultNormalizer(
                     new NormalizeOptions
                     {
@@ -168,12 +181,14 @@ public static class ServiceCollectionExtensions
                         Transform = TextTransform.ToUpperCase
                     }
                 ));
-                c.AddDefaultPrimers();
-                c.AddDefaultEntityNormalizer();
-                c.AddNormalizer<EntityLabelNormalizer, IEntityLabel>();
-                c.AddDefaultGlobalQueryFilters();
+                c.UseAutoMapper(typeof(FleetProfile).Assembly);
+                //c.AddDefaultPrimers();
+                //c.AddDefaultEntityNormalizer();
+                c.AddNormalizer<IEntityLabel, EntityLabelNormalizer>();
+                //c.AddDefaultGlobalQueryFilters();
                 // make sure only allowed clientId items are loaded
                 c.AddGlobalFilterQueryBuilder<FilterHasClientQueryBuilder>();
+                // Postgres ILike?
                 if (options.DatabaseType == DataBaseTypes.PostgreSQL)
                 {
                     c.AddGlobalFilterQueryBuilder<PgFilterHasNormalizedContentQueryBuilder>();

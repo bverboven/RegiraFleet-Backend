@@ -1,6 +1,6 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Regira.Entities.DependencyInjection.Abstractions;
-using Regira.Entities.DependencyInjection.Extensions;
+using Regira.Entities.DependencyInjection.Attachments;
 using Regira.Entities.Models;
 using Regira.Fleet.Core.Abstractions;
 using Regira.Fleet.Data;
@@ -17,19 +17,21 @@ public static class OperatorServiceCollectionExtensions
         where TContext : FleetContextBase
     {
         services
+            .AddTransient<AddressNormalizer, AddressNormalizer>()
+            .AddTransient<ContactDataNormalizer>()
+            .AddTransient<IdentificationNumberNormalizer>()
+            .AddTransient(p => new PhoneNumberFormatter(p.GetRequiredService<ICultureContext>().Culture));
+
+        services
             .For<Operator, OperatorSearchObject, EntitySortBy, OperatorIncludes>(e =>
             {
                 e.UseEntityService<OperatorRepository>();
                 e.HasRepository<OperatorRepository>();
                 e.UseQueryBuilder<OperatorQueryBuilder>();
                 e.HasAttachments<TContext, Operator, OperatorAttachment>();
-                e
-                    .AddTransient<AddressNormalizer, AddressNormalizer>()
-                    .AddTransient(p => new PhoneNumberFormatter(p.GetRequiredService<ICultureContext>().Culture))
-                    .AddTransient<IdentificationNumberNormalizer>()
-                    .AddTransient<ContactDataNormalizer, ContactDataNormalizer>()
-                    .AddNormalizer<OperatorNormalizer>();
+                e.AddNormalizer<OperatorNormalizer>();
             });
+
         return services;
     }
 }

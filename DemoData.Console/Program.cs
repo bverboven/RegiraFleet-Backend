@@ -81,7 +81,7 @@ static void ConfigureServices(HostBuilderContext context, IServiceCollection ser
         var dataDirectory = config["Data:Directory"];
         c.DatabaseType = config["Database:Accounts:Type"]!;
         c.ConnectionString = config["Database:Accounts:ConnectionString"]!;
-        var fsConfig = new BinaryFileService.FileServiceOptions
+        var fsConfig = new FileSystemOptions
         {
             RootFolder = dataDirectory!
         };
@@ -92,7 +92,7 @@ static void ConfigureServices(HostBuilderContext context, IServiceCollection ser
         var dataDirectory = config["Data:Directory"];
         c.DatabaseType = config["Database:Fleet:Type"]!;
         c.ConnectionString = config["Database:Fleet:ConnectionString"]!;
-        var fsConfig = new BinaryFileService.FileServiceOptions
+        var fsConfig = new FileSystemOptions
         {
             RootFolder = dataDirectory!
         };

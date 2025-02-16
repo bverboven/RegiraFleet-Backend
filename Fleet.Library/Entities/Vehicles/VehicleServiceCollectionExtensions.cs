@@ -1,5 +1,5 @@
 ﻿using Regira.Entities.DependencyInjection.Abstractions;
-using Regira.Entities.DependencyInjection.Extensions;
+using Regira.Entities.DependencyInjection.Attachments;
 using Regira.Entities.Models;
 using Regira.Fleet.Core.Normalizing;
 using Regira.Fleet.Data;

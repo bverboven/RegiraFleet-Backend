@@ -21,7 +21,7 @@ public class DataSeeder(FleetContextBase dbContext, IEntityService<Brand> brandS
     IEntityService<InterventionType> interventionTypeService, IEntityService<VehicleType> vehicleTypeService,
     IEntityService<Operator> operatorService, IEntityService<Vehicle> vehicleService)
 {
-    const int FACTOR = 100;
+    const int FACTOR = 1;
     Dictionary<string, string> CarBrands => new()
     {
         {"ALF", "Alfa Romeo"},

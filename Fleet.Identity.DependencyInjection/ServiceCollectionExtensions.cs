@@ -2,14 +2,17 @@
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using Regira.DAL.EFcore.Services;
 using Regira.Entities.DependencyInjection.Extensions;
-using Regira.Entities.EFcore.Abstractions;
+using Regira.Entities.DependencyInjection.Mapping;
+using Regira.Entities.DependencyInjection.Normalizers;
+using Regira.Entities.DependencyInjection.QueryBuilders;
+using Regira.Entities.EFcore.Normalizing;
+using Regira.Entities.EFcore.Primers;
 using Regira.Entities.EFcore.QueryBuilders.GlobalFilterBuilders;
-using Regira.Entities.Models.Abstractions;
 using Regira.Fleet.Core.Abstractions;
 using Regira.Fleet.Core.Constants;
 using Regira.Fleet.Core.DependencyInjection;
-using Regira.Fleet.Core.Primers;
 using Regira.Fleet.Identity.Data;
 using Regira.Fleet.Identity.Data.MySQL;
 using Regira.Fleet.Identity.Data.PostgreSQL;
@@ -42,11 +45,12 @@ public static class ServiceCollectionExtensions
             // Entity context
             .UseEntities<AccountsContextBase>(c =>
             {
-                c.ProfileAssemblies.Add(typeof(IdentityProfile).Assembly);
+                c.UseDefaults();
                 c.AddDefaultQKeywordHelper(_ => new IdentityNormalizer());
-                c.AddDefaultPrimers();
-                c.AddDefaultEntityNormalizer();
-                c.AddDefaultGlobalQueryFilters();
+                c.UseAutoMapper(typeof(IdentityProfile).Assembly);
+                //c.AddDefaultPrimers();
+                //c.AddDefaultEntityNormalizer();
+                //c.AddDefaultGlobalQueryFilters();
                 if (options.DatabaseType == DataBaseTypes.PostgreSQL)
                 {
                     c.AddGlobalFilterQueryBuilder<PgFilterHasNormalizedContentQueryBuilder>();
@@ -83,7 +87,13 @@ public static class ServiceCollectionExtensions
         where TContext : AccountsContextBase
     {
         return services
-            .AddDbContext<TContext>(configureDb)
+            .AddDbContext<TContext>((sp, db) =>
+            {
+                configureDb(db);
+                db.AddPrimerInterceptors(sp);
+                db.AddNormalizerInterceptors(sp);
+                db.AddAutoTruncateInterceptors();
+            })
             .AddScoped<AccountsContextBase, TContext>()
             .AddScoped<IAccountsDbContext, TContext>();
     }
@@ -94,7 +104,7 @@ public static class ServiceCollectionExtensions
                 db.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString), o =>
                 {
                     o
-                        .MigrationsAssembly(typeof(AccountsMySqlContext).Assembly.GetName().Name)
+                        .MigrationsAssembly(typeof(AccountsMySqlContext).Assembly)
                         .UseQuerySplittingBehavior(QuerySplittingBehavior.SplitQuery);
                 })
 #if DEBUG
@@ -112,7 +122,7 @@ public static class ServiceCollectionExtensions
                 .UseNpgsql(connectionString, o =>
                 {
                     o
-                        .MigrationsAssembly(typeof(AccountsPostgresContext).Assembly.GetName().Name)
+                        .MigrationsAssembly(typeof(AccountsPostgresContext).Assembly)
                         .UseQuerySplittingBehavior(QuerySplittingBehavior.SplitQuery);
                 })
                 //.UseQueryTrackingBehavior(QueryTrackingBehavior.NoTrackingWithIdentityResolution)
@@ -131,7 +141,7 @@ public static class ServiceCollectionExtensions
                 .UseSqlServer(connectionString, o =>
                 {
                     o
-                        .MigrationsAssembly(typeof(AccountsSqlServerContext).Assembly.GetName().Name)
+                        .MigrationsAssembly(typeof(AccountsSqlServerContext).Assembly)
                         .UseQuerySplittingBehavior(QuerySplittingBehavior.SplitQuery);
                 })
                 //.UseQueryTrackingBehavior(QueryTrackingBehavior.NoTrackingWithIdentityResolution)
@@ -164,14 +174,6 @@ public static class ServiceCollectionExtensions
         return builder;
     }
 
-    public static FleetServiceBuilder AddPrimers(this FleetServiceBuilder builder)
-    {
-        builder.Services
-            .AddTransient<IEntityPrimer<IHasCreated>, HasCreatedDbPrimer>()
-            .AddTransient<IEntityPrimer<IHasLastModified>, HasLastModifiedDbPrimer>();
-
-        return builder;
-    }
 
     public static IdentityBuilder AddFleetAuthentication(this IServiceCollection services, FleetAuthenticationOptions options)
     {

@@ -36,9 +36,10 @@ Add new (empty) migration. Insert following code.
 
 
 #### Reverting
+```
 Update-Database [MigrationName] -context Fleet[Database]Context
 Remove-Migration -context Fleet[Database]Context -project 'Fleet.Data.[Database]'
-
+```
 
 # Accounts
 
@@ -56,6 +57,7 @@ Add-Migration [MigrationName] -context AccountsSqlServerContext -project 'Fleet.
 ```
 
 #### Reverting
+```
 Update-Database [MigrationName] -context Accounts[Database]Context
 Remove-Migration -context Accounts[Database]Context -project 'Fleet.Identity.Data.[Database]'
-
+```

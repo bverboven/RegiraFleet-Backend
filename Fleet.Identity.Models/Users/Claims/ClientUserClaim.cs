@@ -1,7 +1,6 @@
 ﻿using Regira.Entities.Models.Abstractions;
 using Regira.Fleet.Core.Abstractions;
 using Regira.Fleet.Identity.Models.Clients;
-using Regira.Fleet.Identity.Models.Users;
 using System.ComponentModel.DataAnnotations;
 
 namespace Regira.Fleet.Identity.Models.Users.Claims;
