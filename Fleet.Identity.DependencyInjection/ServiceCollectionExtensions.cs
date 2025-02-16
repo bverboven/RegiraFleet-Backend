@@ -5,7 +5,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Regira.DAL.EFcore.Services;
 using Regira.Entities.DependencyInjection.Extensions;
 using Regira.Entities.DependencyInjection.Mapping;
-using Regira.Entities.DependencyInjection.Normalizers;
 using Regira.Entities.DependencyInjection.QueryBuilders;
 using Regira.Entities.EFcore.Normalizing;
 using Regira.Entities.EFcore.Primers;
@@ -17,12 +16,13 @@ using Regira.Fleet.Identity.Data;
 using Regira.Fleet.Identity.Data.MySQL;
 using Regira.Fleet.Identity.Data.PostgreSQL;
 using Regira.Fleet.Identity.Data.SqlServer;
-using Regira.Fleet.Identity.Entities.Clients;
-using Regira.Fleet.Identity.Entities.Users;
+using Regira.Fleet.Identity.DependencyInjection.Entities.Clients;
+using Regira.Fleet.Identity.DependencyInjection.Entities.Users;
 using Regira.Fleet.Identity.Models;
 using Regira.Fleet.Identity.Models.Users;
 using Regira.Fleet.Identity.Services;
 using Regira.IO.Storage.Abstractions;
+using Regira.Normalizing.Models;
 using PgFilterHasNormalizedContentQueryBuilder = Regira.Fleet.Identity.Data.PostgreSQL.QueryBuilders.FilterHasNormalizedContentQueryBuilder;
 
 namespace Regira.Fleet.Identity.DependencyInjection;
@@ -45,12 +45,10 @@ public static class ServiceCollectionExtensions
             // Entity context
             .UseEntities<AccountsContextBase>(c =>
             {
-                c.UseDefaults();
-                c.AddDefaultQKeywordHelper(_ => new IdentityNormalizer());
                 c.UseAutoMapper(typeof(IdentityProfile).Assembly);
-                //c.AddDefaultPrimers();
-                //c.AddDefaultEntityNormalizer();
-                //c.AddDefaultGlobalQueryFilters();
+                c.UseDefaults(ed => ed.ConfigureNormalizing(o => o.Transform = TextTransform.ToUpperCase));
+
+                c.AddGlobalFilterQueryBuilder<FilterIdsQueryBuilder<string>>();
                 if (options.DatabaseType == DataBaseTypes.PostgreSQL)
                 {
                     c.AddGlobalFilterQueryBuilder<PgFilterHasNormalizedContentQueryBuilder>();
@@ -64,7 +62,7 @@ public static class ServiceCollectionExtensions
         builder.Entities
             // Entity context
             .AddClients()
-            .AddFleetUsers();
+            .AddFleetUsers(options.DatabaseType);
 
         builder
             // Attachments

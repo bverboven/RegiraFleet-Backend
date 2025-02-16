@@ -3,8 +3,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Regira.DAL.Paging;
 using Regira.Entities.Abstractions;
-using Regira.Entities.EFcore.Extensions;
-using Regira.Entities.Keywords.Abstractions;
+using Regira.Entities.EFcore.QueryBuilders.Abstractions;
 using Regira.Entities.Models;
 using Regira.Fleet.Identity.Data;
 using Regira.Fleet.Identity.Models.Users;
@@ -12,7 +11,7 @@ using Regira.Fleet.Identity.Models.Users.Claims;
 using Regira.Utilities;
 
 namespace Regira.Fleet.Identity.Entities.Users;
-public class FleetUserRepository(AccountsContextBase dbContext, UserManager<FleetUser> userManager, IQKeywordHelper qHelper, IMapper mapper)
+public class FleetUserRepository(AccountsContextBase dbContext, UserManager<FleetUser> userManager, IEnumerable<IFilteredQueryBuilder<FleetUser, string, FleetUserSearchObject>> queryFilters, IMapper mapper)
     : IEntityRepository<FleetUserModel, string, FleetUserSearchObject, EntitySortBy, FleetUserIncludes>
 {
     protected AccountsContextBase DbContext => dbContext;
@@ -50,49 +49,11 @@ public class FleetUserRepository(AccountsContextBase dbContext, UserManager<Flee
     }
     public IQueryable<FleetUser> Filter(IQueryable<FleetUser> query, FleetUserSearchObject? so)
     {
-        if (so != null)
+        foreach (var filter in queryFilters)
         {
-            // ID
-            query = query.FilterId(so.Id);
-            query = query.FilterIds(so.Ids);
-            // Client
-            if (!string.IsNullOrWhiteSpace(so.ClientId))
-            {
-                query = query.Where(x => x.ClientClaims!.Any(c => c.ClientId == so.ClientId));
-            }
-            // Username
-            if (!string.IsNullOrWhiteSpace(so.UserName))
-            {
-                var q = qHelper.ParseKeyword(so.UserName);
-                query = query.Where(x => EF.Functions.Like(x.NormalizedUserName, q.Q));
-            }
-            // Title
-            if (!string.IsNullOrWhiteSpace(so.Title))
-            {
-                var qNames = qHelper.Parse(so.Title);
-                foreach (var q in qNames)
-                {
-                    query = query.Where(x => EF.Functions.Like(x.GivenName!.ToUpper(), q.Q) || EF.Functions.Like(x.LastName!.ToUpper(), q.Q));
-                }
-            }
-            // Culture
-            if (!string.IsNullOrWhiteSpace(so.Culture))
-            {
-                query = query.Where(x => x.Culture == so.Culture);
-            }
-            // Q
-            if (!string.IsNullOrWhiteSpace(so.Q))
-            {
-                var keywords = qHelper.Parse(so.Q);
-                foreach (var q in keywords)
-                {
-                    query = query.Where(x =>
-                        x.NormalizedUserName!.Contains(q.Normalized!) || x.NormalizedEmail!.Contains(q.Normalized!)
-                        || x.GivenName!.ToUpper().Contains(q.Normalized!) || x.LastName!.ToUpper().Contains(q.Normalized!)
-                    );
-                }
-            }
+            query = filter.Build(query, so);
         }
+
         return query;
     }
     public IQueryable<FleetUser> Filter(IQueryable<FleetUser> query, IList<FleetUserSearchObject?> searchObjects)

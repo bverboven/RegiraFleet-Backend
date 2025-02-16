@@ -21,7 +21,7 @@ public class DataSeeder(FleetContextBase dbContext, IEntityService<Brand> brandS
     IEntityService<InterventionType> interventionTypeService, IEntityService<VehicleType> vehicleTypeService,
     IEntityService<Operator> operatorService, IEntityService<Vehicle> vehicleService)
 {
-    const int FACTOR = 1;
+    const int FACTOR = 100;
     Dictionary<string, string> CarBrands => new()
     {
         {"ALF", "Alfa Romeo"},
@@ -267,7 +267,7 @@ public class DataSeeder(FleetContextBase dbContext, IEntityService<Brand> brandS
             .RuleFor(x => x.OperatorId, (f) => f.PickRandom(suppliers).Id)
             .RuleFor(x => x.InterventionTypeId, (f, x) => (suppliers.FirstOrDefault(s => s.Id == x.OperatorId)
                 ?.InterventionTypeIds
-                ?.Shuffle()
+                .Shuffle()
                 .FirstOrDefault())
                 ?? f.PickRandom(typeIds)
             )
@@ -307,13 +307,13 @@ public class DataSeeder(FleetContextBase dbContext, IEntityService<Brand> brandS
         {
             case ContactDataTypes.Email:
                 var provider = $"{UriUtility.Slugify(supplier.Title)}.{f.Internet.DomainSuffix()}";
-                cd.Value = f.Internet.Email(provider: provider ?? f.Internet.DomainName()).ToLowerInvariant().ToLower();
+                cd.Value = f.Internet.Email(provider: provider).ToLowerInvariant().ToLower();
                 break;
             case ContactDataTypes.Phone:
                 cd.Value = f.Phone.PhoneNumber("0## ## ## ##");
                 break;
             case ContactDataTypes.Website:
-                cd.Value = $"{f.PickRandom(new[] { "www.", "services.", "business", "sales", "" })}{UriUtility.Slugify(supplier.Title!)}.{f.Internet.DomainSuffix()}".ToLower();
+                cd.Value = $"{f.PickRandom(new[] { "www.", "services.", "business", "sales", "" })}{UriUtility.Slugify(supplier.Title)}.{f.Internet.DomainSuffix()}".ToLower();
                 break;
         }
 

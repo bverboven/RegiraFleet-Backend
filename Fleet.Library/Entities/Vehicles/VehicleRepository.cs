@@ -6,7 +6,7 @@ using Regira.Entities.Models;
 using Regira.Fleet.Abstractions;
 using Regira.Fleet.Core.Abstractions;
 using Regira.Fleet.Data;
-using Regira.Fleet.Extensions;
+using Regira.Fleet.Data.Extensions;
 using Regira.Fleet.Models.Vehicles;
 
 namespace Regira.Fleet.Entities.Vehicles;
@@ -15,12 +15,11 @@ public class VehicleRepository(FleetContextBase dbContext, IFleetAppContext appC
     IQueryBuilder<Vehicle, VehicleSearchObject, EntitySortBy, VehicleIncludes> queryBuilder)
     : FleetRepositoryBase<Vehicle, VehicleSearchObject, EntitySortBy, VehicleIncludes>(dbContext, queryBuilder, appContext)
 {
-    private readonly FleetContextBase _dbContext1 = dbContext;
-
     public override void Modify(Vehicle item, Vehicle original)
     {
         base.Modify(item, original);
 
+        // Cannot use UpdateEntityChildCollection since VehicleInterventionType doesn't have int ID
         if (item.InterventionTypes != null)
         {
             var itemsToRemove = original.InterventionTypes?
@@ -31,11 +30,11 @@ public class VehicleRepository(FleetContextBase dbContext, IFleetAppContext appC
                 .ToArray();
             foreach (var itemToRemove in itemsToRemove)
             {
-                _dbContext1.Entry(itemToRemove).State = EntityState.Deleted;
+                DbContext.Entry(itemToRemove).State = EntityState.Deleted;
             }
             foreach (var itemToAdd in itemsToAdd)
             {
-                _dbContext1.Entry(itemToAdd).State = EntityState.Added;
+                DbContext.Entry(itemToAdd).State = EntityState.Added;
             }
             original.InterventionTypes = (original.InterventionTypes ?? Array.Empty<VehicleInterventionType>())
                 .Except(itemsToRemove)
@@ -43,11 +42,11 @@ public class VehicleRepository(FleetContextBase dbContext, IFleetAppContext appC
                 .ToList();
         }
 
-        _dbContext1.UpdateEntityChildCollection(original, item, x => x.Labels, (x, collection) => x.Labels = collection);
+        DbContext.UpdateEntityChildCollection(original, item, x => x.Labels, (x, collection) => x.Labels = collection);
 
         if (item.Attachments != null)
         {
-            _dbContext1.ModifyEntityAttachments(original, item);
+            DbContext.ModifyEntityAttachments(original, item);
         }
     }
     public override void PrepareItem(Vehicle item)

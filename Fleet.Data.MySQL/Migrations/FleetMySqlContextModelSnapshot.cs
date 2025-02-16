@@ -17,7 +17,7 @@ namespace Regira.Fleet.Data.MySQL.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "8.0.3")
+                .HasAnnotation("ProductVersion", "9.0.2")
                 .HasAnnotation("Relational:MaxIdentifierLength", 64);
 
             MySqlModelBuilderExtensions.AutoIncrementColumns(modelBuilder);
@@ -486,8 +486,8 @@ namespace Regira.Fleet.Data.MySQL.Migrations
                         .HasColumnName("intervention_type_id");
 
                     b.Property<string>("NormalizedTitle")
-                        .HasMaxLength(256)
-                        .HasColumnType("varchar(256)")
+                        .HasMaxLength(64)
+                        .HasColumnType("varchar(64)")
                         .HasColumnName("normalized_title");
 
                     b.Property<string>("Title")
@@ -1205,8 +1205,8 @@ namespace Regira.Fleet.Data.MySQL.Migrations
                         .HasColumnName("id");
 
                     b.Property<string>("NormalizedTitle")
-                        .HasMaxLength(256)
-                        .HasColumnType("varchar(256)")
+                        .HasMaxLength(64)
+                        .HasColumnType("varchar(64)")
                         .HasColumnName("normalized_title");
 
                     b.Property<string>("Title")

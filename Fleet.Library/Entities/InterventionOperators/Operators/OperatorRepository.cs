@@ -6,7 +6,7 @@ using Regira.Entities.Models;
 using Regira.Fleet.Abstractions;
 using Regira.Fleet.Core.Abstractions;
 using Regira.Fleet.Data;
-using Regira.Fleet.Extensions;
+using Regira.Fleet.Data.Extensions;
 using Regira.Fleet.Models.InterventionOperators.Operators;
 
 namespace Regira.Fleet.Entities.InterventionOperators.Operators;
@@ -15,16 +15,14 @@ public class OperatorRepository(FleetContextBase dbContext, IFleetAppContext app
     IQueryBuilder<Operator, OperatorSearchObject, EntitySortBy, OperatorIncludes> queryBuilder)
     : FleetRepositoryBase<Operator, OperatorSearchObject, EntitySortBy, OperatorIncludes>(dbContext, queryBuilder, appContext)
 {
-    private readonly FleetContextBase _dbContext1 = dbContext;
-
     public override void Modify(Operator item, Operator original)
     {
         // Addresses
-        _dbContext1.UpdateEntityChildCollection(original, item, x => x.Addresses, (x, collection) => x.Addresses = collection);
+        DbContext.UpdateEntityChildCollection(original, item, x => x.Addresses, (x, collection) => x.Addresses = collection);
         // Contact Data
-        _dbContext1.UpdateEntityChildCollection(original, item, x => x.ContactData, (x, collection) => x.ContactData = collection);
+        DbContext.UpdateEntityChildCollection(original, item, x => x.ContactData, (x, collection) => x.ContactData = collection);
         // Labels
-        _dbContext1.UpdateEntityChildCollection(original, item, x => x.Labels, (x, collection) => x.Labels = collection);
+        DbContext.UpdateEntityChildCollection(original, item, x => x.Labels, (x, collection) => x.Labels = collection);
 
         // Intervent Types
         if (item.InterventionTypes != null)
@@ -37,11 +35,11 @@ public class OperatorRepository(FleetContextBase dbContext, IFleetAppContext app
                 .ToArray();
             foreach (var itemToRemove in itemsToRemove)
             {
-                _dbContext1.Entry(itemToRemove).State = EntityState.Deleted;
+                DbContext.Entry(itemToRemove).State = EntityState.Deleted;
             }
             foreach (var itemToAdd in itemsToAdd)
             {
-                _dbContext1.Entry(itemToAdd).State = EntityState.Added;
+                DbContext.Entry(itemToAdd).State = EntityState.Added;
             }
             original.InterventionTypes = (original.InterventionTypes ?? Array.Empty<OperatorInterventionType>())
                 .Except(itemsToRemove)
@@ -51,7 +49,7 @@ public class OperatorRepository(FleetContextBase dbContext, IFleetAppContext app
         // Attachments
         if (item.Attachments != null)
         {
-            _dbContext1.ModifyEntityAttachments(original, item);
+            DbContext.ModifyEntityAttachments(original, item);
         }
 
         base.Modify(item, original);

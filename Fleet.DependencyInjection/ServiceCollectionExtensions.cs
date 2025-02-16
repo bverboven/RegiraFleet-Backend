@@ -4,6 +4,7 @@ using Regira.DAL.EFcore.Services;
 using Regira.Entities.DependencyInjection.Extensions;
 using Regira.Entities.DependencyInjection.Mapping;
 using Regira.Entities.DependencyInjection.Normalizers;
+using Regira.Entities.DependencyInjection.Primers;
 using Regira.Entities.DependencyInjection.QueryBuilders;
 using Regira.Entities.EFcore.Attachments;
 using Regira.Entities.EFcore.Normalizing;
@@ -18,18 +19,18 @@ using Regira.Fleet.Data;
 using Regira.Fleet.Data.MySQL;
 using Regira.Fleet.Data.PostgreSQL;
 using Regira.Fleet.Data.SqlServer;
-using Regira.Fleet.Entities.Countries;
+using Regira.Fleet.DependencyInjection.Entities.Countries;
+using Regira.Fleet.DependencyInjection.Entities.InterventionOperators;
+using Regira.Fleet.DependencyInjection.Entities.Interventions;
+using Regira.Fleet.DependencyInjection.Entities.Vehicles;
 using Regira.Fleet.Entities.EntityLabels;
-using Regira.Fleet.Entities.InterventionOperators;
-using Regira.Fleet.Entities.Interventions;
-using Regira.Fleet.Entities.Vehicles;
 using Regira.Fleet.Models;
 using Regira.Fleet.Models.EntityLabels;
 using Regira.Fleet.Models.InterventionOperators.Operators;
 using Regira.Fleet.Models.Interventions;
 using Regira.Fleet.Models.Vehicles;
+using Regira.Fleet.Primers;
 using Regira.IO.Storage.Abstractions;
-using Regira.Normalizing;
 using Regira.Normalizing.Models;
 using FilterHasNormalizedContentQueryBuilder = Regira.Entities.EFcore.QueryBuilders.GlobalFilterBuilders.FilterHasNormalizedContentQueryBuilder;
 using PgFilterHasNormalizedContentQueryBuilder = Regira.Fleet.Data.PostgreSQL.QueryBuilders.FilterHasNormalizedContentQueryBuilder;
@@ -172,22 +173,15 @@ public static class ServiceCollectionExtensions
             //Entity context
             .UseEntities<FleetContextBase>(c =>
             {
-                //c.ProfileAssemblies.Add(typeof(FleetProfile).Assembly);
-                c.UseDefaults();
-                c.AddDefaultQKeywordHelper(_ => new DefaultNormalizer(
-                    new NormalizeOptions
-                    {
-                        RemoveDiacritics = true,
-                        Transform = TextTransform.ToUpperCase
-                    }
-                ));
                 c.UseAutoMapper(typeof(FleetProfile).Assembly);
-                //c.AddDefaultPrimers();
-                //c.AddDefaultEntityNormalizer();
                 c.AddNormalizer<IEntityLabel, EntityLabelNormalizer>();
-                //c.AddDefaultGlobalQueryFilters();
+                c.UseDefaults(ed => ed.ConfigureNormalizing(o => o.Transform = TextTransform.ToUpperCase));
+
                 // make sure only allowed clientId items are loaded
                 c.AddGlobalFilterQueryBuilder<FilterHasClientQueryBuilder>();
+                c.AddPrimer<HasClientPrimer>();
+                c.AddPrimer<ArchivablePrimer>();
+
                 // Postgres ILike?
                 if (options.DatabaseType == DataBaseTypes.PostgreSQL)
                 {
@@ -201,10 +195,14 @@ public static class ServiceCollectionExtensions
 
         // Entity Items
         builder.Entities
+           // Countries
            .AddCountries()
-           .AddInterventions()
-           .AddVehicles()
-           .AddOperators();
+           // Interventions
+           .AddInterventions(options.DatabaseType)
+           // Vehicles
+           .AddVehicles(options.DatabaseType)
+           // InterventionOperators
+           .AddOperators(options.DatabaseType);
 
         return builder;
     }

@@ -6,7 +6,7 @@ using Regira.Entities.Models;
 using Regira.Fleet.Abstractions;
 using Regira.Fleet.Core.Abstractions;
 using Regira.Fleet.Data;
-using Regira.Fleet.Extensions;
+using Regira.Fleet.Data.Extensions;
 using Regira.Fleet.Models.InterventionTypes;
 
 namespace Regira.Fleet.Entities.InterventionTypes;
@@ -15,8 +15,6 @@ public class InterventionTypeRepository(FleetContextBase dbContext,
     IQueryBuilder<InterventionType, InterventionTypeSearchObject, EntitySortBy, EntityIncludes> queryBuilder, IFleetAppContext appContext)
     : FleetRepositoryBase<InterventionType, InterventionTypeSearchObject>(dbContext, queryBuilder, appContext)
 {
-    private readonly FleetContextBase _dbContext1 = dbContext;
-
     public override IQueryable<InterventionType> Query(IQueryable<InterventionType> query, IList<InterventionTypeSearchObject?> searchObjects, IList<EntitySortBy> sortBy, EntityIncludes? includes, PagingInfo? pagingInfo)
     {
         query = query
@@ -30,7 +28,7 @@ public class InterventionTypeRepository(FleetContextBase dbContext,
     {
         base.Modify(item, original);
 
-        _dbContext1.UpdateEntityChildCollection(original, item, x => x.Translations, (x, collection) => x.Translations = collection);
+        DbContext.UpdateEntityChildCollection(original, item, x => x.Translations, (x, collection) => x.Translations = collection);
     }
     public override void PrepareItem(InterventionType item)
     {

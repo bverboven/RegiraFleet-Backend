@@ -1,6 +1,5 @@
 ﻿using Regira.Entities.EFcore.QueryBuilders.Abstractions;
 using Regira.Entities.Keywords.Abstractions;
-using Regira.Fleet.Extensions;
 using Regira.Fleet.Models.Interventions;
 
 namespace Regira.Fleet.Entities.Interventions;
@@ -46,8 +45,6 @@ public class InterventionQueryFilter(IQKeywordHelper qHelper) : FilteredQueryBui
             {
                 query = query.Where(x => so.MaxDate >= x.InterventionDate);
             }
-            // Q
-            query = query.FilterILikeQ(qHelper.Parse(so.Q));
         }
 
         return query;

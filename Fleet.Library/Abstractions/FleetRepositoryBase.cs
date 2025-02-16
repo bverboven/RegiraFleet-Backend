@@ -1,5 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
-using Regira.Entities.EFcore.QueryBuilders.Abstractions;
+﻿using Regira.Entities.EFcore.QueryBuilders.Abstractions;
 using Regira.Entities.EFcore.Services;
 using Regira.Entities.Models;
 using Regira.Entities.Models.Abstractions;
@@ -7,7 +6,6 @@ using Regira.Fleet.Core.Abstractions;
 using Regira.Fleet.Data;
 
 namespace Regira.Fleet.Abstractions;
-
 
 public abstract class FleetRepositoryBase<TEntity, TSearchObject>(FleetContextBase dbContext,
     IQueryBuilder<TEntity, TSearchObject, EntitySortBy, EntityIncludes> queryBuilder, IFleetAppContext appContext)
@@ -22,26 +20,5 @@ public abstract class FleetRepositoryBase<TEntity, TSearchObject, TSortBy, TIncl
     where TSortBy : struct, Enum
     where TInclude : struct, Enum
 {
-    private readonly FleetContextBase _dbContext = dbContext;
-
-    public override Task Remove(TEntity item)
-    {
-        if (item is IArchivable archivableItem)
-        {
-            archivableItem.IsArchived = true;
-            _dbContext.Entry(item).State = EntityState.Modified;
-            return Task.CompletedTask;
-        }
-
-        return base.Remove(item);
-    }
-
-    public override void PrepareItem(TEntity item)
-    {
-        base.PrepareItem(item);
-        if (item is IHasClientId itemWithClientId && string.IsNullOrWhiteSpace(itemWithClientId.ClientId))
-        {
-            itemWithClientId.ClientId = appContext.Client.ClientId!;
-        }
-    }
+    protected readonly FleetContextBase DbContext = dbContext;
 }
