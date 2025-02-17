@@ -8,7 +8,10 @@ public class HasClientPrimer(IClientContext clientContext) : EntityPrimerBase<IH
 {
     public override Task PrepareAsync(IHasClientId entity, EntityEntry entry)
     {
-        entity.ClientId = clientContext.ClientId!;
+        if (!string.IsNullOrWhiteSpace(clientContext.ClientId))
+        {
+            entity.ClientId = clientContext.ClientId;
+        }
 
         return Task.CompletedTask;
     }

@@ -9,3 +9,8 @@ public class ClientContext(IHttpContextAccessor httpContextAccessor) : IClientCo
 {
     public string? ClientId => httpContextAccessor.HttpContext?.User.FindFirstValue(FleetClaimTypes.ClientId);
 }
+
+public class WritableClientContext : IClientContext
+{
+    public string? ClientId { get; set; }
+}

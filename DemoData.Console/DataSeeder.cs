@@ -1,6 +1,7 @@
 ﻿using Bogus;
 using Microsoft.EntityFrameworkCore;
 using Regira.Entities.Abstractions;
+using Regira.Fleet.Clients;
 using Regira.Fleet.Data;
 using Regira.Fleet.Identity.Models.Clients;
 using Regira.Fleet.Models.InterventionOperators.Addresses;
@@ -17,9 +18,9 @@ using Regira.Web.Utilities;
 
 namespace DemoData.Console;
 
-public class DataSeeder(FleetContextBase dbContext, IEntityService<Brand> brandService, IEntityService<Intervention> interventionService,
-    IEntityService<InterventionType> interventionTypeService, IEntityService<VehicleType> vehicleTypeService,
-    IEntityService<Operator> operatorService, IEntityService<Vehicle> vehicleService)
+public class DataSeeder(FleetContextBase dbContext, WritableClientContext clientContext, IEntityService<Brand> brandService,
+    IEntityService<Intervention> interventionService, IEntityService<InterventionType> interventionTypeService,
+    IEntityService<VehicleType> vehicleTypeService, IEntityService<Operator> operatorService, IEntityService<Vehicle> vehicleService)
 {
     const int FACTOR = 100;
     Dictionary<string, string> CarBrands => new()
@@ -63,20 +64,24 @@ public class DataSeeder(FleetContextBase dbContext, IEntityService<Brand> brandS
     public async Task Seed(IList<Client> clients)
     {
         _clients = clients;
-        await SeedBrands();
-        await SeedInterventionTypes();
-        await SeedVehicleTypes();
         foreach (var client in _clients)
         {
+            clientContext.ClientId = client.Id;
+            await SeedBrands(client.Id);
+            await SeedInterventionTypes(client.Id);
+            await SeedVehicleTypes(client.Id);
             await SeedOperators(client.Id);
             await SeedVehicles(client.Id);
             await SeedInterventions(client.Id);
         }
     }
 
-    public async Task SeedBrands()
+    public async Task SeedBrands(string clientId)
     {
-        var items = await dbContext.VehicleBrands.ToListAsync();
+        var items = await dbContext.VehicleBrands
+            .Where(x => x.ClientId == clientId)
+            .ToListAsync();
+
         if (!items.Any())
         {
             items.AddRange([
@@ -104,16 +109,19 @@ public class DataSeeder(FleetContextBase dbContext, IEntityService<Brand> brandS
                 new() { ClientId = Ambulance.Id, Code = "VLV", Title = "Volvo" }
             ]);
 
-            foreach (var item in items)
+            foreach (var item in items.Where(x => x.ClientId == clientId))
             {
                 await brandService.Add(item);
             }
             await brandService.SaveChanges();
         }
     }
-    public async Task SeedInterventionTypes()
+    public async Task SeedInterventionTypes(string clientId)
     {
-        var items = await dbContext.InterventionTypes.ToListAsync();
+        var items = await dbContext.InterventionTypes
+            .Where(x => x.ClientId == clientId)
+            .ToListAsync();
+
         if (!items.Any())
         {
             items.AddRange([
@@ -143,16 +151,19 @@ public class DataSeeder(FleetContextBase dbContext, IEntityService<Brand> brandS
                 new() { ClientId = Ambulance.Id, Code = "BODY", Title = "Carrosserie" }
             ]);
 
-            foreach (var item in items)
+            foreach (var item in items.Where(x => x.ClientId == clientId))
             {
                 await interventionTypeService.Add(item);
             }
             await interventionTypeService.SaveChanges();
         }
     }
-    public async Task SeedVehicleTypes()
+    public async Task SeedVehicleTypes(string clientId)
     {
-        var items = await dbContext.VehicleTypes.ToListAsync();
+        var items = await dbContext.VehicleTypes
+            .Where(x => x.ClientId == clientId)
+            .ToListAsync();
+
         if (!items.Any())
         {
 
@@ -179,7 +190,7 @@ public class DataSeeder(FleetContextBase dbContext, IEntityService<Brand> brandS
                 new() { ClientId = Ambulance.Id, Code = "EXEC", Title = "Directiewagen" }
             ]);
 
-            foreach (var item in items)
+            foreach (var item in items.Where(x => x.ClientId == clientId))
             {
                 await vehicleTypeService.Add(item);
             }
@@ -201,7 +212,6 @@ public class DataSeeder(FleetContextBase dbContext, IEntityService<Brand> brandS
             .RuleFor(x => x.Number, (f, _) => f.Address.BuildingNumber());
 
         var items = new Faker<Operator>("nl_BE")
-            .RuleFor(x => x.ClientId, _ => clientId)
             .RuleFor(x => x.Title, (f, _) => f.Company.CompanyName())
             .RuleFor(x => x.IdentificationNumber, f => f.Random.Bool(.6f) ? "BE" + f.Random.Number(999, 999999999).ToString().PadLeft(10, '0') : null)
             .RuleFor(x => x.Addresses, (f, _) => addressRule.Generate(f.Random.Number(0, 2)).ToList())
