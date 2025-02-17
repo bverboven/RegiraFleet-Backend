@@ -3,7 +3,7 @@ using Regira.Entities.EFcore.QueryBuilders.Abstractions;
 using Regira.Entities.Keywords.Abstractions;
 using Regira.Fleet.Identity.Models.Users;
 
-namespace Regira.Fleet.Identity.DependencyInjection.Entities.Users;
+namespace Regira.Fleet.Identity.DependencyInjection.Postgres;
 
 public class UserPostgresLikeQueryFilter(IQKeywordHelper qHelper)
     : FilteredQueryBuilderBase<FleetUser, string, FleetUserSearchObject>
@@ -24,7 +24,7 @@ public class UserPostgresLikeQueryFilter(IQKeywordHelper qHelper)
                 var qNames = qHelper.Parse(so.Title);
                 foreach (var q in qNames)
                 {
-                    query = query.Where(x => EF.Functions.ILike(x.GivenName!, q.Q!) 
+                    query = query.Where(x => EF.Functions.ILike(x.GivenName!, q.Q!)
                                              || EF.Functions.ILike(x.LastName!, q.Q!));
                 }
             }

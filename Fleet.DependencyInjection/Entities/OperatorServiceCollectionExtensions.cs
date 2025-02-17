@@ -5,12 +5,13 @@ using Regira.Entities.Models;
 using Regira.Fleet.Core.Abstractions;
 using Regira.Fleet.Core.Constants;
 using Regira.Fleet.Data;
+using Regira.Fleet.DependencyInjection.Postgres;
 using Regira.Fleet.Entities.InterventionOperators.Normalizers;
 using Regira.Fleet.Entities.InterventionOperators.Operators;
 using Regira.Fleet.Models.InterventionOperators.Operators;
 using Regira.Globalization.LibPhoneNumber;
 
-namespace Regira.Fleet.DependencyInjection.Entities.InterventionOperators;
+namespace Regira.Fleet.DependencyInjection.Entities;
 
 public static class OperatorServiceCollectionExtensions
 {

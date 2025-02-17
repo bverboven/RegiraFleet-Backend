@@ -5,7 +5,7 @@ namespace Regira.Fleet.Identity.Entities.Users;
 
 public static class FleetUserCollectionExtensions
 {
-    public static void UpdateEntityChildCollection<TEntity, TEntityKey, TChild, TChildKey>(this DbContext dbContext, TEntity original, TEntity modified, Func<TEntity, ICollection<TChild>?> childrenGetter, Action<TEntity, ICollection<TChild>> childrenSetter, Action<TChild?, TChild>? processExtra = null)
+    public static void UpdateEntityChildCollection<TEntity, TChild, TChildKey>(this DbContext dbContext, TEntity original, TEntity modified, Func<TEntity, ICollection<TChild>?> childrenGetter, Action<TEntity, ICollection<TChild>> childrenSetter, Action<TChild?, TChild>? processExtra = null)
     where TChild : class, IEntity<TChildKey>
     {
         var originalChildCollection = childrenGetter(original);
@@ -16,13 +16,18 @@ public static class FleetUserCollectionExtensions
             return;
         }
 
-        var childrenToRemove = originalChildCollection!.Where(oc => modifiedChildCollection.All(c => !oc.Id!.Equals(c.Id)));
-        var childrenToAdd = modifiedChildCollection!.Where(c => originalChildCollection.All(oc => !oc.Id!.Equals(c.Id)));
-        var childrenToUpdate = originalChildCollection.Except(childrenToRemove);
+        var childrenToRemove = originalChildCollection
+            .Where(oc => modifiedChildCollection.All(c => !oc.Id!.Equals(c.Id)))
+            .ToArray();
+        var childrenToAdd = modifiedChildCollection
+            .Where(c => originalChildCollection.All(oc => !oc.Id!.Equals(c.Id)))
+            .ToArray();
+        var childrenToUpdate = originalChildCollection.Except(childrenToRemove)
+            .ToArray();
 
         if (childrenToRemove.Any())
         {
-            dbContext.RemoveRange(childrenToRemove);
+            dbContext.Set<TChild>().RemoveRange(childrenToRemove);
         }
         if (childrenToAdd.Any())
         {
@@ -32,7 +37,7 @@ public static class FleetUserCollectionExtensions
                 dbContext.Add(child);
             }
         }
-        if (childrenToUpdate?.Any() == true)
+        if (childrenToUpdate.Any())
         {
             foreach (var originalChild in childrenToUpdate)
             {

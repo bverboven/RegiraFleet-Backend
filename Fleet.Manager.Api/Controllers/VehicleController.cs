@@ -9,12 +9,8 @@ namespace Regira.Fleet.Manager.Api.Controllers;
 
 [ApiController]
 [Route("vehicles")]
-public class VehicleController : EntityControllerBase<Vehicle, VehicleSearchObject, EntitySortBy, VehicleIncludes, VehicleDto, VehicleInputDto>
-{
-}
+public class VehicleController : EntityControllerBase<Vehicle, VehicleSearchObject, EntitySortBy, VehicleIncludes, VehicleDto, VehicleInputDto>;
 
 [ApiController]
 [Route("vehicles")]
-public class VehicleAttachmentController : EntityAttachmentControllerBase<VehicleAttachment, EntityAttachmentDto, EntityAttachmentInputDto>
-{
-}
+public class VehicleAttachmentController : EntityAttachmentControllerBase<VehicleAttachment, EntityAttachmentDto, EntityAttachmentInputDto>;

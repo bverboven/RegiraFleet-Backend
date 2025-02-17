@@ -112,7 +112,7 @@ public static class HostingExtensions
                 o.Audiences.AddRange(options.Audiences);
                 o.AddMailer(_ =>
                 {
-                    var key = config[$"SendGrid:Key"];
+                    var key = config["SendGrid:Key"];
                     ArgumentException.ThrowIfNullOrWhiteSpace(key, "SendGrid API key");
                     return new SendGridMailer(new SendGridConfig { Key = key });
                 });

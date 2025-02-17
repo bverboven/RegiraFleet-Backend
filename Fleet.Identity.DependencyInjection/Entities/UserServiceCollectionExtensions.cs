@@ -3,10 +3,11 @@ using Regira.Entities.DependencyInjection.Abstractions;
 using Regira.Entities.DependencyInjection.QueryBuilders;
 using Regira.Entities.Models;
 using Regira.Fleet.Core.Constants;
+using Regira.Fleet.Identity.DependencyInjection.Postgres;
 using Regira.Fleet.Identity.Entities.Users;
 using Regira.Fleet.Identity.Models.Users;
 
-namespace Regira.Fleet.Identity.DependencyInjection.Entities.Users;
+namespace Regira.Fleet.Identity.DependencyInjection.Entities;
 
 public static class UserServiceCollectionExtensions
 {

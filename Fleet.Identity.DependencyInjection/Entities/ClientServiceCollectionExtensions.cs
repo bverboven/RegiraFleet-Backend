@@ -5,7 +5,7 @@ using Regira.Fleet.Identity.Entities.Clients;
 using Regira.Fleet.Identity.Models.Clients;
 using Regira.Fleet.Identity.Models.Clients.Subscriptions;
 
-namespace Regira.Fleet.Identity.DependencyInjection.Entities.Clients;
+namespace Regira.Fleet.Identity.DependencyInjection.Entities;
 
 public static class ClientServiceCollectionExtensions
 {

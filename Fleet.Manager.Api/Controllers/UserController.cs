@@ -22,7 +22,7 @@ namespace Regira.Fleet.Manager.Api.Controllers;
 //public class UserController(UserManager<FleetUser> userManager, AccountsContextBase dbContext, ISerializer serializer, IClientContext clientContext) : ControllerBase
 public class UserController(UserManager<FleetUser> userManager, IAccountsDbContext dbContext, ISerializer serializer, IClientContext clientContext) : ControllerBase
 {
-    static string[] ALLOWED_PERMISSIONS = [ClientPermissions.CanRead, ClientPermissions.CanWrite];
+    static readonly string[] ALLOWED_PERMISSIONS = [ClientPermissions.CanRead, ClientPermissions.CanWrite];
 
     [HttpPost("personal-data")]
     public async Task<IActionResult> ChangePersonalData(ChangePersonalDataInput model)

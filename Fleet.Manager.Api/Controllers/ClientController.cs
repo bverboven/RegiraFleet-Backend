@@ -13,7 +13,7 @@ public class ClientController(IAccountsDbContext dbContext) : ControllerBase
     public async Task<IActionResult> List()
     {
         var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-        var items = await dbContext.Clients.Where(c => c.UserClaims!.Any(c => c.UserId == userId)).ToListAsync();
+        var items = await dbContext.Clients.Where(c => c.UserClaims!.Any(cc => cc.UserId == userId)).ToListAsync();
         var models = items.Select(x => new
         {
             x.Id,

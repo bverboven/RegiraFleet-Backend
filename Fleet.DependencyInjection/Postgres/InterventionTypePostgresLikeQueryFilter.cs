@@ -4,7 +4,7 @@ using Regira.Fleet.Data;
 using Regira.Fleet.Data.PostgreSQL.Extensions;
 using Regira.Fleet.Models.InterventionTypes;
 
-namespace Regira.Fleet.DependencyInjection.Entities.Interventions.InterventionTypes;
+namespace Regira.Fleet.DependencyInjection.Postgres;
 
 public class InterventionTypePostgresLikeQueryFilter(FleetContextBase dbContext, IQKeywordHelper qHelper)
     : FilteredQueryBuilderBase<InterventionType, InterventionTypeSearchObject>

@@ -4,8 +4,7 @@ using Regira.Entities.Models;
 using Regira.Fleet.Core.Constants;
 using Regira.Fleet.Core.Normalizing;
 using Regira.Fleet.Data;
-using Regira.Fleet.DependencyInjection.Entities.Vehicles.Brands;
-using Regira.Fleet.DependencyInjection.Entities.Vehicles.VehicleTypes;
+using Regira.Fleet.DependencyInjection.Postgres;
 using Regira.Fleet.Entities.Vehicles;
 using Regira.Fleet.Entities.Vehicles.Brands;
 using Regira.Fleet.Entities.Vehicles.Normalizers;
@@ -14,7 +13,7 @@ using Regira.Fleet.Models.Vehicles;
 using Regira.Fleet.Models.Vehicles.Brands;
 using Regira.Fleet.Models.Vehicles.VehicleTypes;
 
-namespace Regira.Fleet.DependencyInjection.Entities.Vehicles;
+namespace Regira.Fleet.DependencyInjection.Entities;
 
 public static class VehicleServiceCollectionExtensions
 {

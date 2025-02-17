@@ -31,10 +31,13 @@ public class IdentityProfile : Profile
             .ForMember(e => e.UserClaims, e => e.Ignore())
             .AfterMap((dto, model, ctx) =>
             {
-                model.UserName ??= dto.Email;
+                if (string.IsNullOrWhiteSpace(model.UserName))
+                {
+                    model.UserName = dto.Email;
+                }
                 if (dto.UserClaims != null)
                 {
-                    var userClaims = dto.UserClaims.Select(x => new IdentityUserClaim<string> { Id = x.Id, ClaimType = x.ClaimType!, ClaimValue = x.ClaimValue }).ToList();
+                    var userClaims = dto.UserClaims.Select(x => new IdentityUserClaim<string> { Id = x.Id, ClaimType = x.ClaimType, ClaimValue = x.ClaimValue }).ToList();
                     //if (!string.IsNullOrWhiteSpace(dto.GivenName))
                     //{
                     //    var claim = userClaims.FirstOrDefault(c => c.ClaimType == FleetClaimTypes.GivenName);

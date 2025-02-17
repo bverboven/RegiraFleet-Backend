@@ -3,7 +3,7 @@ using Regira.Entities.Keywords.Abstractions;
 using Regira.Fleet.Data.PostgreSQL.Extensions;
 using Regira.Fleet.Models.Interventions;
 
-namespace Regira.Fleet.DependencyInjection.Entities.Interventions;
+namespace Regira.Fleet.DependencyInjection.Postgres;
 
 public class InterventionPostgresLikeQueryFilter(IQKeywordHelper qHelper) : FilteredQueryBuilderBase<Intervention, InterventionSearchObject>
 {

@@ -2,6 +2,4 @@
 
 namespace Regira.Fleet.Models.Abstractions;
 
-public abstract class FleetSearchObject : SearchObject
-{
-}
+public abstract class FleetSearchObject : SearchObject;

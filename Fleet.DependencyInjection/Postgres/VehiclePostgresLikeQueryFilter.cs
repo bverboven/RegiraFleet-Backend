@@ -4,7 +4,7 @@ using Regira.Entities.Keywords.Abstractions;
 using Regira.Fleet.Data.PostgreSQL.Extensions;
 using Regira.Fleet.Models.Vehicles;
 
-namespace Regira.Fleet.DependencyInjection.Entities.Vehicles;
+namespace Regira.Fleet.DependencyInjection.Postgres;
 
 public class VehiclePostgresLikeQueryFilter(IQKeywordHelper qHelper) : FilteredQueryBuilderBase<Vehicle, VehicleSearchObject>
 {

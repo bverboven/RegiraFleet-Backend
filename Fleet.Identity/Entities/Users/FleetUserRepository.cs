@@ -205,7 +205,7 @@ public class FleetUserRepository(AccountsContextBase dbContext, UserManager<Flee
         }
 
         var originalModel = mapper.Map<FleetUserModel>(original);
-        dbContext.UpdateEntityChildCollection<FleetUserModel, string, ClientUserClaim, int>(originalModel, item, model => model.ClientClaims, (model, collection) => model.ClientClaims = collection);
+        dbContext.UpdateEntityChildCollection<FleetUserModel, ClientUserClaim, int>(originalModel, item, model => model.ClientClaims, (model, collection) => model.ClientClaims = collection);
         return Task.CompletedTask;
     }
 
@@ -216,6 +216,5 @@ public class FleetUserRepository(AccountsContextBase dbContext, UserManager<Flee
 
     protected FleetUserSearchObject? Convert(object? so)
         => so == null ? null
-            : so is FleetUserSearchObject tso ? tso
-            : ObjectUtility.Create<FleetUserSearchObject>(so);
+            : so as FleetUserSearchObject ?? ObjectUtility.Create<FleetUserSearchObject>(so);
 }

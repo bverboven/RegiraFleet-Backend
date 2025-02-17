@@ -4,14 +4,14 @@ using Regira.Entities.Models;
 using Regira.Fleet.Core.Constants;
 using Regira.Fleet.Core.Normalizing;
 using Regira.Fleet.Data;
-using Regira.Fleet.DependencyInjection.Entities.Interventions.InterventionTypes;
+using Regira.Fleet.DependencyInjection.Postgres;
 using Regira.Fleet.Entities.Interventions;
 using Regira.Fleet.Entities.Interventions.Normalizers;
 using Regira.Fleet.Entities.InterventionTypes;
 using Regira.Fleet.Models.Interventions;
 using Regira.Fleet.Models.InterventionTypes;
 
-namespace Regira.Fleet.DependencyInjection.Entities.Interventions;
+namespace Regira.Fleet.DependencyInjection.Entities;
 
 public static class InterventionServiceCollectionExtensions
 {

@@ -3,7 +3,7 @@ using Regira.Entities.DependencyInjection.Abstractions;
 using Regira.Fleet.Entities.Countries;
 using Regira.Fleet.Models.Countries;
 
-namespace Regira.Fleet.DependencyInjection.Entities.Countries;
+namespace Regira.Fleet.DependencyInjection.Entities;
 
 public static class CountryServiceCollectionExtensions
 {

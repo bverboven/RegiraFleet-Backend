@@ -4,7 +4,7 @@ using Regira.Entities.Keywords.Abstractions;
 using Regira.Fleet.Data.PostgreSQL.Extensions;
 using Regira.Fleet.Models.Vehicles.Brands;
 
-namespace Regira.Fleet.DependencyInjection.Entities.Vehicles.Brands;
+namespace Regira.Fleet.DependencyInjection.Postgres;
 
 public class BrandPostgresQueryFilter(IQKeywordHelper qHelper) : FilteredQueryBuilderBase<Brand, BrandSearchObject>
 {

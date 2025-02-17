@@ -6,6 +6,4 @@ namespace Regira.Fleet.Manager.Api.Controllers;
 
 [ApiController]
 [Route("vehicle-types")]
-public class VehicleTypeController : EntityControllerBase<VehicleType, VehicleTypeSearchObject, VehicleTypeDto, VehicleTypeInputDto>
-{
-}
+public class VehicleTypeController : EntityControllerBase<VehicleType, VehicleTypeSearchObject, VehicleTypeDto, VehicleTypeInputDto>;

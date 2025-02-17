@@ -10,7 +10,7 @@ public class FleetProfile : Profile
 {
     public FleetProfile()
     {
-        var _ = new Profile[] {
+        _ = new Profile[] {
             new VehicleProfile(),
             new OperatorProfile(),
             new InterventionTypeProfile(),

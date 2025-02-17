@@ -8,14 +8,8 @@ using CountryEntity = Regira.Fleet.Models.Countries.Country;
 
 namespace Regira.Fleet.Entities.Countries;
 
-public class CountryRepository : IEntityService<CountryEntity, string>
+public class CountryRepository(ICultureContext cultureContext) : IEntityService<CountryEntity, string>
 {
-    private readonly ICultureContext _cultureContext;
-    public CountryRepository(ICultureContext cultureContext)
-    {
-        _cultureContext = cultureContext;
-    }
-
     public Task<CountryEntity?> Details(string id)
     {
         var country = CountryUtility.GetCountry(id);
@@ -38,7 +32,7 @@ public class CountryRepository : IEntityService<CountryEntity, string>
         else
         {
             query = query
-                .OrderBy(x => x.Iso2Code == _cultureContext.CountryCode ? 0 : 1)
+                .OrderBy(x => x.Iso2Code == cultureContext.CountryCode ? 0 : 1)
                 .ThenBy(x => x.Title);
         }
 
@@ -62,8 +56,8 @@ public class CountryRepository : IEntityService<CountryEntity, string>
         if (!string.IsNullOrWhiteSpace(so?.Q))
         {
             // title in current language
-            var itemTitle = (item.NamesByLanguage?.ContainsKey(_cultureContext.Culture.Name) == true
-                                ? item.NamesByLanguage![_cultureContext.Culture.Name]
+            var itemTitle = (item.NamesByLanguage?.ContainsKey(cultureContext.Culture.Name) == true
+                                ? item.NamesByLanguage![cultureContext.Culture.Name]
                                 : null)
                             ?? item.Title;
             if (item.Iso2Code.Equals(so.Q, StringComparison.InvariantCultureIgnoreCase))
@@ -93,7 +87,7 @@ public class CountryRepository : IEntityService<CountryEntity, string>
             }
         }
         // Bonus points for default item
-        if (weight > 0 && item.Iso2Code.Equals(_cultureContext.CountryCode, StringComparison.InvariantCultureIgnoreCase))
+        if (weight > 0 && item.Iso2Code.Equals(cultureContext.CountryCode, StringComparison.InvariantCultureIgnoreCase))
         {
             weight += 5;
         }
@@ -106,15 +100,15 @@ public class CountryRepository : IEntityService<CountryEntity, string>
         {
             Id = item.Iso2Code,
             Code = item.Iso2Code,
-            Title = (item.NamesByLanguage?.ContainsKey(_cultureContext.Culture.Name) == true ? item.NamesByLanguage[_cultureContext.Culture.Name] : null) ?? item.Title,
-            IsDefault = item.Iso2Code == _cultureContext.CountryCode
+            Title = (item.NamesByLanguage?.TryGetValue(cultureContext.Culture.Name, out var value) is true ? value : null) ?? item.Title,
+            IsDefault = item.Iso2Code == cultureContext.CountryCode
         };
     }
     protected virtual SearchObject<string>? Convert(object? so)
     {
         if (so == null)
         {
-            return default;
+            return null;
         }
         return so as SearchObject<string> ?? ObjectUtility.Create<SearchObject<string>>(so);
     }
@@ -139,7 +133,7 @@ public class CountryRepository : IEntityService<CountryEntity, string>
     {
         throw new NotImplementedException();
     }
-    public Task<int> SaveChanges(CancellationToken token = new CancellationToken())
+    public Task<int> SaveChanges(CancellationToken token = new())
     {
         throw new NotImplementedException();
     }

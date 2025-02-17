@@ -7,7 +7,7 @@ using Regira.Fleet.Entities.InterventionOperators.Normalizers;
 using Regira.Fleet.Models.InterventionOperators.ContactData;
 using Regira.Fleet.Models.InterventionOperators.Operators;
 
-namespace Regira.Fleet.DependencyInjection.Entities.InterventionOperators;
+namespace Regira.Fleet.DependencyInjection.Postgres;
 
 public class OperatorFilteredPostgresLikeQueryBuilder(FleetContextBase dbContext, IQKeywordHelper qHelper, ContactDataNormalizer contactDataNormalizer)
     : FilteredQueryBuilderBase<Operator, OperatorSearchObject>

@@ -19,10 +19,7 @@ using Regira.Fleet.Data;
 using Regira.Fleet.Data.MySQL;
 using Regira.Fleet.Data.PostgreSQL;
 using Regira.Fleet.Data.SqlServer;
-using Regira.Fleet.DependencyInjection.Entities.Countries;
-using Regira.Fleet.DependencyInjection.Entities.InterventionOperators;
-using Regira.Fleet.DependencyInjection.Entities.Interventions;
-using Regira.Fleet.DependencyInjection.Entities.Vehicles;
+using Regira.Fleet.DependencyInjection.Entities;
 using Regira.Fleet.Entities.EntityLabels;
 using Regira.Fleet.Models;
 using Regira.Fleet.Models.EntityLabels;
@@ -35,8 +32,8 @@ using Regira.Normalizing.Models;
 using FilterHasNormalizedContentQueryBuilder = Regira.Entities.EFcore.QueryBuilders.GlobalFilterBuilders.FilterHasNormalizedContentQueryBuilder;
 using PgFilterHasNormalizedContentQueryBuilder = Regira.Fleet.Data.PostgreSQL.QueryBuilders.FilterHasNormalizedContentQueryBuilder;
 
-
 namespace Regira.Fleet.DependencyInjection;
+
 public static class ServiceCollectionExtensions
 {
     public static FleetServiceBuilder AddFleet(this IServiceCollection services, Action<FleetHostingOptions> configure)
@@ -65,8 +62,7 @@ public static class ServiceCollectionExtensions
 
         return fleetBuilder;
     }
-
-
+    
     public static FleetServiceBuilder AddDbContext(this FleetServiceBuilder builder)
     {
         return builder.Options.DatabaseType switch
@@ -92,7 +88,6 @@ public static class ServiceCollectionExtensions
             .AddScoped<IFleetDbContext, TContext>();
 
         return builder;
-
     }
     public static FleetServiceBuilder AddPgContext(this FleetServiceBuilder builder, string connectionString)
     {

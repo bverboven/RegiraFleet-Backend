@@ -313,7 +313,7 @@ public class DataSeeder(FleetContextBase dbContext, IEntityService<Brand> brandS
                 cd.Value = f.Phone.PhoneNumber("0## ## ## ##");
                 break;
             case ContactDataTypes.Website:
-                cd.Value = $"{f.PickRandom(new[] { "www.", "services.", "business", "sales", "" })}{UriUtility.Slugify(supplier.Title)}.{f.Internet.DomainSuffix()}".ToLower();
+                cd.Value = $"{f.PickRandom("www.", "services.", "business", "sales", "")}{UriUtility.Slugify(supplier.Title)}.{f.Internet.DomainSuffix()}".ToLower();
                 break;
         }
 

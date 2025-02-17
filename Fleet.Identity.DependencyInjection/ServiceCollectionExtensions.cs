@@ -16,8 +16,7 @@ using Regira.Fleet.Identity.Data;
 using Regira.Fleet.Identity.Data.MySQL;
 using Regira.Fleet.Identity.Data.PostgreSQL;
 using Regira.Fleet.Identity.Data.SqlServer;
-using Regira.Fleet.Identity.DependencyInjection.Entities.Clients;
-using Regira.Fleet.Identity.DependencyInjection.Entities.Users;
+using Regira.Fleet.Identity.DependencyInjection.Entities;
 using Regira.Fleet.Identity.Models;
 using Regira.Fleet.Identity.Models.Users;
 using Regira.Fleet.Identity.Services;
@@ -26,6 +25,7 @@ using Regira.Normalizing.Models;
 using PgFilterHasNormalizedContentQueryBuilder = Regira.Fleet.Identity.Data.PostgreSQL.QueryBuilders.FilterHasNormalizedContentQueryBuilder;
 
 namespace Regira.Fleet.Identity.DependencyInjection;
+
 public static class ServiceCollectionExtensions
 {
     public static FleetServiceBuilder AddIdentityWithAdmin(this IServiceCollection services, Action<FleetHostingOptions> configure)
@@ -151,7 +151,6 @@ public static class ServiceCollectionExtensions
         });
     }
 
-
     public static IServiceCollection AddClientClaims(this IServiceCollection services)
     {
         services
@@ -171,8 +170,7 @@ public static class ServiceCollectionExtensions
 
         return builder;
     }
-
-
+    
     public static IdentityBuilder AddFleetAuthentication(this IServiceCollection services, FleetAuthenticationOptions options)
     {
         var builder = services
