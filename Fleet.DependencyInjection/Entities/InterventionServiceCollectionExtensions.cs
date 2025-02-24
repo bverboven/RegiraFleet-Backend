@@ -1,4 +1,5 @@
-﻿using Regira.Entities.DependencyInjection.Abstractions;
+﻿using Microsoft.EntityFrameworkCore;
+using Regira.Entities.DependencyInjection.Abstractions;
 using Regira.Entities.DependencyInjection.Attachments;
 using Regira.Entities.Models;
 using Regira.Fleet.Core.Constants;
@@ -22,8 +23,9 @@ public static class InterventionServiceCollectionExtensions
             // InterventionType
             .For<InterventionType, InterventionTypeSearchObject, EntitySortBy, EntityIncludes>(e =>
             {
-                e.UseEntityService<InterventionTypeRepository>();
+                e.UseWriteService<InterventionTypeWriteService>();
                 e.AddQueryFilter<InterventionTypeQueryFilter>();
+                e.Includes((query, _) => query.Include(x => x.Translations).OrderBy(x => x.Title));
                 if (dbType == DataBaseTypes.PostgreSQL)
                 {
                     e.AddQueryFilter<InterventionTypePostgresLikeQueryFilter>();
@@ -37,8 +39,7 @@ public static class InterventionServiceCollectionExtensions
             // Intervention
             .For<Intervention, InterventionSearchObject, InterventionSortBy, InterventionIncludes>(e =>
             {
-                e.UseEntityService<InterventionRepository>();
-                e.HasRepository<InterventionRepository>();
+                e.UseWriteService<InterventionWriteService>();
                 e.AddQueryFilter<InterventionQueryFilter>();
                 if (dbType == DataBaseTypes.PostgreSQL)
                 {

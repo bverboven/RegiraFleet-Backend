@@ -37,7 +37,7 @@ public static class VehicleServiceCollectionExtensions
             // VehicleType
             .For<VehicleType, VehicleTypeSearchObject, EntitySortBy, EntityIncludes>(e =>
             {
-                e.UseEntityService<VehicleTypeRepository>();
+                e.UseWriteService<VehicleTypeWriteService>();
                 e.AddNormalizer<FleetEntityNormalizer<VehicleType>>();
                 if (dbType == DataBaseTypes.PostgreSQL)
                 {
@@ -51,8 +51,7 @@ public static class VehicleServiceCollectionExtensions
             // Vehicle
             .For<Vehicle, VehicleSearchObject, EntitySortBy, VehicleIncludes>(e =>
             {
-                e.UseEntityService<VehicleRepository>();
-                e.HasRepository<VehicleRepository>();
+                e.UseWriteService<VehicleWriteService>();
                 e.AddNormalizer<VehicleNormalizer>();
                 e.UseQueryBuilder<VehicleQueryBuilder>();
                 e.AddQueryFilter<VehicleFilteredQueryBuilder>();

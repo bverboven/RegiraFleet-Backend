@@ -8,7 +8,7 @@ using CountryEntity = Regira.Fleet.Models.Countries.Country;
 
 namespace Regira.Fleet.Entities.Countries;
 
-public class CountryRepository(ICultureContext cultureContext) : IEntityService<CountryEntity, string>
+public class CountryRepository(ICultureContext cultureContext) : IEntityService<CountryEntity, string, SearchObject<string>>
 {
     public Task<CountryEntity?> Details(string id)
     {
@@ -44,10 +44,14 @@ public class CountryRepository(ICultureContext cultureContext) : IEntityService<
         var items = itemQuery.ToList();
         return Task.FromResult(items as IList<CountryEntity>);
     }
+
+
     Task<IList<CountryEntity>> IEntityReadService<CountryEntity, string>.List(object? so, PagingInfo? pagingInfo)
         => List(Convert(so), pagingInfo);
-    public async Task<int> Count(object? so)
-        => (await List(Convert(so))).Count;
+    public Task<long> Count(object? so)
+        => Count(Convert(so));
+    public async Task<long> Count(SearchObject<string>? so)
+        => (await List(so)).Count;
 
 
     public int CalculateWeight(Country item, SearchObject<string>? so)
@@ -121,7 +125,7 @@ public class CountryRepository(ICultureContext cultureContext) : IEntityService<
     {
         throw new NotImplementedException();
     }
-    public Task Modify(CountryEntity item)
+    public Task<CountryEntity?> Modify(CountryEntity item)
     {
         throw new NotImplementedException();
     }

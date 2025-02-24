@@ -7,7 +7,7 @@ namespace Regira.Fleet.Entities.Interventions;
 
 public class InterventionQueryBuilder(
     IEnumerable<IGlobalFilteredQueryBuilder> globalFilters,
-    IEnumerable<IFilteredQueryBuilder<Intervention, InterventionSearchObject>>? filters = null)
+    IEnumerable<IFilteredQueryBuilder<Intervention, int, InterventionSearchObject>>? filters = null)
     : QueryBuilder<Intervention, InterventionSearchObject, InterventionSortBy, InterventionIncludes>(globalFilters, filters)
 {
     public override IQueryable<Intervention> SortBy(IQueryable<Intervention> query, IList<InterventionSearchObject?>? so, InterventionSortBy? sortBy, InterventionIncludes? includes)

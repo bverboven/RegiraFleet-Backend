@@ -45,7 +45,7 @@ public static class ServiceCollectionExtensions
             // Entity context
             .UseEntities<AccountsContextBase>(c =>
             {
-                c.UseAutoMapper(typeof(IdentityProfile).Assembly);
+                c.UseAutoMapper([typeof(IdentityProfile).Assembly]);
                 c.UseDefaults(ed => ed.ConfigureNormalizing(o => o.Transform = TextTransform.ToUpperCase));
 
                 c.AddGlobalFilterQueryBuilder<FilterIdsQueryBuilder<string>>();
@@ -163,14 +163,14 @@ public static class ServiceCollectionExtensions
     public static FleetServiceBuilder AddAttachmentServices(this FleetServiceBuilder builder, Func<IServiceProvider, IFileService> configure)
     {
         builder.Entities
-            .ConfigureAttachmentService(configure)
+            .WithAttachments(configure)
             .ConfigureTypedAttachmentService(_ => (
             [
             ]));
 
         return builder;
     }
-    
+
     public static IdentityBuilder AddFleetAuthentication(this IServiceCollection services, FleetAuthenticationOptions options)
     {
         var builder = services

@@ -47,7 +47,7 @@ public class FleetEntityNormalizer<T>(INormalizer normalizer)
         {
             if (hasAttachments.Attachments?.Any() == true)
             {
-                entries.AddRange(hasAttachments.Attachments.Select(a =>
+                entries.AddRange(hasAttachments.Attachments.OfType<IEntityAttachment<int, int>>().Select(a =>
                     DefaultPropertyNormalizer.Normalize(Path.GetFileNameWithoutExtension(a.Attachment?.FileName))
                 ));
             }

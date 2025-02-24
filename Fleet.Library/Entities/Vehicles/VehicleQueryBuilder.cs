@@ -7,7 +7,7 @@ using Regira.Fleet.Models.Vehicles;
 namespace Regira.Fleet.Entities.Vehicles;
 
 public class VehicleQueryBuilder(IEnumerable<IGlobalFilteredQueryBuilder> globalFilters,
-    IEnumerable<IFilteredQueryBuilder<Vehicle, VehicleSearchObject>>? filters = null)
+    IEnumerable<IFilteredQueryBuilder<Vehicle, int, VehicleSearchObject>>? filters = null)
     : QueryBuilder<Vehicle, VehicleSearchObject, EntitySortBy, VehicleIncludes>(globalFilters, filters)
 {
     public override IQueryable<Vehicle> SortBy(IQueryable<Vehicle> query, IList<VehicleSearchObject?>? so, EntitySortBy? sortBy, VehicleIncludes? includes)

@@ -1,22 +1,22 @@
-﻿using Regira.Entities.EFcore.QueryBuilders.Abstractions;
-using Regira.Entities.Models;
-using Regira.Fleet.Identity.Abstractions;
-using Regira.Fleet.Identity.Data;
-using Regira.Fleet.Identity.Models.Clients;
+﻿//using Regira.Entities.EFcore.QueryBuilders.Abstractions;
+//using Regira.Entities.Models;
+//using Regira.Fleet.Identity.Abstractions;
+//using Regira.Fleet.Identity.Data;
+//using Regira.Fleet.Identity.Models.Clients;
 
-namespace Regira.Fleet.Identity.Entities.Clients;
+//namespace Regira.Fleet.Identity.Entities.Clients;
 
-public class ClientRepository(AccountsContextBase dbContext,
-    IQueryBuilder<Client, string, ClientSearchObject, EntitySortBy, ClientIncludes> queryBuilder)
-    : IdentityRepositoryBase<Client, string, ClientSearchObject, EntitySortBy, ClientIncludes>(dbContext, queryBuilder)
-{
-    public override Task Add(Client item)
-    {
-        if (string.IsNullOrWhiteSpace(item.Id))
-        {
-            item.Id = Guid.NewGuid().ToString("N");
-        }
+//public class ClientRepository(AccountsContextBase dbContext,
+//    IQueryBuilder<Client, string, ClientSearchObject, EntitySortBy, ClientIncludes> queryBuilder)
+//    : IdentityRepositoryBase<Client, string, ClientSearchObject, EntitySortBy, ClientIncludes>(dbContext, queryBuilder)
+//{
+//    public override Task Add(Client item)
+//    {
+//        if (string.IsNullOrWhiteSpace(item.Id))
+//        {
+//            item.Id = Guid.NewGuid().ToString("N");
+//        }
 
-        return base.Add(item);
-    }
-}
+//        return base.Add(item);
+//    }
+//}

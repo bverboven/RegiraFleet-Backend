@@ -7,7 +7,7 @@ using Regira.Fleet.Models.InterventionOperators.Operators;
 namespace Regira.Fleet.Entities.InterventionOperators.Operators;
 
 public class OperatorQueryBuilder(IEnumerable<IGlobalFilteredQueryBuilder> globalFilters,
-    IEnumerable<IFilteredQueryBuilder<Operator, OperatorSearchObject>>? filters = null)
+    IEnumerable<IFilteredQueryBuilder<Operator, int, OperatorSearchObject>>? filters = null)
     : QueryBuilder<Operator, OperatorSearchObject, EntitySortBy, OperatorIncludes>(globalFilters, filters)
 {
     public override IQueryable<Operator> SortBy(IQueryable<Operator> query, IList<OperatorSearchObject?>? so, EntitySortBy? sortBy, OperatorIncludes? includes)

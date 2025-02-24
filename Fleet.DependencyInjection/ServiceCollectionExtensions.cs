@@ -26,7 +26,6 @@ using Regira.Fleet.Models.EntityLabels;
 using Regira.Fleet.Models.InterventionOperators.Operators;
 using Regira.Fleet.Models.Interventions;
 using Regira.Fleet.Models.Vehicles;
-using Regira.Fleet.Primers;
 using Regira.IO.Storage.Abstractions;
 using Regira.Normalizing.Models;
 using FilterHasNormalizedContentQueryBuilder = Regira.Entities.EFcore.QueryBuilders.GlobalFilterBuilders.FilterHasNormalizedContentQueryBuilder;
@@ -62,7 +61,7 @@ public static class ServiceCollectionExtensions
 
         return fleetBuilder;
     }
-    
+
     public static FleetServiceBuilder AddDbContext(this FleetServiceBuilder builder)
     {
         return builder.Options.DatabaseType switch
@@ -168,7 +167,7 @@ public static class ServiceCollectionExtensions
             //Entity context
             .UseEntities<FleetContextBase>(c =>
             {
-                c.UseAutoMapper(typeof(FleetProfile).Assembly);
+                c.UseAutoMapper([typeof(FleetProfile).Assembly]);
                 c.AddNormalizer<IEntityLabel, EntityLabelNormalizer>();
                 c.UseDefaults(ed => ed.ConfigureNormalizing(o => o.Transform = TextTransform.ToUpperCase));
 
@@ -204,7 +203,7 @@ public static class ServiceCollectionExtensions
     public static FleetServiceBuilder AddAttachmentServices(this FleetServiceBuilder builder, Func<IServiceProvider, IFileService> configure)
     {
         builder.Entities
-            .ConfigureAttachmentService(configure)
+            .WithAttachments(configure)
             .ConfigureTypedAttachmentService(db => (
             [
                 db.InterventionAttachments.ToDescriptor<Intervention>(),

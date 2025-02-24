@@ -31,15 +31,19 @@ public class FleetUserRepository(AccountsContextBase dbContext, UserManager<Flee
     }
     public Task<IList<FleetUserModel>> List(FleetUserSearchObject? so = null, PagingInfo? pagingInfo = null)
         => List([so], [], null, pagingInfo);
+
+
     public Task<IList<FleetUserModel>> List(object? so = null, PagingInfo? pagingInfo = null)
         => List([Convert(so)], [], null, pagingInfo);
-    public Task<int> Count(IList<FleetUserSearchObject?> searchObjects)
+    public Task<long> Count(IList<FleetUserSearchObject?> searchObjects)
     {
         var query = Filter(dbContext.Users, searchObjects.Select(Convert).ToList());
-        return query.CountAsync();
+        return query.LongCountAsync();
     }
-    public Task<int> Count(object? so)
+    public Task<long> Count(object? so)
         => Count([Convert(so)]);
+    public Task<long> Count(FleetUserSearchObject? so)
+        => Count([so]);
 
     public Task<FleetUser?> GetItem(string id)
     {
@@ -98,7 +102,7 @@ public class FleetUserRepository(AccountsContextBase dbContext, UserManager<Flee
             await Modify(model, item);
         }
     }
-    public async Task Modify(FleetUserModel model)
+    public async Task<FleetUserModel?> Modify(FleetUserModel model)
     {
         var original = await GetItem(model.Id);
         if (original != null)
@@ -106,7 +110,11 @@ public class FleetUserRepository(AccountsContextBase dbContext, UserManager<Flee
             PrepareItem(model, original);
             await Modify(model, original);
             await UpdateUser(model, original);
+
+            return model;
         }
+
+        return null;
     }
     public async Task Save(FleetUserModel model)
     {

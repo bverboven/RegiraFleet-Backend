@@ -1,21 +1,19 @@
-﻿using Regira.Entities.EFcore.QueryBuilders.Abstractions;
+﻿using Regira.Entities.Abstractions;
 using Regira.Entities.EFcore.Services;
 using Regira.Entities.Models;
 using Regira.Entities.Models.Abstractions;
-using Regira.Fleet.Identity.Data;
 
 namespace Regira.Fleet.Identity.Abstractions;
 
-public abstract class IdentityRepositoryBase<TEntity, TSearchObject>(
-    AccountsContextBase dbContext,
-    IQueryBuilder<TEntity, string, TSearchObject, EntitySortBy, EntityIncludes> queryBuilder)
-    : IdentityRepositoryBase<TEntity, string, TSearchObject, EntitySortBy, EntityIncludes>(dbContext, queryBuilder)
+public abstract class IdentityRepositoryBase<TEntity, TSearchObject>
+    (IEntityReadService<TEntity, string, TSearchObject, EntitySortBy, EntityIncludes> readService, IEntityWriteService<TEntity, string> writeService) 
+    : IdentityRepositoryBase<TEntity, string, TSearchObject, EntitySortBy, EntityIncludes>(readService, writeService) 
     where TEntity : class, IEntity<string>, new()
     where TSearchObject : class, ISearchObject<string>, new();
-public abstract class IdentityRepositoryBase<TEntity, TKey, TSearchObject, TSortBy, TInclude>(
-    AccountsContextBase dbContext,
-    IQueryBuilder<TEntity, TKey, TSearchObject, TSortBy, TInclude> queryBuilder)
-    : EntityRepository<AccountsContextBase, TEntity, TKey, TSearchObject, TSortBy, TInclude>(dbContext, queryBuilder)
+
+public abstract class IdentityRepositoryBase<TEntity, TKey, TSearchObject, TSortBy, TInclude>
+    (IEntityReadService<TEntity, TKey, TSearchObject, TSortBy, TInclude> readService, IEntityWriteService<TEntity, TKey> writeService) 
+    : EntityRepository<TEntity, TKey, TSearchObject, TSortBy, TInclude>(readService, writeService)
     where TEntity : class, IEntity<TKey>, new()
     where TSearchObject : class, ISearchObject<TKey>, new()
     where TSortBy : struct, Enum

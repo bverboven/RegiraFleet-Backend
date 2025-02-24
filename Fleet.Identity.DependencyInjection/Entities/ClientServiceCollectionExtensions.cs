@@ -15,8 +15,8 @@ public static class ClientServiceCollectionExtensions
         services
             .For<Client, string, ClientSearchObject, EntitySortBy, ClientIncludes>(e =>
             {
-                e.UseEntityService<ClientRepository>();
-                e.HasRepository<ClientRepository>();
+                //e.UseEntityService<ClientRepository>();
+                //e.HasRepository<ClientRepository>();
             })
             .For<ClientSubscription, int, ClientSubscriptionSearchObject>();
         return services;

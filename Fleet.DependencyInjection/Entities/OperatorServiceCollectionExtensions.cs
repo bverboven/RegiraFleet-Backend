@@ -27,8 +27,7 @@ public static class OperatorServiceCollectionExtensions
         services
             .For<Operator, OperatorSearchObject, EntitySortBy, OperatorIncludes>(e =>
             {
-                e.UseEntityService<OperatorRepository>();
-                e.HasRepository<OperatorRepository>();
+                e.UseWriteService<OperatorWriteService>();
                 e.UseQueryBuilder<OperatorQueryBuilder>();
                 e.AddQueryFilter<OperatorFilteredQueryBuilder>();
                 if (dbType == DataBaseTypes.PostgreSQL)
