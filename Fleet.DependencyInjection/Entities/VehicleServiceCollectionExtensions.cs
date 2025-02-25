@@ -51,9 +51,7 @@ public static class VehicleServiceCollectionExtensions
             // Vehicle
             .For<Vehicle, VehicleSearchObject, EntitySortBy, VehicleIncludes>(e =>
             {
-                e.UseWriteService<VehicleWriteService>();
                 e.AddNormalizer<VehicleNormalizer>();
-                e.UseQueryBuilder<VehicleQueryBuilder>();
                 e.AddQueryFilter<VehicleFilteredQueryBuilder>();
                 if (dbType == DataBaseTypes.PostgreSQL)
                 {
@@ -63,6 +61,9 @@ public static class VehicleServiceCollectionExtensions
                 {
                     e.AddQueryFilter<VehicleLikeQueryFilter>();
                 }
+                e.SortBy((query, _) => query.OrderBy(x => x.Code));
+                e.Includes<VehicleIncludingQueryBuilder>();
+                e.UseWriteService<VehicleWriteService>();
                 e.HasAttachments<TContext, Vehicle, VehicleAttachment>();
             });
         return services;

@@ -16,7 +16,7 @@ namespace Regira.Fleet.Data;
 
 public abstract class FleetContextBase(DbContextOptions options) : DbContext(options), IFleetDbContext
 {
-    public DbSet<Attachment<int>> Attachments { get; set; }
+    public DbSet<Attachment> Attachments { get; set; }
     public DbSet<Intervention> Interventions { get; set; }
     public DbSet<InterventionAction> InterventionActions { get; set; }
     public DbSet<InterventionLabel> InterventionLabels { get; set; }

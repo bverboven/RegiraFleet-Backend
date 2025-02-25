@@ -1,18 +1,12 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Regira.Entities.EFcore.QueryBuilders;
 using Regira.Entities.EFcore.QueryBuilders.Abstractions;
-using Regira.Entities.Models;
 using Regira.Fleet.Models.InterventionOperators.Operators;
 
 namespace Regira.Fleet.Entities.InterventionOperators.Operators;
 
-public class OperatorQueryBuilder(IEnumerable<IGlobalFilteredQueryBuilder> globalFilters,
-    IEnumerable<IFilteredQueryBuilder<Operator, int, OperatorSearchObject>>? filters = null)
-    : QueryBuilder<Operator, OperatorSearchObject, EntitySortBy, OperatorIncludes>(globalFilters, filters)
+public class OperatorIncludingQueryBuilder : IIncludableQueryBuilder<Operator, int, OperatorIncludes>
 {
-    public override IQueryable<Operator> SortBy(IQueryable<Operator> query, IList<OperatorSearchObject?>? so, EntitySortBy? sortBy, OperatorIncludes? includes)
-        => query.OrderBy(x => x.NormalizedTitle);
-    public override IQueryable<Operator> AddIncludes(IQueryable<Operator> query, IList<OperatorSearchObject?>? so, IList<EntitySortBy>? sortByList, OperatorIncludes? includes)
+    public IQueryable<Operator> AddIncludes(IQueryable<Operator> query, OperatorIncludes? includes = null)
     {
         if (includes.HasValue)
         {

@@ -39,34 +39,11 @@ public static class ServiceCollectionExtensions
 
         var builder = new FleetServiceBuilder(services, options);
 
-        builder.Services.AddProblemDetails();
+        // Entities
+        builder.AddFleetEntities(options);
 
-        builder.Services
-            // Entity context
-            .UseEntities<AccountsContextBase>(c =>
-            {
-                c.UseAutoMapper([typeof(IdentityProfile).Assembly]);
-                c.UseDefaults(ed => ed.ConfigureNormalizing(o => o.Transform = TextTransform.ToUpperCase));
-
-                c.AddGlobalFilterQueryBuilder<FilterIdsQueryBuilder<string>>();
-                if (options.DatabaseType == DataBaseTypes.PostgreSQL)
-                {
-                    c.AddGlobalFilterQueryBuilder<PgFilterHasNormalizedContentQueryBuilder>();
-                }
-                else
-                {
-                    c.AddGlobalFilterQueryBuilder<FilterHasNormalizedContentQueryBuilder>();
-                }
-            });
-
-        builder.Entities
-            // Entity context
-            .AddClients()
-            .AddFleetUsers(options.DatabaseType);
-
-        builder
-            // Attachments
-            .AddAttachmentServices(options.FileServiceFactory ?? throw new InvalidOperationException($"No implementation for {nameof(IFileService)} configured"));
+        // Attachments
+        builder.AddAttachmentServices(options.FileServiceFactory ?? throw new InvalidOperationException($"No implementation for {nameof(IFileService)} configured"));
 
         return builder;
     }
@@ -151,6 +128,34 @@ public static class ServiceCollectionExtensions
         });
     }
 
+    public static FleetServiceBuilder AddFleetEntities(this FleetServiceBuilder builder, FleetHostingOptions options)
+    {
+        builder.Services
+             // Entity context
+             .UseEntities<AccountsContextBase>(c =>
+             {
+                 c.UseAutoMapper([typeof(IdentityProfile).Assembly]);
+                 c.UseDefaults(ed => ed.ConfigureNormalizing(o => o.Transform = TextTransform.ToUpperCase));
+
+                 c.AddGlobalFilterQueryBuilder<FilterIdsQueryBuilder<string>>();
+                 if (options.DatabaseType == DataBaseTypes.PostgreSQL)
+                 {
+                     c.AddGlobalFilterQueryBuilder<PgFilterHasNormalizedContentQueryBuilder>();
+                 }
+                 else
+                 {
+                     c.AddGlobalFilterQueryBuilder<FilterHasNormalizedContentQueryBuilder>();
+                 }
+             });
+
+
+        builder.Entities
+            // Entity context
+            .AddClients()
+            .AddFleetUsers(options.DatabaseType);
+
+        return builder;
+    }
     public static IServiceCollection AddClientClaims(this IServiceCollection services)
     {
         services

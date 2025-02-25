@@ -17,7 +17,6 @@ public static class UserServiceCollectionExtensions
         services
             .For<FleetUserModel, string, FleetUserSearchObject, EntitySortBy, FleetUserIncludes>(e =>
             {
-                e.UseEntityService<FleetUserRepository>();
                 e.HasRepository<FleetUserRepository>();
                 e.AddQueryFilter<FleetUser, string, FleetUserSearchObject, UserQueryFilter>();
                 if (dbType == DataBaseTypes.PostgreSQL)

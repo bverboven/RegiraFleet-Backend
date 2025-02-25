@@ -1,22 +1,12 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Regira.Entities.EFcore.QueryBuilders;
 using Regira.Entities.EFcore.QueryBuilders.Abstractions;
 using Regira.Fleet.Models.Interventions;
 
 namespace Regira.Fleet.Entities.Interventions;
 
-public class InterventionQueryBuilder(
-    IEnumerable<IGlobalFilteredQueryBuilder> globalFilters,
-    IEnumerable<IFilteredQueryBuilder<Intervention, int, InterventionSearchObject>>? filters = null)
-    : QueryBuilder<Intervention, InterventionSearchObject, InterventionSortBy, InterventionIncludes>(globalFilters, filters)
+public class InterventionIncludingQueryBuilder : IIncludableQueryBuilder<Intervention, int, InterventionIncludes>
 {
-    public override IQueryable<Intervention> SortBy(IQueryable<Intervention> query, IList<InterventionSearchObject?>? so, InterventionSortBy? sortBy, InterventionIncludes? includes)
-        => query
-            .OrderByDescending(x => x.InterventionDate ?? x.Created)
-            //.OrderByDescending(x => x.Invoices!.Max(i => i.InvoiceDate))
-            .ThenByDescending(x => x.Id);
-
-    public override IQueryable<Intervention> AddIncludes(IQueryable<Intervention> query, IList<InterventionSearchObject?>? so, IList<InterventionSortBy>? sortByList, InterventionIncludes? includes)
+    public IQueryable<Intervention> AddIncludes(IQueryable<Intervention> query, InterventionIncludes? includes = null)
     {
         if (includes.HasValue)
         {

@@ -22,7 +22,7 @@ public class DataSeeder(FleetContextBase dbContext, WritableClientContext client
     IEntityService<Intervention> interventionService, IEntityService<InterventionType> interventionTypeService,
     IEntityService<VehicleType> vehicleTypeService, IEntityService<Operator> operatorService, IEntityService<Vehicle> vehicleService)
 {
-    const int FACTOR = 100;
+    private int _factor = 1;
     Dictionary<string, string> CarBrands => new()
     {
         {"ALF", "Alfa Romeo"},
@@ -61,8 +61,9 @@ public class DataSeeder(FleetContextBase dbContext, WritableClientContext client
     private Client Ambulance => _clients.Single(x => x.Code == "AMB");
 
 
-    public async Task Seed(IList<Client> clients)
+    public async Task Seed(IList<Client> clients, int factor = 1)
     {
+        _factor = factor;
         _clients = clients;
         foreach (var client in _clients)
         {
@@ -220,7 +221,7 @@ public class DataSeeder(FleetContextBase dbContext, WritableClientContext client
                 .Select(_ => new OperatorInterventionType { InterventionTypeId = f.PickRandom(interventionTypes).Id })
                 .DistinctBy(x => x.InterventionTypeId).ToList()
             )
-            .Generate(100 * FACTOR)!;
+            .Generate(100 * _factor)!;
 
         foreach (var item in items)
         {
@@ -239,7 +240,7 @@ public class DataSeeder(FleetContextBase dbContext, WritableClientContext client
             .AsNoTracking()
             .ToArrayAsync();
 
-        var codes = new Queue<int>(Enumerable.Range(0, 1000 * FACTOR).Select((_, i) => i + 1).Shuffle().Take(100 * FACTOR));
+        var codes = new Queue<int>(Enumerable.Range(0, 1000 * _factor).Select((_, i) => i + 1).Shuffle().Take(100 * _factor));
 
         var items = new Faker<Vehicle>()
             .RuleFor(x => x.ClientId, _ => clientId)
@@ -247,7 +248,7 @@ public class DataSeeder(FleetContextBase dbContext, WritableClientContext client
             .RuleFor(x => x.BrandId, f => f.PickRandom(brands).Id)
             .RuleFor(x => x.Model, (f, _) => f.Vehicle.Model())
             .RuleFor(x => x.VehicleTypeId, f => f.PickRandom(types).Id)
-            .Generate(100 * FACTOR);
+            .Generate(100 * _factor);
 
         foreach (var item in items)
         {

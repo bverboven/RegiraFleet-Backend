@@ -1,7 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Regira.Entities.DependencyInjection.Abstractions;
 using Regira.Entities.Models;
-using Regira.Fleet.Identity.Entities.Clients;
 using Regira.Fleet.Identity.Models.Clients;
 using Regira.Fleet.Identity.Models.Clients.Subscriptions;
 
@@ -13,11 +12,7 @@ public static class ClientServiceCollectionExtensions
         where TContext : DbContext
     {
         services
-            .For<Client, string, ClientSearchObject, EntitySortBy, ClientIncludes>(e =>
-            {
-                //e.UseEntityService<ClientRepository>();
-                //e.HasRepository<ClientRepository>();
-            })
+            .For<Client, string, ClientSearchObject, EntitySortBy, ClientIncludes>()
             .For<ClientSubscription, int, ClientSubscriptionSearchObject>();
         return services;
     }

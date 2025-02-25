@@ -27,8 +27,6 @@ public static class OperatorServiceCollectionExtensions
         services
             .For<Operator, OperatorSearchObject, EntitySortBy, OperatorIncludes>(e =>
             {
-                e.UseWriteService<OperatorWriteService>();
-                e.UseQueryBuilder<OperatorQueryBuilder>();
                 e.AddQueryFilter<OperatorFilteredQueryBuilder>();
                 if (dbType == DataBaseTypes.PostgreSQL)
                 {
@@ -38,6 +36,9 @@ public static class OperatorServiceCollectionExtensions
                 {
                     e.AddQueryFilter<OperatorFilteredLikeQueryBuilder>();
                 }
+                e.Includes<OperatorIncludingQueryBuilder>();
+                e.SortBy((query, _) => query.OrderBy(x => x.NormalizedTitle));
+                e.UseWriteService<OperatorWriteService>();
                 e.HasAttachments<TContext, Operator, OperatorAttachment>();
                 e.AddNormalizer<OperatorNormalizer>();
             });

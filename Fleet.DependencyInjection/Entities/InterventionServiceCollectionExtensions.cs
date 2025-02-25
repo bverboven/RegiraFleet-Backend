@@ -49,7 +49,12 @@ public static class InterventionServiceCollectionExtensions
                 {
                     e.AddQueryFilter<InterventionLikeQueryFilter>();
                 }
-                e.UseQueryBuilder<InterventionQueryBuilder>();
+
+                e.Includes<InterventionIncludingQueryBuilder>();
+                e.SortBy((query, _) => query
+                    .OrderByDescending(x => x.InterventionDate ?? x.Created)
+                    //.OrderByDescending(x => x.Invoices!.Max(i => i.InvoiceDate))
+                    .ThenByDescending(x => x.Id));
                 e.AddNormalizer<InterventionNormalizer>();
                 e.HasAttachments<TContext, Intervention, InterventionAttachment>();
             });
