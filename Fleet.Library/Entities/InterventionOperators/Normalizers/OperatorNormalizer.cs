@@ -1,32 +1,25 @@
-﻿using Regira.Fleet.Core.Abstractions;
+﻿using Regira.Entities.EFcore.Normalizing.Abstractions;
+using Regira.Fleet.Core.Abstractions;
 using Regira.Fleet.Core.Normalizing;
-using Regira.Fleet.Entities.EntityLabels;
+using Regira.Fleet.Models.EntityLabels;
 using Regira.Fleet.Models.InterventionOperators.Operators;
 using Regira.Normalizing.Abstractions;
 
 namespace Regira.Fleet.Entities.InterventionOperators.Normalizers;
 
 public class OperatorNormalizer(INormalizer defaultNormalizer, IdentificationNumberNormalizer idNumberNormalizer,
-    ContactDataNormalizer contactDataNormalizer, AddressNormalizer addressNormalizer, EntityLabelNormalizer labelNormalizer, ICultureContext cultureContext)
+    ContactDataNormalizer contactDataNormalizer, AddressNormalizer addressNormalizer, IEntityNormalizer<IEntityLabel> labelNormalizer, ICultureContext cultureContext)
     : FleetEntityNormalizer<Operator>(defaultNormalizer)
 {
-    public override void HandleNormalize(Operator? item, bool recursive = false)
+    public override async Task HandleNormalize(Operator item)
     {
-        if (item == null)
-        {
-            return;
-        }
-
         // KBO
         item.NormalizedIdentificationNumber = idNumberNormalizer.Normalize(item.IdentificationNumber);
 
         // ContactData
         if (item.ContactData?.Any() == true)
         {
-            foreach (var contactData in item.ContactData)
-            {
-                contactDataNormalizer.Normalize(contactData);
-            }
+            await contactDataNormalizer.HandleNormalizeMany(item.ContactData);
         }
 
         // Address
@@ -38,17 +31,19 @@ public class OperatorNormalizer(INormalizer defaultNormalizer, IdentificationNum
             }
         }
 
-        labelNormalizer.NormalizeItem(item);
+        if (item.Labels?.Any() == true)
+        {
+            await labelNormalizer.HandleNormalizeMany(item.Labels);
+        }
 
         // Title
-        item.NormalizedTitle = DefaultNormalizer.Normalize(item.Title);
+        item.NormalizedTitle = DefaultPropertyNormalizer.Normalize(item.Title);
 
         // NormalizedContent
         var contentEntries = GetDefaultNormalizedContentEntries(item);
-        contentEntries.AddRange(new[]
-        {
+        contentEntries.AddRange([
             item.NormalizedIdentificationNumber?.ToUpper()
-        });
+        ]);
 
         if (item.ContactData?.Any() == true)
         {

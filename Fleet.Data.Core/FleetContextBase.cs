@@ -16,7 +16,7 @@ namespace Regira.Fleet.Data;
 
 public abstract class FleetContextBase(DbContextOptions options) : DbContext(options), IFleetDbContext
 {
-    public DbSet<Attachment<int>> Attachments { get; set; }
+    public DbSet<Attachment> Attachments { get; set; }
     public DbSet<Intervention> Interventions { get; set; }
     public DbSet<InterventionAction> InterventionActions { get; set; }
     public DbSet<InterventionLabel> InterventionLabels { get; set; }
@@ -70,10 +70,10 @@ public abstract class FleetContextBase(DbContextOptions options) : DbContext(opt
         {
             entity.HasIndex(e => e.InvoiceNumber);
         });
-        modelBuilder.Entity<InterventionAction>(entity =>
+        modelBuilder.Entity<InterventionAction>(_ =>
         {
         });
-        modelBuilder.Entity<OperatorAddress>(entity =>
+        modelBuilder.Entity<OperatorAddress>(_ =>
         {
             // causes error in MySQL
             //entity.HasIndex(cd => cd.NormalizedContent);
@@ -163,24 +163,24 @@ public abstract class FleetContextBase(DbContextOptions options) : DbContext(opt
     }
 
     // AutoTruncate
-    public override int SaveChanges()
-    {
-        this.AutoTruncateStringsToMaxLengthForEntries();
-        return base.SaveChanges();
-    }
-    public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = new())
-    {
-        this.AutoTruncateStringsToMaxLengthForEntries();
-        return base.SaveChangesAsync(cancellationToken);
-    }
-    public override int SaveChanges(bool acceptAllChangesOnSuccess)
-    {
-        this.AutoTruncateStringsToMaxLengthForEntries();
-        return base.SaveChanges(acceptAllChangesOnSuccess);
-    }
-    public override Task<int> SaveChangesAsync(bool acceptAllChangesOnSuccess, CancellationToken cancellationToken = new())
-    {
-        this.AutoTruncateStringsToMaxLengthForEntries();
-        return base.SaveChangesAsync(acceptAllChangesOnSuccess, cancellationToken);
-    }
+    //public override int SaveChanges()
+    //{
+    //    this.AutoTruncateStringsToMaxLengthForEntries();
+    //    return base.SaveChanges();
+    //}
+    //public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = new())
+    //{
+    //    this.AutoTruncateStringsToMaxLengthForEntries();
+    //    return base.SaveChangesAsync(cancellationToken);
+    //}
+    //public override int SaveChanges(bool acceptAllChangesOnSuccess)
+    //{
+    //    this.AutoTruncateStringsToMaxLengthForEntries();
+    //    return base.SaveChanges(acceptAllChangesOnSuccess);
+    //}
+    //public override Task<int> SaveChangesAsync(bool acceptAllChangesOnSuccess, CancellationToken cancellationToken = new())
+    //{
+    //    this.AutoTruncateStringsToMaxLengthForEntries();
+    //    return base.SaveChangesAsync(acceptAllChangesOnSuccess, cancellationToken);
+    //}
 }

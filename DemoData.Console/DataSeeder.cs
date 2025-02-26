@@ -1,6 +1,7 @@
 ﻿using Bogus;
 using Microsoft.EntityFrameworkCore;
 using Regira.Entities.Abstractions;
+using Regira.Fleet.Clients;
 using Regira.Fleet.Data;
 using Regira.Fleet.Identity.Models.Clients;
 using Regira.Fleet.Models.InterventionOperators.Addresses;
@@ -17,11 +18,11 @@ using Regira.Web.Utilities;
 
 namespace DemoData.Console;
 
-public class DataSeeder(FleetContextBase dbContext, IEntityService<Brand> brandService, IEntityService<Intervention> interventionService,
-    IEntityService<InterventionType> interventionTypeService, IEntityService<VehicleType> vehicleTypeService,
-    IEntityService<Operator> operatorService, IEntityService<Vehicle> vehicleService)
+public class DataSeeder(FleetContextBase dbContext, WritableClientContext clientContext, IEntityService<Brand> brandService,
+    IEntityService<Intervention> interventionService, IEntityService<InterventionType> interventionTypeService,
+    IEntityService<VehicleType> vehicleTypeService, IEntityService<Operator> operatorService, IEntityService<Vehicle> vehicleService)
 {
-    const int FACTOR = 100;
+    private int _factor = 1;
     Dictionary<string, string> CarBrands => new()
     {
         {"ALF", "Alfa Romeo"},
@@ -60,137 +61,137 @@ public class DataSeeder(FleetContextBase dbContext, IEntityService<Brand> brandS
     private Client Ambulance => _clients.Single(x => x.Code == "AMB");
 
 
-    public async Task Seed(IList<Client> clients)
+    public async Task Seed(IList<Client> clients, int factor = 1)
     {
+        _factor = factor;
         _clients = clients;
-        await SeedBrands();
-        await SeedInterventionTypes();
-        await SeedVehicleTypes();
         foreach (var client in _clients)
         {
+            clientContext.ClientId = client.Id;
+            await SeedBrands(client.Id);
+            await SeedInterventionTypes(client.Id);
+            await SeedVehicleTypes(client.Id);
             await SeedOperators(client.Id);
             await SeedVehicles(client.Id);
             await SeedInterventions(client.Id);
         }
     }
 
-    public async Task SeedBrands()
+    public async Task SeedBrands(string clientId)
     {
-        var items = await dbContext.VehicleBrands.ToListAsync();
+        var items = await dbContext.VehicleBrands
+            .Where(x => x.ClientId == clientId)
+            .ToListAsync();
+
         if (!items.Any())
         {
-            items.AddRange(new Brand[]
-            {
+            items.AddRange([
                 new() { ClientId = PublicTransport.Id, Code = "BYD", Title = "BYD" },
                 new() { ClientId = PublicTransport.Id, Code = "CIT", Title = "Citroën" },
                 new() { ClientId = PublicTransport.Id, Code = "HOO", Title = "Van Hool" },
-                new() { ClientId = PublicTransport.Id, Code = "REN", Title = "Renault" },
-            });
+                new() { ClientId = PublicTransport.Id, Code = "REN", Title = "Renault" }
+            ]);
             items.AddRange(CarBrands.Select(b => new Brand { ClientId = Police.Id, Code = b.Key, Title = b.Value }));
-            items.AddRange(new Brand[]
-            {
+            items.AddRange([
                 new() { ClientId = FireBrigade.Id, Code = "BMW", Title = "BMW" },
                 new() { ClientId = FireBrigade.Id, Code = "FOR", Title = "Ford" },
                 new() { ClientId = FireBrigade.Id, Code = "MER", Title = "Mercedes" },
                 new() { ClientId = FireBrigade.Id, Code = "PEU", Title = "Peugeot" },
                 new() { ClientId = FireBrigade.Id, Code = "REN", Title = "Renault" },
-                new() { ClientId = FireBrigade.Id, Code = "VLV", Title = "Volvo" },
-            });
-            items.AddRange(new Brand[]
-            {
+                new() { ClientId = FireBrigade.Id, Code = "VLV", Title = "Volvo" }
+            ]);
+            items.AddRange([
                 new() { ClientId = Ambulance.Id, Code = "BMW", Title = "BMW" },
                 new() { ClientId = Ambulance.Id, Code = "FOR", Title = "Ford" },
                 new() { ClientId = Ambulance.Id, Code = "FIA", Title = "Fiat" },
                 new() { ClientId = Ambulance.Id, Code = "MER", Title = "Mercedes" },
                 new() { ClientId = Ambulance.Id, Code = "PEU", Title = "Peugeot" },
                 new() { ClientId = Ambulance.Id, Code = "REN", Title = "Renault" },
-                new() { ClientId = Ambulance.Id, Code = "VLV", Title = "Volvo" },
-            });
+                new() { ClientId = Ambulance.Id, Code = "VLV", Title = "Volvo" }
+            ]);
 
-            foreach (var item in items)
+            foreach (var item in items.Where(x => x.ClientId == clientId))
             {
                 await brandService.Add(item);
             }
             await brandService.SaveChanges();
         }
     }
-    public async Task SeedInterventionTypes()
+    public async Task SeedInterventionTypes(string clientId)
     {
-        var items = await dbContext.InterventionTypes.ToListAsync();
+        var items = await dbContext.InterventionTypes
+            .Where(x => x.ClientId == clientId)
+            .ToListAsync();
+
         if (!items.Any())
         {
-            items.AddRange(new InterventionType[]
-            {
+            items.AddRange([
                 new() { ClientId = PublicTransport.Id, Code = "MAIN", Title = "Onderhoud" },
                 new() { ClientId = PublicTransport.Id, Code = "TIRE", Title = "Banden" },
                 new() { ClientId = PublicTransport.Id, Code = "BRAKE", Title = "Remmen" },
                 new() { ClientId = PublicTransport.Id, Code = "BODY", Title = "Carrosserie" }
-            });
-            items.AddRange(new InterventionType[]
-            {
+            ]);
+            items.AddRange([
                 new() { ClientId = Police.Id, Code = "MAIN", Title = "Onderhoud" },
                 new() { ClientId = Police.Id, Code = "TIRE", Title = "Banden" },
                 new() { ClientId = Police.Id, Code = "BRAKE", Title = "Remmen" },
                 new() { ClientId = Police.Id, Code = "BODY", Title = "Carrosserie" },
                 new() { ClientId = Police.Id, Code = "ROT", Title = "Rotor" }
-            });
-            items.AddRange(new InterventionType[]
-            {
+            ]);
+            items.AddRange([
                 new() { ClientId = FireBrigade.Id, Code = "MAIN", Title = "Onderhoud" },
                 new() { ClientId = FireBrigade.Id, Code = "TIRE", Title = "Banden" },
                 new() { ClientId = FireBrigade.Id, Code = "BRAKE", Title = "Remmen" },
                 new() { ClientId = FireBrigade.Id, Code = "BODY", Title = "Carrosserie" },
                 new() { ClientId = FireBrigade.Id, Code = "ROT", Title = "Rotor" }
-            });
-            items.AddRange(new InterventionType[]
-            {
+            ]);
+            items.AddRange([
                 new() { ClientId = Ambulance.Id, Code = "MAIN", Title = "Onderhoud" },
                 new() { ClientId = Ambulance.Id, Code = "TIRE", Title = "Banden" },
                 new() { ClientId = Ambulance.Id, Code = "BRAKE", Title = "Remmen" },
                 new() { ClientId = Ambulance.Id, Code = "BODY", Title = "Carrosserie" }
-            });
+            ]);
 
-            foreach (var item in items)
+            foreach (var item in items.Where(x => x.ClientId == clientId))
             {
                 await interventionTypeService.Add(item);
             }
             await interventionTypeService.SaveChanges();
         }
     }
-    public async Task SeedVehicleTypes()
+    public async Task SeedVehicleTypes(string clientId)
     {
-        var items = await dbContext.VehicleTypes.ToListAsync();
+        var items = await dbContext.VehicleTypes
+            .Where(x => x.ClientId == clientId)
+            .ToListAsync();
+
         if (!items.Any())
         {
 
-            items.AddRange(new VehicleType[]
-            {
+            items.AddRange([
                 new() { ClientId = PublicTransport.Id, Code = "BUS", Title = "Bus" },
                 new() { ClientId = PublicTransport.Id, Code = "TRA", Title = "Tram" },
                 new() { ClientId = PublicTransport.Id, Code = "HTR", Title = "Paardentram", IsArchived = true },
-                new() { ClientId = PublicTransport.Id, Code = "EXEC", Title = "Directiewagen" },
-            });
-            items.AddRange(new VehicleType[]
-            {
+                new() { ClientId = PublicTransport.Id, Code = "EXEC", Title = "Directiewagen" }
+            ]);
+            items.AddRange([
                 new() { ClientId = Police.Id, Code = "COMBI", Title = "Combi" },
                 new() { ClientId = Police.Id, Code = "MOTOR", Title = "Motorbike" },
                 new() { ClientId = Police.Id, Code = "UAV", Title = "Drone" },
-                new() { ClientId = Police.Id, Code = "EXEC", Title = "Directiewagen" },
-            });
-            items.AddRange(new VehicleType[]
-            {
+                new() { ClientId = Police.Id, Code = "EXEC", Title = "Directiewagen" }
+            ]);
+            items.AddRange([
                 new() { ClientId = FireBrigade.Id, Code = "TRU", Title = "Brandweerwagen" },
                 new() { ClientId = FireBrigade.Id, Code = "UGV", Title = "Drone (grond)" },
-                new() { ClientId = FireBrigade.Id, Code = "UAV", Title = "Drone (lucht)" },
-            });
-            items.AddRange(new VehicleType[]
-            {
+                new() { ClientId = FireBrigade.Id, Code = "UAV", Title = "Drone (lucht)" }
+            ]);
+            items.AddRange([
                 new() { ClientId = Ambulance.Id, Code = "AMB", Title = "Ziekenwagen" },
                 new() { ClientId = Ambulance.Id, Code = "MOT", Title = "Motor" },
-                new() { ClientId = Ambulance.Id, Code = "EXEC", Title = "Directiewagen" },
-            });
+                new() { ClientId = Ambulance.Id, Code = "EXEC", Title = "Directiewagen" }
+            ]);
 
-            foreach (var item in items)
+            foreach (var item in items.Where(x => x.ClientId == clientId))
             {
                 await vehicleTypeService.Add(item);
             }
@@ -206,22 +207,21 @@ public class DataSeeder(FleetContextBase dbContext, IEntityService<Brand> brandS
 
         var addressRule = new Faker<OperatorAddress>("nl_BE")
             .RuleFor(x => x.CountryCode, _ => "BE")
-            .RuleFor(x => x.PostalCode, (f, x) => f.Address.ZipCode())
-            .RuleFor(x => x.City, (f, x) => f.Address.City())
-            .RuleFor(x => x.Street, (f, x) => f.Address.StreetAddress())
-            .RuleFor(x => x.Number, (f, x) => f.Address.BuildingNumber());
+            .RuleFor(x => x.PostalCode, (f, _) => f.Address.ZipCode())
+            .RuleFor(x => x.City, (f, _) => f.Address.City())
+            .RuleFor(x => x.Street, (f, _) => f.Address.StreetAddress())
+            .RuleFor(x => x.Number, (f, _) => f.Address.BuildingNumber());
 
         var items = new Faker<Operator>("nl_BE")
-            .RuleFor(x => x.ClientId, _ => clientId)
-            .RuleFor(x => x.Title, (f, x) => f.Company.CompanyName())
+            .RuleFor(x => x.Title, (f, _) => f.Company.CompanyName())
             .RuleFor(x => x.IdentificationNumber, f => f.Random.Bool(.6f) ? "BE" + f.Random.Number(999, 999999999).ToString().PadLeft(10, '0') : null)
-            .RuleFor(x => x.Addresses, (f, x) => addressRule.Generate(f.Random.Number(0, 2)).ToList())
+            .RuleFor(x => x.Addresses, (f, _) => addressRule.Generate(f.Random.Number(0, 2)).ToList())
             .RuleFor(x => x.ContactData, (f, x) => Enumerable.Range(0, f.Random.Number(0, 2)).Select(_ => GenerateContactData(f, x)).ToList())
             .RuleFor(x => x.InterventionTypes, (f) => Enumerable.Range(0, f.Random.Number(0, interventionTypes.Length))
                 .Select(_ => new OperatorInterventionType { InterventionTypeId = f.PickRandom(interventionTypes).Id })
                 .DistinctBy(x => x.InterventionTypeId).ToList()
             )
-            .Generate(100 * FACTOR)!;
+            .Generate(100 * _factor)!;
 
         foreach (var item in items)
         {
@@ -240,15 +240,15 @@ public class DataSeeder(FleetContextBase dbContext, IEntityService<Brand> brandS
             .AsNoTracking()
             .ToArrayAsync();
 
-        var codes = new Queue<int>(Enumerable.Range(0, 1000 * FACTOR).Select((_, i) => i + 1).Shuffle().Take(100 * FACTOR));
+        var codes = new Queue<int>(Enumerable.Range(0, 1000 * _factor).Select((_, i) => i + 1).Shuffle().Take(100 * _factor));
 
         var items = new Faker<Vehicle>()
             .RuleFor(x => x.ClientId, _ => clientId)
             .RuleFor(x => x.Code, _ => codes.Dequeue().ToString().PadLeft(3, '0'))
             .RuleFor(x => x.BrandId, f => f.PickRandom(brands).Id)
-            .RuleFor(x => x.Model, (f, x) => f.Vehicle.Model())
+            .RuleFor(x => x.Model, (f, _) => f.Vehicle.Model())
             .RuleFor(x => x.VehicleTypeId, f => f.PickRandom(types).Id)
-            .Generate(100 * FACTOR);
+            .Generate(100 * _factor);
 
         foreach (var item in items)
         {
@@ -278,13 +278,13 @@ public class DataSeeder(FleetContextBase dbContext, IEntityService<Brand> brandS
             .RuleFor(x => x.OperatorId, (f) => f.PickRandom(suppliers).Id)
             .RuleFor(x => x.InterventionTypeId, (f, x) => (suppliers.FirstOrDefault(s => s.Id == x.OperatorId)
                 ?.InterventionTypeIds
-                ?.Shuffle()
+                .Shuffle()
                 .FirstOrDefault())
                 ?? f.PickRandom(typeIds)
             )
             .RuleFor(x => x.Mileage, (f) => (int)(Math.Floor((decimal)f.Random.Number(0, 999_999) / 1000) * 1000))
             .RuleFor(x => x.InterventionDate, f => f.Date.Between(DateTime.Today.AddYears(-5), DateTime.Today))
-            .RuleFor(x => x.Invoice, (f, x) => GenerateInvoice(x))
+            .RuleFor(x => x.Invoice, (_, x) => GenerateInvoice(x))
             .Generate(vehicleIds.Length * 5);
 
         foreach (var item in items)
@@ -300,8 +300,8 @@ public class DataSeeder(FleetContextBase dbContext, IEntityService<Brand> brandS
             .RuleFor(x => x.InvoiceNumber, f => $"INV{f.Commerce.Random.Number(1, 999999).ToString().PadLeft(8, '0')}")
             .RuleFor(x => x.InvoiceDate, f => f.Date.Between(intervention.InterventionDate!.Value, intervention.InterventionDate!.Value.AddDays(15)))
             .RuleFor(x => x.PriceExcl, f => f.Random.Decimal(10, 99_999))
-            .RuleFor(x => x.PriceIncl, (f, x) => x.PriceExcl * 1.21m)
-            .RuleFor(x => x.TaxAmount, (f, x) => x.PriceExcl * .21m)
+            .RuleFor(x => x.PriceIncl, (_, x) => x.PriceExcl * 1.21m)
+            .RuleFor(x => x.TaxAmount, (_, x) => x.PriceExcl * .21m)
             .RuleFor(x => x.TaxCategory, f => f.PickRandom(Enum.GetValues<TaxCategory>()))
             .Generate();
     }
@@ -318,13 +318,13 @@ public class DataSeeder(FleetContextBase dbContext, IEntityService<Brand> brandS
         {
             case ContactDataTypes.Email:
                 var provider = $"{UriUtility.Slugify(supplier.Title)}.{f.Internet.DomainSuffix()}";
-                cd.Value = f.Internet.Email(provider: provider ?? f.Internet.DomainName()).ToLowerInvariant().ToLower();
+                cd.Value = f.Internet.Email(provider: provider).ToLowerInvariant().ToLower();
                 break;
             case ContactDataTypes.Phone:
                 cd.Value = f.Phone.PhoneNumber("0## ## ## ##");
                 break;
             case ContactDataTypes.Website:
-                cd.Value = $"{f.PickRandom(new[] { "www.", "services.", "business", "sales", "" })}{UriUtility.Slugify(supplier.Title!)}.{f.Internet.DomainSuffix()}".ToLower();
+                cd.Value = $"{f.PickRandom("www.", "services.", "business", "sales", "")}{UriUtility.Slugify(supplier.Title)}.{f.Internet.DomainSuffix()}".ToLower();
                 break;
         }
 

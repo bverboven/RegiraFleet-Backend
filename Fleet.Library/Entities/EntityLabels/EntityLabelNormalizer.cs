@@ -1,37 +1,31 @@
-﻿using Regira.Fleet.Models.EntityLabels;
+﻿using Regira.Fleet.Core.Normalizing;
+using Regira.Fleet.Models.EntityLabels;
 using Regira.Globalization.LibPhoneNumber;
 using Regira.Normalizing.Abstractions;
 using Regira.Utilities;
 
 namespace Regira.Fleet.Entities.EntityLabels;
 
-public class EntityLabelNormalizer(INormalizer defaultNormalizer, PhoneNumberFormatter phoneNumberNormalizer) : IObjectNormalizer
+public class EntityLabelNormalizer(INormalizer defaultNormalizer, PhoneNumberFormatter phoneNumberNormalizer)
+    : FleetEntityNormalizer<IEntityLabel>(defaultNormalizer)
 {
-    public bool IsExclusive => false;
-    public INormalizer DefaultNormalizer => defaultNormalizer;
-
-    public Task HandleNormalizeMany(IEnumerable<object?> instances, bool recursive = false)
+    public override Task HandleNormalizeMany(IEnumerable<IEntityLabel> instances)
     {
         foreach (var item in instances)
         {
-            HandleNormalize(item, recursive);
+            HandleNormalize(item);
         }
         return Task.CompletedTask;
     }
-    public void HandleNormalize(object? instance, bool recursive = false)
+    public override Task HandleNormalize(IEntityLabel item)
     {
-        if (instance is IEntityLabel label)
-        {
-            Normalize(label);
-        }
+        var normalizedTitle = DefaultPropertyNormalizer.Normalize(item.Title);
+        var normalizedValue = NormalizeValue(item.Value);
+        item.NormalizedContent = $"{normalizedTitle} {normalizedValue}".Trim();
+
+        return Task.CompletedTask;
     }
 
-    public string? Normalize(IEntityLabel input)
-    {
-        var normalizedTitle = defaultNormalizer.Normalize(input.Title);
-        var normalizedValue = NormalizeValue(input.Value);
-        return $"{normalizedTitle} {normalizedValue}".Trim();
-    }
     public string? NormalizeValue(string? input)
     {
         if (string.IsNullOrWhiteSpace(input))
@@ -41,13 +35,13 @@ public class EntityLabelNormalizer(INormalizer defaultNormalizer, PhoneNumberFor
 
         if (RegexUtility.IsValidIPAddress(input))
         {
-            return $"{defaultNormalizer.Normalize(input)} {input.Replace(".", "_")}";
+            return $"{DefaultPropertyNormalizer.Normalize(input)} {input.Replace(".", "_")}";
         }
         if (RegexUtility.IsValidPhoneNumber(input))
         {
             try
             {
-                return $"{defaultNormalizer.Normalize(input)} {phoneNumberNormalizer.Normalize(input)}";
+                return $"{DefaultPropertyNormalizer.Normalize(input)} {phoneNumberNormalizer.Normalize(input)}";
             }
             catch
             {
@@ -56,25 +50,13 @@ public class EntityLabelNormalizer(INormalizer defaultNormalizer, PhoneNumberFor
         }
         if (RegexUtility.IsValidEmail(input))
         {
-            return $"{defaultNormalizer.Normalize(input)} {input.ToUpper()}";
+            return $"{DefaultPropertyNormalizer.Normalize(input)} {input.ToUpper()}";
         }
         if (RegexUtility.IsValidUrl(input))
         {
-            return $"{defaultNormalizer.Normalize(input)} {input.ToUpper()}";
+            return $"{DefaultPropertyNormalizer.Normalize(input)} {input.ToUpper()}";
         }
 
-        return defaultNormalizer.Normalize(input);
-    }
-    public void NormalizeItem(IHasLabels item)
-    {
-        if (item.Labels?.Any() != true)
-        {
-            return;
-        }
-
-        foreach (var data in item.Labels!)
-        {
-            data.NormalizedContent = Normalize(data);
-        }
+        return DefaultPropertyNormalizer.Normalize(input);
     }
 }

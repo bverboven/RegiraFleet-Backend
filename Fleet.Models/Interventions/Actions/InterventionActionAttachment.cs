@@ -2,6 +2,4 @@
 
 namespace Regira.Fleet.Models.Interventions.Actions;
 
-public class InterventionActionAttachment : EntityAttachment
-{
-}
+public class InterventionActionAttachment : EntityAttachment;

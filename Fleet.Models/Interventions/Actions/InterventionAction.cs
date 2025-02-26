@@ -19,6 +19,7 @@ public class InterventionAction : IFleetEntity, IEntityWithSerial, IHasDescripti
     public int OperatorId { get; set; }
     public int InvoiceId { get; set; }
     public int? Mileage { get; set; }
+    // ReSharper disable once EntityFramework.ModelValidation.UnlimitedStringLength
     public string? Description { get; set; }
 
 

@@ -3,6 +3,8 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Regira.Fleet.Clients;
+using Regira.Fleet.Core.Abstractions;
 using Regira.Fleet.Data;
 using Regira.Fleet.DependencyInjection;
 using Regira.Fleet.Identity.Data;
@@ -73,12 +75,15 @@ static void ConfigureServices(HostBuilderContext context, IServiceCollection ser
     services.AddAuthentication();
     services.AddFleetAuthentication();
 
+    // Problem details
+    services.AddProblemDetails();
+
     services.AddIdentityWithAdmin(c =>
     {
         var dataDirectory = config["Data:Directory"];
         c.DatabaseType = config["Database:Accounts:Type"]!;
         c.ConnectionString = config["Database:Accounts:ConnectionString"]!;
-        var fsConfig = new BinaryFileService.FileServiceOptions
+        var fsConfig = new FileSystemOptions
         {
             RootFolder = dataDirectory!
         };
@@ -89,11 +94,15 @@ static void ConfigureServices(HostBuilderContext context, IServiceCollection ser
         var dataDirectory = config["Data:Directory"];
         c.DatabaseType = config["Database:Fleet:Type"]!;
         c.ConnectionString = config["Database:Fleet:ConnectionString"]!;
-        var fsConfig = new BinaryFileService.FileServiceOptions
+        var fsConfig = new FileSystemOptions
         {
             RootFolder = dataDirectory!
         };
         c.ConfigureStorageService(_ => new BinaryFileService(fsConfig));
     });
+
+    // make ClientContext writable for demo data
+    services.AddSingleton<WritableClientContext>();
+    services.AddSingleton<IClientContext>(p => p.GetRequiredService<WritableClientContext>());
 }
 #endregion

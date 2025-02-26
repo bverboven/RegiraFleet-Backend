@@ -1,7 +1,5 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using Regira.DAL.EFcore.Normalizing;
-using Regira.Entities.EFcore.Extensions;
 using Regira.Fleet.Core.Constants;
 using Regira.Fleet.Identity.Data;
 using Regira.Fleet.Identity.Models.Clients;
@@ -33,9 +31,10 @@ public class AccountSeeder(FleetUserIdentityManager userManager, RoleManager<Ide
         foreach (var client in clients)
         {
             var permissions = new Dictionary<string, string[]>{
-                    { "read" ,  new[] { ClientPermissions.CanRead } },
-                    { "write" ,  new[] { ClientPermissions.CanRead, ClientPermissions.CanWrite } },
-                    { "admin" ,  new[] { ClientPermissions.Administrator, ClientPermissions.CanRead, ClientPermissions.CanWrite } }
+                    { "read" , [ClientPermissions.CanRead] },
+                    { "write" , [ClientPermissions.CanRead, ClientPermissions.CanWrite] },
+                    { "admin" , [ClientPermissions.Administrator, ClientPermissions.CanRead, ClientPermissions.CanWrite]
+                    }
                 };
             foreach (var permission in permissions)
             {
@@ -77,16 +76,13 @@ public class AccountSeeder(FleetUserIdentityManager userManager, RoleManager<Ide
         var items = await accountsContext.Clients.ToListAsync();
         if (!items.Any())
         {
-            items.AddRange(new Client[]
-            {
+            items.AddRange([
                 new() { Code = "TRA", Title = "Openbaar vervoer", Id = "11fc2d46df234aed8df1de9a7b0f114f" },
                 new() { Code = "POL", Title = "Politie", Id = "232dfc2012b8491cb7d1aaee93007480", DefaultCulture="nl-BE" },
                 new() { Code = "BWR", Title = "Brandweer", Id = "1b615c0096c04eb2975ef84463aa8257", DefaultCulture="en-US" },
                 new() { Code = "AMB", Title = "Ambulance", Id = "f64a75e938b64dfaae5eab03fe541972" }
-            });
+            ]);
             accountsContext.Clients.AddRange(items);
-            await accountsContext.ApplyNormalizers();
-            await accountsContext.ApplyPrimers();
             await accountsContext.SaveChangesAsync();
         }
 

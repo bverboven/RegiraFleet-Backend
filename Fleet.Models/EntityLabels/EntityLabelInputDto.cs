@@ -8,6 +8,7 @@ public class EntityLabelInputDto
     public int ObjectId { get; set; }
     [MaxLength(64)]
     public string? Title { get; set; }
+    [Required]
     [MaxLength(512)]
     public string Value { get; set; } = null!;
     [MaxLength(64)]

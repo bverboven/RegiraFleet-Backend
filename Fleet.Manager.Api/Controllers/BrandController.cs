@@ -7,6 +7,4 @@ namespace Regira.Fleet.Manager.Api.Controllers;
 
 [ApiController]
 [Route("brands")]
-public class BrandController : EntityControllerBase<Brand, BrandSearchObject, EntitySortBy, EntityIncludes, BrandDto, BrandInputDto>
-{
-}
+public class BrandController : EntityControllerBase<Brand, BrandSearchObject, EntitySortBy, EntityIncludes, BrandDto, BrandInputDto>;

@@ -5,5 +5,5 @@ namespace Regira.Fleet.Identity.Web.DependencyInjection;
 public class FleetIdentityOptions : FleetAuthenticationOptions
 {
     public string? SecretKey { get; set; }
-    public List<string> Audiences { get; } = new();
+    public List<string> Audiences { get; } = [];
 }

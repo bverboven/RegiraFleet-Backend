@@ -1,8 +1,8 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using System.Data;
+using System.Data.Common;
+using Microsoft.EntityFrameworkCore;
 using Regira.Fleet.Core.Abstractions;
 using Regira.Fleet.Data;
-using System.Data;
-using System.Data.Common;
 
 namespace Regira.Fleet.Statistics;
 
@@ -43,9 +43,11 @@ public class StatisticsService(FleetContextBase dbContext, IClientContext client
             .OrderBy(x => x.Key)
             .Select(x =>
             {
-                var dic = new Dictionary<string, object?>();
-                dic.Add("Maand", FormatMonth(x.Key, year));
-                dic.Add("JaarTotaal", x.Sum(v => (decimal?)v.total ?? 0));
+                var dic = new Dictionary<string, object?>
+                {
+                    { "Maand", FormatMonth(x.Key, year) },
+                    { "JaarTotaal", x.Sum(v => (decimal?)v.total ?? 0) }
+                };
                 foreach (var vehicleType in vehicleTypes)
                 {
                     dic.Add(vehicleType, null);
@@ -87,10 +89,10 @@ public class StatisticsService(FleetContextBase dbContext, IClientContext client
                 while (await reader.ReadAsync())
                 {
                     var month = reader.GetInt32("month");
-                    var brand = reader.IsDBNull("vehicle_brand_code") ? string.Empty : reader.GetString("vehicle_brand_code");
-                    var model = reader.IsDBNull("model") ? string.Empty : reader.GetString("model");
+                    var brand = await reader.IsDBNullAsync("vehicle_brand_code") ? string.Empty : reader.GetString("vehicle_brand_code");
+                    var model = await reader.IsDBNullAsync("model") ? string.Empty : reader.GetString("model");
                     var vehicle = $"{reader.GetString("vehicle_code")} {brand} {model}";
-                    var total = reader.IsDBNull("total") ? 0m : reader.GetDecimal("total");
+                    var total = await reader.IsDBNullAsync("total") ? 0m : reader.GetDecimal("total");
                     list.Add(new { month, vehicleType, vehicle, total });
                 }
             }
@@ -103,10 +105,12 @@ public class StatisticsService(FleetContextBase dbContext, IClientContext client
             .OrderBy(x => x.Key)
             .Select(x =>
             {
-                var dic = new Dictionary<string, object?>();
-                dic.Add("Maand", FormatMonth(x.Key, year));
-                dic.Add("Wagentype", vehicleType);
-                dic.Add("JaarTotaal", x.Sum(v => (decimal?)v.total ?? 0));
+                var dic = new Dictionary<string, object?>
+                {
+                    { "Maand", FormatMonth(x.Key, year) },
+                    { "Wagentype", vehicleType },
+                    { "JaarTotaal", x.Sum(v => (decimal?)v.total ?? 0) }
+                };
                 foreach (var vehicle in vehicles)
                 {
                     dic.Add(vehicle, null);
@@ -143,10 +147,10 @@ public class StatisticsService(FleetContextBase dbContext, IClientContext client
                 while (await reader.ReadAsync())
                 {
                     var month = reader.GetInt32("month");
-                    var brand = reader.IsDBNull("vehicle_brand_code") ? string.Empty : reader.GetString("vehicle_brand_code");
-                    var model = reader.IsDBNull("model") ? string.Empty : reader.GetString("model");
+                    var brand = await reader.IsDBNullAsync("vehicle_brand_code") ? string.Empty : reader.GetString("vehicle_brand_code");
+                    var model = await reader.IsDBNullAsync("model") ? string.Empty : reader.GetString("model");
                     var vehicle = $"{reader.GetString("vehicle_code")} {brand} {model}";
-                    var total = reader.IsDBNull("total") ? 0m : reader.GetDecimal("total");
+                    var total = await reader.IsDBNullAsync("total") ? 0m : reader.GetDecimal("total");
                     list.Add(new { month, vehicle, total });
                 }
             }
@@ -205,9 +209,11 @@ public class StatisticsService(FleetContextBase dbContext, IClientContext client
             .OrderBy(x => x.Key)
             .Select(x =>
             {
-                var dic = new Dictionary<string, object?>();
-                dic.Add("Interventie", (string)x.Key);
-                dic.Add("JaarTotaal", x.Sum(v => (decimal?)v.total ?? 0));
+                var dic = new Dictionary<string, object?>
+                {
+                    { "Interventie", (string)x.Key },
+                    { "JaarTotaal", x.Sum(v => (decimal?)v.total ?? 0) }
+                };
                 AddMonthTotals(dic, year, months, x);
                 return (IDictionary<string, object?>)dic;
             })
@@ -237,10 +243,10 @@ public class StatisticsService(FleetContextBase dbContext, IClientContext client
                 while (await reader.ReadAsync())
                 {
                     var month = reader.GetInt32("month");
-                    var intervention_operatorId = reader.GetInt32("intervention_operator_id");
+                    var interventionOperatorId = reader.GetInt32("intervention_operator_id");
                     var supplier = reader.GetString("supplier");
                     var total = reader.GetDecimal("total");
-                    list.Add(new { month, intervention_operatorId, supplier, total });
+                    list.Add(new { month, intervention_operatorId = interventionOperatorId, supplier, total });
                 }
             }
         }

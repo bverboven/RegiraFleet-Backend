@@ -15,7 +15,8 @@ public class AddressNormalizer(INormalizer normalizer)
             return;
         }
 
-        address.NormalizedContent = Normalize(new[] { address.CountryCode, address.PostalCode, address.City, address.PostBox, address.Street, address.Number, address.Box }, langCode);
+        address.NormalizedContent = Normalize([address.CountryCode, address.PostalCode, address.City, address.PostBox, address.Street, address.Number, address.Box
+        ], langCode);
     }
 
     public string? Normalize(string?[] addressSegments, string? langCode = null)

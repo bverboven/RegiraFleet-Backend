@@ -2,7 +2,7 @@
 
 namespace Regira.Fleet.Models.Interventions;
 
-public class InterventionSearchObject : FleetSearchObject
+public partial class InterventionSearchObject : FleetSearchObject
 {
     public ICollection<int>? VehicleId { get; set; }
     public ICollection<int>? OperatorId { get; set; }

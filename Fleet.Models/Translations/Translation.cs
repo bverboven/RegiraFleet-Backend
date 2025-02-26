@@ -15,7 +15,7 @@ public class Translation : IHasNormalizedTitle, IHasCulture
     [MaxLength(64)]
     public virtual string Title { get; set; } = null!;
 
-    [MaxLength(256)]
+    [MaxLength(64)]
     [Normalized(SourceProperty = nameof(Title))]
     public virtual string? NormalizedTitle { get; set; }
 }

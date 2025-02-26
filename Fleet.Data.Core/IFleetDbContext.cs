@@ -12,7 +12,7 @@ namespace Regira.Fleet.Data;
 
 public interface IFleetDbContext
 {
-    DbSet<Attachment<int>> Attachments { get; set; }
+    DbSet<Attachment> Attachments { get; set; }
     DbSet<Intervention> Interventions { get; set; }
     DbSet<InterventionAction> InterventionActions { get; set; }
     DbSet<InterventionLabel> InterventionLabels { get; set; }

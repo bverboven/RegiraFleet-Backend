@@ -6,6 +6,4 @@ namespace Regira.Fleet.Manager.Api.Controllers;
 
 [ApiController]
 [Route("intervention-types")]
-public class InterventionTypeController : EntityControllerBase<InterventionType, InterventionTypeSearchObject, InterventionTypeDto, InterventionTypeInputDto>
-{
-}
+public class InterventionTypeController : EntityControllerBase<InterventionType, InterventionTypeSearchObject, InterventionTypeDto, InterventionTypeInputDto>;

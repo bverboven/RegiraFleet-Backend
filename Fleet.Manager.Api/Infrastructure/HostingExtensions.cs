@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
+﻿using System.Text.Json.Serialization;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
@@ -16,7 +17,6 @@ using Regira.Security.Encryption;
 using Regira.Serializing.Abstractions;
 using Regira.Serializing.Newtonsoft.Json;
 using Regira.Web.Swagger.Security;
-using System.Text.Json.Serialization;
 using JsonSerializer = Regira.Serializing.Newtonsoft.Json.JsonSerializer;
 
 namespace Regira.Fleet.Manager.Api.Infrastructure;
@@ -88,7 +88,7 @@ public static class HostingExtensions
                 var dataDirectory = config["Data:Directory"];
                 c.DatabaseType = config["Database:Fleet:Type"]!;
                 c.ConnectionString = config["Database:Fleet:ConnectionString"]!;
-                var fsConfig = new BinaryFileService.FileServiceOptions
+                var fsConfig = new FileSystemOptions
                 {
                     RootFolder = dataDirectory!
                 };
@@ -112,7 +112,7 @@ public static class HostingExtensions
                 o.Audiences.AddRange(options.Audiences);
                 o.AddMailer(_ =>
                 {
-                    var key = config[$"SendGrid:Key"];
+                    var key = config["SendGrid:Key"];
                     ArgumentException.ThrowIfNullOrWhiteSpace(key, "SendGrid API key");
                     return new SendGridMailer(new SendGridConfig { Key = key });
                 });

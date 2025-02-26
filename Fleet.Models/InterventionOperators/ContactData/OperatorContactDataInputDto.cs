@@ -8,6 +8,7 @@ public class OperatorContactDataInputDto
     public int Id { get; set; }
     [MaxLength(64)]
     public string? Title { get; set; }
+    [Required]
     [MaxLength(256)]
     public string Value { get; set; } = null!;
     [Normalized(SourceProperty = nameof(Value))]

@@ -1,8 +1,7 @@
-﻿using Regira.Entities.Models.Abstractions;
+﻿using System.ComponentModel.DataAnnotations;
+using Regira.Entities.Models.Abstractions;
 using Regira.Fleet.Core.Abstractions;
 using Regira.Fleet.Identity.Models.Clients;
-using Regira.Fleet.Identity.Models.Users;
-using System.ComponentModel.DataAnnotations;
 
 namespace Regira.Fleet.Identity.Models.Users.Claims;
 
@@ -11,8 +10,9 @@ public class ClientUserClaim : IEntityWithSerial, IHasClientId, IHasUserId
     public int Id { get; set; }
     [StringLength(32)]
     public string ClientId { get; set; } = null!;
+    [Required]
     [MaxLength(64)]
-    public string UserId { get; set; } = null!;
+    public string? UserId { get; set; }
     [MaxLength(64)]
     public string ClaimType { get; set; } = null!;
     [MaxLength(256)]

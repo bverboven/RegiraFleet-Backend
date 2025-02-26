@@ -1,55 +1,20 @@
-﻿using Regira.DAL.EFcore.Normalizing;
-using Regira.Entities.EFcore.Abstractions;
-using Regira.Entities.EFcore.Extensions;
+﻿using Regira.Entities.Abstractions;
+using Regira.Entities.EFcore.Services;
 using Regira.Entities.Models;
 using Regira.Entities.Models.Abstractions;
-using Regira.Fleet.Identity.Data;
-using Regira.Utilities;
 
 namespace Regira.Fleet.Identity.Abstractions;
 
-public abstract class IdentityRepositoryBase<TEntity, TSearchObject>(AccountsContextBase dbContext)
-    : IdentityRepositoryBase<TEntity, string, TSearchObject, EntitySortBy, EntityIncludes>(dbContext)
+public abstract class IdentityRepositoryBase<TEntity, TSearchObject>
+    (IEntityReadService<TEntity, string, TSearchObject, EntitySortBy, EntityIncludes> readService, IEntityWriteService<TEntity, string> writeService) 
+    : IdentityRepositoryBase<TEntity, string, TSearchObject, EntitySortBy, EntityIncludes>(readService, writeService) 
     where TEntity : class, IEntity<string>, new()
     where TSearchObject : class, ISearchObject<string>, new();
-public abstract class IdentityRepositoryBase<TEntity, TKey, TSearchObject, TSortBy, TInclude>(AccountsContextBase dbContext)
-    : EntityRepositoryBase<AccountsContextBase, TEntity, TKey, TSearchObject, TSortBy, TInclude>(dbContext)
+
+public abstract class IdentityRepositoryBase<TEntity, TKey, TSearchObject, TSortBy, TInclude>
+    (IEntityReadService<TEntity, TKey, TSearchObject, TSortBy, TInclude> readService, IEntityWriteService<TEntity, TKey> writeService) 
+    : EntityRepository<TEntity, TKey, TSearchObject, TSortBy, TInclude>(readService, writeService)
     where TEntity : class, IEntity<TKey>, new()
     where TSearchObject : class, ISearchObject<TKey>, new()
     where TSortBy : struct, Enum
-    where TInclude : struct, Enum
-{
-    public override IQueryable<TEntity> Filter(IQueryable<TEntity> query, TSearchObject? so)
-    {
-        if (so != null)
-        {
-            query = query.FilterId(so.Id);
-            query = query.FilterIds(so.Ids);
-            query = query.FilterExclude(so.Exclude);
-
-            if (TypeUtility.ImplementsInterface<IHasCreated>(typeof(TEntity)))
-            {
-                query = query.Cast<IHasCreated>().FilterCreated(so.MinCreated, so.MaxCreated).Cast<TEntity>();
-            }
-            if (TypeUtility.ImplementsInterface<IHasLastModified>(typeof(TEntity)))
-            {
-                query = query.Cast<IHasLastModified>().FilterLastModified(so.MinLastModified, so.MaxLastModified).Cast<TEntity>();
-            }
-            if (TypeUtility.ImplementsInterface<IArchivable>(typeof(TEntity)))
-            {
-                query = query.Cast<IArchivable>().FilterArchivable(so.IsArchived).Cast<TEntity>();
-            }
-        }
-
-        return query;
-    }
-
-
-    public override async Task<int> SaveChanges(CancellationToken token = new())
-    {
-        await DbContext.ApplyNormalizers();
-        await DbContext.ApplyPrimers();
-
-        return await base.SaveChanges(token);
-    }
-}
+    where TInclude : struct, Enum;

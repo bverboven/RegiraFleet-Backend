@@ -1,4 +1,6 @@
-﻿using Regira.Entities.Attachments.Abstractions;
+﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+using Regira.Entities.Attachments.Abstractions;
 using Regira.Entities.Models.Abstractions;
 using Regira.Fleet.Models.Abstractions;
 using Regira.Fleet.Models.EntityLabels;
@@ -7,8 +9,6 @@ using Regira.Fleet.Models.Interventions.Actions;
 using Regira.Fleet.Models.Interventions.Invoices;
 using Regira.Fleet.Models.InterventionTypes;
 using Regira.Fleet.Models.Vehicles;
-using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Regira.Fleet.Models.Interventions;
 
@@ -25,6 +25,7 @@ public class Intervention : IFleetEntity, IEntityWithSerial, IHasDescription, IH
     public int? InterventionTypeId { get; set; }
     public DateTime? InterventionDate { get; set; }
     public int? Mileage { get; set; }
+    // ReSharper disable once EntityFramework.ModelValidation.UnlimitedStringLength
     public string? Description { get; set; }
 
 

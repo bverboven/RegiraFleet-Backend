@@ -1,94 +1,22 @@
-﻿using Microsoft.EntityFrameworkCore;
-using Regira.DAL.EFcore.Normalizing;
-using Regira.Entities.EFcore.Abstractions;
-using Regira.Entities.EFcore.Extensions;
+﻿using Regira.Entities.Abstractions;
+using Regira.Entities.EFcore.Services;
 using Regira.Entities.Models;
 using Regira.Entities.Models.Abstractions;
-using Regira.Fleet.Core.Abstractions;
 using Regira.Fleet.Data;
-using Regira.Utilities;
 
 namespace Regira.Fleet.Abstractions;
 
-public abstract class FleetRepositoryBase<TEntity, TSearchObject>(FleetContextBase dbContext, IFleetAppContext appContext)
-    : FleetRepositoryBase<TEntity, TSearchObject, EntitySortBy, EntityIncludes>(dbContext, appContext)
+public abstract class FleetRepositoryBase<TEntity, TSearchObject>
+    (FleetContextBase dbContext, IEntityReadService<TEntity, int, TSearchObject, EntitySortBy, EntityIncludes> readService, IEntityWriteService<TEntity, int> writeService) 
+    : FleetRepositoryBase<TEntity, TSearchObject, EntitySortBy, EntityIncludes>(dbContext, readService, writeService) where TEntity : class, IEntity<int>, new()
+    where TSearchObject : class, ISearchObject<int>, new();
+public abstract class FleetRepositoryBase<TEntity, TSearchObject, TSortBy, TInclude>
+    (FleetContextBase dbContext, IEntityReadService<TEntity, int, TSearchObject, TSortBy, TInclude> readService, IEntityWriteService<TEntity, int> writeService)
+    : EntityRepository<TEntity, TSearchObject, TSortBy, TInclude>(readService, writeService)
     where TEntity : class, IEntity<int>, new()
-    where TSearchObject : class, ISearchObject, new();
-public abstract class FleetRepositoryBase<TEntity, TSearchObject, TSortBy, TInclude>(FleetContextBase dbContext, IFleetAppContext appContext)
-    : EntityRepositoryBase<FleetContextBase, TEntity, TSearchObject, TSortBy, TInclude>(dbContext)
-    where TEntity : class, IEntity<int>, new()
-    where TSearchObject : class, ISearchObject, new()
+    where TSearchObject : class, ISearchObject<int>, new()
     where TSortBy : struct, Enum
     where TInclude : struct, Enum
 {
-    public override async Task<TEntity?> Details(int id)
-    {
-        var item = await base.Details(id);
-        if (item is IHasClientId hasClientId && hasClientId.ClientId != appContext.Client.ClientId)
-        {
-            // make sure only allowed clientId items are accessed
-            return null;
-        }
-
-        return item;
-    }
-    public override IQueryable<TEntity> Filter(IQueryable<TEntity> query, TSearchObject? so)
-    {
-        if (so != null)
-        {
-            query = query.FilterId(so.Id);
-            query = query.FilterIds(so.Ids);
-            query = query.FilterExclude(so.Exclude);
-
-            if (TypeUtility.ImplementsInterface<IHasCreated>(typeof(TEntity)))
-            {
-                query = query.Cast<IHasCreated>().FilterCreated(so.MinCreated, so.MaxCreated).Cast<TEntity>();
-            }
-            if (TypeUtility.ImplementsInterface<IHasLastModified>(typeof(TEntity)))
-            {
-                query = query.Cast<IHasLastModified>().FilterLastModified(so.MinLastModified, so.MaxLastModified).Cast<TEntity>();
-            }
-            if (TypeUtility.ImplementsInterface<IArchivable>(typeof(TEntity)))
-            {
-                query = query.Cast<IArchivable>().FilterArchivable(so.IsArchived).Cast<TEntity>();
-            }
-        }
-
-        // make sure only allowed clientId items are loaded
-        if (TypeUtility.ImplementsInterface<IHasClientId>(typeof(TEntity)))
-        {
-            query = query.Where(x => (x as IHasClientId)!.ClientId == appContext.Client.ClientId);
-        }
-
-        return query;
-    }
-
-
-    public override Task Remove(TEntity item)
-    {
-        if (item is IArchivable archivableItem)
-        {
-            archivableItem.IsArchived = true;
-            DbContext.Entry(item).State = EntityState.Modified;
-            return Task.CompletedTask;
-        }
-
-        return base.Remove(item);
-    }
-    public override async Task<int> SaveChanges(CancellationToken token = new())
-    {
-        await DbContext.ApplyNormalizers();
-        await DbContext.ApplyPrimers();
-
-        return await base.SaveChanges(token);
-    }
-
-    public override void PrepareItem(TEntity item)
-    {
-        base.PrepareItem(item);
-        if (item is IHasClientId itemWithClientId && string.IsNullOrWhiteSpace(itemWithClientId.ClientId))
-        {
-            itemWithClientId.ClientId = appContext.Client.ClientId!;
-        }
-    }
+    protected readonly FleetContextBase DbContext = dbContext;
 }

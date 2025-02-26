@@ -17,6 +17,7 @@ public class VehicleType : IFleetEntity, IEntityWithSerial, IHasCode, IHasNormal
     public string? Code { get; set; }
     [MaxLength(64)]
     public string Title { get; set; } = null!;
+    // ReSharper disable once EntityFramework.ModelValidation.UnlimitedStringLength
     public string? Description { get; set; }
 
     public DateTime Created { get; set; } = DateTime.Now;
@@ -24,7 +25,7 @@ public class VehicleType : IFleetEntity, IEntityWithSerial, IHasCode, IHasNormal
     public bool IsArchived { get; set; }
 
     [MaxLength(256)]
-    [Normalized(SourceProperties = new[] { nameof(Title), nameof(Code) })]
+    [Normalized(SourceProperties = [nameof(Title), nameof(Code)])]
     public string? NormalizedTitle { get; set; }
 
     public ICollection<VehicleTypeTranslation>? Translations { get; set; }

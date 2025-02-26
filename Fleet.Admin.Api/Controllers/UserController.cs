@@ -9,6 +9,4 @@ namespace Regira.Fleet.Admin.Api.Controllers;
 [AllowAnonymous]
 [ApiController]
 [Route("users")]
-public class UserController : EntityControllerBase<FleetUserModel, string, FleetUserSearchObject, EntitySortBy, FleetUserIncludes, FleetUserDto, FleetUserInputDto>
-{
-}
+public class UserController : EntityControllerBase<FleetUserModel, string, FleetUserSearchObject, EntitySortBy, FleetUserIncludes, FleetUserDto, FleetUserInputDto>;

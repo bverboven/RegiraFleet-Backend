@@ -9,7 +9,7 @@ public class InterventionTypeProfile : Profile
     {
         CreateMap<InterventionType, InterventionTypeDto>();
         CreateMap<InterventionTypeInputDto, InterventionType>()
-            .AfterMap((dto, model) =>
+            .AfterMap((_, model) =>
             {
                 model.Translations = model.Translations
                     ?.Where(x => !string.IsNullOrWhiteSpace(x.Title))

@@ -14,5 +14,6 @@ public class Invoice : IEntityWithSerial
     public decimal? TaxAmount { get; set; }
     public decimal? PriceExcl { get; set; }
     public decimal? PriceIncl { get; set; }
+    // ReSharper disable once EntityFramework.ModelValidation.UnlimitedStringLength
     public string? Description { get; set; }
 }
