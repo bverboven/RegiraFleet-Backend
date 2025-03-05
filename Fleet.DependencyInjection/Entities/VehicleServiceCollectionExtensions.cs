@@ -4,6 +4,7 @@ using Regira.Entities.Models;
 using Regira.Fleet.Core.Constants;
 using Regira.Fleet.Core.Normalizing;
 using Regira.Fleet.Data;
+using Regira.Fleet.Data.Extensions;
 using Regira.Fleet.DependencyInjection.Postgres;
 using Regira.Fleet.Entities.Vehicles;
 using Regira.Fleet.Entities.Vehicles.Brands;
@@ -37,7 +38,6 @@ public static class VehicleServiceCollectionExtensions
             // VehicleType
             .For<VehicleType, VehicleTypeSearchObject, EntitySortBy, EntityIncludes>(e =>
             {
-                e.UseWriteService<VehicleTypeWriteService>();
                 e.AddNormalizer<FleetEntityNormalizer<VehicleType>>();
                 if (dbType == DataBaseTypes.PostgreSQL)
                 {
@@ -47,6 +47,8 @@ public static class VehicleServiceCollectionExtensions
                 {
                     e.AddQueryFilter<VehicleTypeQueryFilter>();
                 }
+                e.Related(item => item.Translations);
+                e.Prepare(item => item.Translations?.Prepare());
             })
             // Vehicle
             .For<Vehicle, VehicleSearchObject, EntitySortBy, VehicleIncludes>(e =>
@@ -63,8 +65,13 @@ public static class VehicleServiceCollectionExtensions
                 }
                 e.SortBy((query, _) => query.OrderBy(x => x.Code));
                 e.Includes<VehicleIncludingQueryBuilder>();
-                e.UseWriteService<VehicleWriteService>();
-                e.HasAttachments<TContext, Vehicle, VehicleAttachment>();
+                e.Related(item => item.Labels);
+                e.Prepare(item =>
+                {
+                    item.Labels?.Prepare();
+                });
+                e.HasAttachments(item => item.Attachments);
+                e.AddPrepper<VehiclePrepper>();
             });
         return services;
     }

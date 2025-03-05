@@ -12,7 +12,7 @@
 
     <ItemGroup>
         <ProjectReference Include="..\Fleet.Data.Core\Fleet.Data.Core.csproj" />
-        <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="9.0.3" />
+        <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="9.0.4" />
     </ItemGroup>
 
 </Project>

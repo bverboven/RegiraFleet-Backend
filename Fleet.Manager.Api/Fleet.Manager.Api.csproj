@@ -16,15 +16,15 @@
     <ItemGroup>
         <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="9.0.2" />
         <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="9.0.2" />
-        <PackageReference Include="Regira.Security" Version="4.2.1" />
+        <PackageReference Include="Regira.Security" Version="4.3.0" />
     </ItemGroup>
 
     <ItemGroup>
-        <PackageReference Include="Regira.Office.Excel.NpoiMapper" Version="4.2.1" />
-        <PackageReference Include="Regira.Office.Excel.EPPlus" Version="4.2.1" />
-        <PackageReference Include="Regira.Office.Mail.SendGrid" Version="4.2.1" />
-        <PackageReference Include="Regira.Serializing.Newtonsoft" Version="4.2.1" />
-        <PackageReference Include="Regira.Web.Swagger" Version="4.2.1" />
+        <PackageReference Include="Regira.Office.Excel.NpoiMapper" Version="4.3.0" />
+        <PackageReference Include="Regira.Office.Excel.EPPlus" Version="4.3.0" />
+        <PackageReference Include="Regira.Office.Mail.SendGrid" Version="4.3.0" />
+        <PackageReference Include="Regira.Serializing.Newtonsoft" Version="4.3.0" />
+        <PackageReference Include="Regira.Web.Swagger" Version="4.3.0" />
     </ItemGroup>
 
     <ItemGroup>

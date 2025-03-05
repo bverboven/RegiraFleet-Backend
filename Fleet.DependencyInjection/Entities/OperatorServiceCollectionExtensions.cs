@@ -5,6 +5,7 @@ using Regira.Entities.Models;
 using Regira.Fleet.Core.Abstractions;
 using Regira.Fleet.Core.Constants;
 using Regira.Fleet.Data;
+using Regira.Fleet.Data.Extensions;
 using Regira.Fleet.DependencyInjection.Postgres;
 using Regira.Fleet.Entities.InterventionOperators.Normalizers;
 using Regira.Fleet.Entities.InterventionOperators.Operators;
@@ -27,6 +28,7 @@ public static class OperatorServiceCollectionExtensions
         services
             .For<Operator, OperatorSearchObject, EntitySortBy, OperatorIncludes>(e =>
             {
+                e.AddNormalizer<OperatorNormalizer>();
                 e.AddQueryFilter<OperatorFilteredQueryBuilder>();
                 if (dbType == DataBaseTypes.PostgreSQL)
                 {
@@ -38,9 +40,19 @@ public static class OperatorServiceCollectionExtensions
                 }
                 e.Includes<OperatorIncludingQueryBuilder>();
                 e.SortBy((query, _) => query.OrderBy(x => x.NormalizedTitle));
-                e.UseWriteService<OperatorWriteService>();
-                e.HasAttachments<TContext, Operator, OperatorAttachment>();
-                e.AddNormalizer<OperatorNormalizer>();
+
+                e.Related(item => item.Addresses);
+                e.Related(item => item.ContactData);
+                e.Related(item => item.Labels);
+                e.Related(item => item.Addresses);
+                e.HasAttachments(item => item.Attachments);
+                e.Prepare(item =>
+                {
+                    item.Addresses?.Prepare();
+                    item.ContactData?.Prepare();
+                    item.Labels?.Prepare();
+                });
+                e.AddPrepper<OperatorPrepper>();
             });
 
         return services;
