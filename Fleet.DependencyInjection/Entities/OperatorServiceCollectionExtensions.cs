@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
-using Regira.Entities.DependencyInjection.Abstractions;
 using Regira.Entities.DependencyInjection.Attachments;
+using Regira.Entities.DependencyInjection.Preppers;
+using Regira.Entities.DependencyInjection.ServiceBuilders.Abstractions;
 using Regira.Entities.Models;
 using Regira.Fleet.Core.Abstractions;
 using Regira.Fleet.Core.Constants;
@@ -44,8 +45,6 @@ public static class OperatorServiceCollectionExtensions
                 e.Related(item => item.Addresses);
                 e.Related(item => item.ContactData);
                 e.Related(item => item.Labels);
-                e.Related(item => item.Addresses);
-                e.HasAttachments(item => item.Attachments);
                 e.Prepare(item =>
                 {
                     item.Addresses?.Prepare();
@@ -53,6 +52,7 @@ public static class OperatorServiceCollectionExtensions
                     item.Labels?.Prepare();
                 });
                 e.AddPrepper<OperatorPrepper>();
+                e.HasAttachments(item => item.Attachments);
             });
 
         return services;

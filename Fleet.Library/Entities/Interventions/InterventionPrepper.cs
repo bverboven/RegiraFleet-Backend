@@ -5,9 +5,9 @@ using Regira.Fleet.Models.Interventions;
 
 namespace Regira.Fleet.Entities.Interventions;
 
-public class InterventionPrepper(FleetContextBase dbContext) : IEntityPrepper<Intervention, int>
+public class InterventionPrepper(FleetContextBase dbContext) : EntityPrepperBase<Intervention>
 {
-    public Task Prepare(Intervention modified, Intervention? original)
+    public override Task Prepare(Intervention modified, Intervention? original)
     {
         if (modified.Invoice != null)
         {

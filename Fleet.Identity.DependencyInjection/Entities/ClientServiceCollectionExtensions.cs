@@ -1,5 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Regira.Entities.DependencyInjection.Abstractions;
+using Regira.Entities.DependencyInjection.ServiceBuilders.Abstractions;
 using Regira.Entities.Models;
 using Regira.Fleet.Identity.Models.Clients;
 using Regira.Fleet.Identity.Models.Clients.Subscriptions;

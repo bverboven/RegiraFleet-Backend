@@ -1,5 +1,6 @@
-﻿using Regira.Entities.DependencyInjection.Abstractions;
-using Regira.Entities.DependencyInjection.Attachments;
+﻿using Regira.Entities.DependencyInjection.Attachments;
+using Regira.Entities.DependencyInjection.Preppers;
+using Regira.Entities.DependencyInjection.ServiceBuilders.Abstractions;
 using Regira.Entities.Models;
 using Regira.Fleet.Core.Constants;
 using Regira.Fleet.Core.Normalizing;
@@ -47,8 +48,7 @@ public static class VehicleServiceCollectionExtensions
                 {
                     e.AddQueryFilter<VehicleTypeQueryFilter>();
                 }
-                e.Related(item => item.Translations);
-                e.Prepare(item => item.Translations?.Prepare());
+                e.Related(item => item.Translations, item => item.Translations?.Prepare());
             })
             // Vehicle
             .For<Vehicle, VehicleSearchObject, EntitySortBy, VehicleIncludes>(e =>
@@ -65,13 +65,9 @@ public static class VehicleServiceCollectionExtensions
                 }
                 e.SortBy((query, _) => query.OrderBy(x => x.Code));
                 e.Includes<VehicleIncludingQueryBuilder>();
-                e.Related(item => item.Labels);
-                e.Prepare(item =>
-                {
-                    item.Labels?.Prepare();
-                });
-                e.HasAttachments(item => item.Attachments);
+                e.Related(item => item.Labels, item => item.Labels?.Prepare());
                 e.AddPrepper<VehiclePrepper>();
+                e.HasAttachments(item => item.Attachments);
             });
         return services;
     }

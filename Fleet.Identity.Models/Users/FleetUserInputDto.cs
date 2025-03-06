@@ -1,5 +1,5 @@
-﻿using Regira.Fleet.Identity.Models.Users.Claims;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
+using Regira.Fleet.Identity.Models.Users.Claims;
 
 namespace Regira.Fleet.Identity.Models.Users;
 

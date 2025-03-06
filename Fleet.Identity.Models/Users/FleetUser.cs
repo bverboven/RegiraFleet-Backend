@@ -1,9 +1,9 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+using Microsoft.AspNetCore.Identity;
 using Regira.Entities.Models.Abstractions;
 using Regira.Fleet.Identity.Models.Clients;
 using Regira.Fleet.Identity.Models.Users.Claims;
-using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Regira.Fleet.Identity.Models.Users;
 

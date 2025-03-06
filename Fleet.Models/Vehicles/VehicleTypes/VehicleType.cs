@@ -1,8 +1,8 @@
-﻿using Regira.Entities.Models.Abstractions;
+﻿using System.ComponentModel.DataAnnotations;
+using Regira.Entities.Models.Abstractions;
 using Regira.Fleet.Models.Abstractions;
 using Regira.Fleet.Models.Translations;
 using Regira.Normalizing;
-using System.ComponentModel.DataAnnotations;
 
 namespace Regira.Fleet.Models.Vehicles.VehicleTypes;
 

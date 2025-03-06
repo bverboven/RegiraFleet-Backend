@@ -1,8 +1,8 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using System.Security.Claims;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Regira.Fleet.Identity.Data;
-using System.Security.Claims;
 
 namespace Regira.Fleet.Manager.Api.Controllers;
 

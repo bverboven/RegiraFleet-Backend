@@ -1,9 +1,9 @@
-﻿using OfficeOpenXml;
+﻿using System.Data;
+using OfficeOpenXml;
 using Regira.IO.Abstractions;
 using Regira.IO.Extensions;
 using Regira.Office.Excel;
 using Regira.Office.Excel.Abstractions;
-using System.Data;
 
 namespace Regira.Fleet.Manager.Api.Infrastructure;
 

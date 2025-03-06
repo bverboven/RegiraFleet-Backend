@@ -5,9 +5,9 @@ using Regira.Fleet.Models.InterventionOperators.Operators;
 
 namespace Regira.Fleet.Entities.InterventionOperators.Operators;
 
-public class OperatorPrepper(FleetContextBase dbContext) : IEntityPrepper<Operator, int>
+public class OperatorPrepper(FleetContextBase dbContext) : EntityPrepperBase<Operator>
 {
-    public Task Prepare(Operator modified, Operator? original)
+    public override Task Prepare(Operator modified, Operator? original)
     {
         if (original != null)
         {

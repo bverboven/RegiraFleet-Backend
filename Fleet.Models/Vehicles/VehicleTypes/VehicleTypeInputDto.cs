@@ -1,5 +1,5 @@
-﻿using Regira.Fleet.Models.Translations;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
+using Regira.Fleet.Models.Translations;
 
 namespace Regira.Fleet.Models.Vehicles.VehicleTypes;
 

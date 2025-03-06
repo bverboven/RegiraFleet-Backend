@@ -1,8 +1,8 @@
 ﻿using Regira.Entities.Web.Attachments.Models;
-using Regira.Fleet.Models.InterventionOperators.ContactData;
 using Regira.Fleet.Models.Addresses;
-using Regira.Fleet.Models.InterventionTypes;
 using Regira.Fleet.Models.EntityLabels;
+using Regira.Fleet.Models.InterventionOperators.ContactData;
+using Regira.Fleet.Models.InterventionTypes;
 
 namespace Regira.Fleet.Models.InterventionOperators.Operators;
 

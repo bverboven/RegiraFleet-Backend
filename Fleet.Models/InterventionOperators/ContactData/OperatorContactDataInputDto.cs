@@ -1,5 +1,5 @@
-﻿using Regira.Normalizing;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
+using Regira.Normalizing;
 
 namespace Regira.Fleet.Models.InterventionOperators.ContactData;
 

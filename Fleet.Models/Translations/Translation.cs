@@ -1,7 +1,7 @@
-﻿using Regira.Entities.Models.Abstractions;
+﻿using System.ComponentModel.DataAnnotations;
+using Regira.Entities.Models.Abstractions;
 using Regira.Fleet.Core.Abstractions;
 using Regira.Normalizing;
-using System.ComponentModel.DataAnnotations;
 
 namespace Regira.Fleet.Models.Translations;
 

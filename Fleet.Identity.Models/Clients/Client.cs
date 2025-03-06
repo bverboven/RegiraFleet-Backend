@@ -1,8 +1,8 @@
-﻿using Regira.Entities.Models.Abstractions;
+﻿using System.ComponentModel.DataAnnotations;
+using Regira.Entities.Models.Abstractions;
 using Regira.Fleet.Identity.Models.Clients.Subscriptions;
 using Regira.Fleet.Identity.Models.Users.Claims;
 using Regira.Normalizing;
-using System.ComponentModel.DataAnnotations;
 
 namespace Regira.Fleet.Identity.Models.Clients;
 

@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Regira.Entities.DependencyInjection.Abstractions;
 using Regira.Entities.DependencyInjection.Attachments;
+using Regira.Entities.DependencyInjection.Preppers;
+using Regira.Entities.DependencyInjection.ServiceBuilders.Abstractions;
 using Regira.Entities.Models;
 using Regira.Fleet.Core.Constants;
 using Regira.Fleet.Core.Normalizing;
@@ -35,8 +36,7 @@ public static class InterventionServiceCollectionExtensions
                 {
                     e.AddQueryFilter<InterventionTypeLikeQueryFilter>();
                 }
-                e.Related(item => item.Translations);
-                e.Prepare(item => item.Translations?.Prepare());
+                e.Related(item => item.Translations, item => item.Translations?.Prepare());
             })
             // Intervention
             .For<Intervention, InterventionSearchObject, InterventionSortBy, InterventionIncludes>(e =>
@@ -57,12 +57,8 @@ public static class InterventionServiceCollectionExtensions
                     .OrderByDescending(x => x.InterventionDate ?? x.Created)
                     //.OrderByDescending(x => x.Invoices!.Max(i => i.InvoiceDate))
                     .ThenByDescending(x => x.Id));
-                e.Related(item => item.Labels);
-                e.Prepare(item =>
-                {
-                    item.Labels?.Prepare();
-                });
-                e.HasAttachments<TContext, Intervention, InterventionAttachment>();
+                e.Related(item => item.Labels, item => item.Labels?.Prepare());
+                e.HasAttachments(item => item.Attachments);
                 e.AddPrepper<InterventionPrepper>();
             });
         return services;

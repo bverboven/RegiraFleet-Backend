@@ -1,7 +1,7 @@
-﻿using Regira.Entities.Web.Attachments.Models;
+﻿using System.ComponentModel.DataAnnotations;
+using Regira.Entities.Web.Attachments.Models;
 using Regira.Fleet.Models.EntityLabels;
 using Regira.Fleet.Models.InterventionTypes;
-using System.ComponentModel.DataAnnotations;
 
 namespace Regira.Fleet.Models.Vehicles;
 

@@ -1,7 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
-using Regira.Entities.DependencyInjection;
-using Regira.Entities.DependencyInjection.Extensions;
+using Regira.Entities.DependencyInjection.ServiceBuilders;
+using Regira.Entities.DependencyInjection.ServiceBuilders.Extensions;
 
 
 namespace Regira.Fleet.Core.DependencyInjection;

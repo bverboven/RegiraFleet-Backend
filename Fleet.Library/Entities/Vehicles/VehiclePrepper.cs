@@ -5,9 +5,9 @@ using Regira.Fleet.Models.Vehicles;
 
 namespace Regira.Fleet.Entities.Vehicles;
 
-public class VehiclePrepper(FleetContextBase dbContext) : IEntityPrepper<Vehicle, int>
+public class VehiclePrepper(FleetContextBase dbContext) : EntityPrepperBase<Vehicle>
 {
-    public Task Prepare(Vehicle modified, Vehicle? original)
+    public override Task Prepare(Vehicle modified, Vehicle? original)
     {
         if (modified.InterventionTypes != null)
         {
