@@ -1,20 +1,19 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Regira.Entities.EFcore.Preppers.Abstractions;
 using Regira.Fleet.Data;
-using Regira.Fleet.Models.InterventionOperators.Operators;
+using Regira.Fleet.Models.Vehicles;
 
-namespace Regira.Fleet.Entities.InterventionOperators.Operators;
+namespace Regira.Fleet.Entities.Vehicles;
 
-public class OperatorPrepper(FleetContextBase dbContext) : EntityPrepperBase<Operator>
+public class VehicleInterventionTypesPrepper(FleetContextBase dbContext) : EntityPrepperBase<Vehicle>
 {
-    public override Task Prepare(Operator modified, Operator? original)
+    public override Task Prepare(Vehicle modified, Vehicle? original)
     {
         if (original != null)
         {
-            // Intervention Types
             if (modified.InterventionTypes != null)
             {
-                var itemsToRemove = original.InterventionTypes?
+                var itemsToRemove = original!.InterventionTypes?
                     .Where(o => modified.InterventionTypes.All(x => o.InterventionTypeId != x.InterventionTypeId))
                     .ToArray() ?? [];
                 var itemsToAdd = modified.InterventionTypes
@@ -26,12 +25,12 @@ public class OperatorPrepper(FleetContextBase dbContext) : EntityPrepperBase<Ope
                 }
                 foreach (var itemToAdd in itemsToAdd)
                 {
-                    dbContext.Entry(itemToAdd).State = EntityState.Added;
+                    dbContext.Add(itemToAdd);
                 }
-                original.InterventionTypes = (original.InterventionTypes ?? Array.Empty<OperatorInterventionType>())
-                    .Except(itemsToRemove)
-                    .Concat(itemsToAdd)
-                    .ToList();
+                foreach (var item in modified.InterventionTypes.Except(itemsToAdd))
+                {
+                    dbContext.Entry(item).State = EntityState.Modified;
+                }
             }
         }
 

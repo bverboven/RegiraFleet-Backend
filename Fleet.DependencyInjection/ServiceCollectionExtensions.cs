@@ -177,14 +177,9 @@ public static class ServiceCollectionExtensions
                 c.AddPrimer<ArchivablePrimer>();
 
                 // Postgres ILike?
-                if (options.DatabaseType == DataBaseTypes.PostgreSQL)
-                {
-                    c.AddGlobalFilterQueryBuilder<PgFilterHasNormalizedContentQueryBuilder>();
-                }
-                else
-                {
-                    c.AddGlobalFilterQueryBuilder<FilterHasNormalizedContentQueryBuilder>();
-                }
+                _ = options.DatabaseType == DataBaseTypes.PostgreSQL
+                    ? c.AddGlobalFilterQueryBuilder<PgFilterHasNormalizedContentQueryBuilder>()
+                    : c.AddGlobalFilterQueryBuilder<FilterHasNormalizedContentQueryBuilder>();
             });
 
         // Entity Items

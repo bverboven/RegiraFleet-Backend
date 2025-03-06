@@ -31,14 +31,9 @@ public static class OperatorServiceCollectionExtensions
             {
                 e.AddNormalizer<OperatorNormalizer>();
                 e.AddQueryFilter<OperatorFilteredQueryBuilder>();
-                if (dbType == DataBaseTypes.PostgreSQL)
-                {
-                    e.AddQueryFilter<OperatorFilteredPostgresLikeQueryBuilder>();
-                }
-                else
-                {
-                    e.AddQueryFilter<OperatorFilteredLikeQueryBuilder>();
-                }
+                _ = dbType == DataBaseTypes.PostgreSQL
+                    ? e.AddQueryFilter<OperatorFilteredPostgresLikeQueryBuilder>()
+                    : e.AddQueryFilter<OperatorFilteredLikeQueryBuilder>();
                 e.Includes<OperatorIncludingQueryBuilder>();
                 e.SortBy((query, _) => query.OrderBy(x => x.NormalizedTitle));
 
@@ -51,7 +46,7 @@ public static class OperatorServiceCollectionExtensions
                     item.ContactData?.Prepare();
                     item.Labels?.Prepare();
                 });
-                e.AddPrepper<OperatorPrepper>();
+                e.AddPrepper<OperatorInterventionTypesPrepper>();
                 e.HasAttachments(item => item.Attachments);
             });
 

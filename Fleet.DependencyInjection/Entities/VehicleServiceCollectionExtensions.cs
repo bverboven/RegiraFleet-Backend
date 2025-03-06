@@ -27,27 +27,17 @@ public static class VehicleServiceCollectionExtensions
             .For<Brand, BrandSearchObject, EntitySortBy, EntityIncludes>(e =>
             {
                 e.AddNormalizer<FleetEntityNormalizer<Brand>>();
-                if (dbType == DataBaseTypes.PostgreSQL)
-                {
-                    e.AddQueryFilter<BrandPostgresQueryFilter>();
-                }
-                else
-                {
-                    e.AddQueryFilter<BrandQueryFilter>();
-                }
+                _ = dbType == DataBaseTypes.PostgreSQL 
+                    ? e.AddQueryFilter<BrandPostgresQueryFilter>() 
+                    : e.AddQueryFilter<BrandQueryFilter>();
             })
             // VehicleType
             .For<VehicleType, VehicleTypeSearchObject, EntitySortBy, EntityIncludes>(e =>
             {
                 e.AddNormalizer<FleetEntityNormalizer<VehicleType>>();
-                if (dbType == DataBaseTypes.PostgreSQL)
-                {
-                    e.AddQueryFilter<VehicleTypePostgresQueryFilter>();
-                }
-                else
-                {
-                    e.AddQueryFilter<VehicleTypeQueryFilter>();
-                }
+                _ = dbType == DataBaseTypes.PostgreSQL 
+                    ? e.AddQueryFilter<VehicleTypePostgresQueryFilter>() 
+                    : e.AddQueryFilter<VehicleTypeQueryFilter>();
                 e.Related(item => item.Translations, item => item.Translations?.Prepare());
             })
             // Vehicle
@@ -55,18 +45,13 @@ public static class VehicleServiceCollectionExtensions
             {
                 e.AddNormalizer<VehicleNormalizer>();
                 e.AddQueryFilter<VehicleFilteredQueryBuilder>();
-                if (dbType == DataBaseTypes.PostgreSQL)
-                {
-                    e.AddQueryFilter<VehiclePostgresLikeQueryFilter>();
-                }
-                else
-                {
-                    e.AddQueryFilter<VehicleLikeQueryFilter>();
-                }
+                _ = dbType == DataBaseTypes.PostgreSQL 
+                    ? e.AddQueryFilter<VehiclePostgresLikeQueryFilter>() 
+                    : e.AddQueryFilter<VehicleLikeQueryFilter>();
                 e.SortBy((query, _) => query.OrderBy(x => x.Code));
                 e.Includes<VehicleIncludingQueryBuilder>();
                 e.Related(item => item.Labels, item => item.Labels?.Prepare());
-                e.AddPrepper<VehiclePrepper>();
+                e.AddPrepper<VehicleInterventionTypesPrepper>();
                 e.HasAttachments(item => item.Attachments);
             });
         return services;

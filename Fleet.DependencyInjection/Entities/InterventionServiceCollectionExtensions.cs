@@ -27,15 +27,10 @@ public static class InterventionServiceCollectionExtensions
             {
                 e.AddNormalizer<FleetEntityNormalizer<InterventionType>>();
                 e.AddQueryFilter<InterventionTypeQueryFilter>();
+                _ = dbType == DataBaseTypes.PostgreSQL
+                    ? e.AddQueryFilter<InterventionTypePostgresLikeQueryFilter>()
+                    : e.AddQueryFilter<InterventionTypeLikeQueryFilter>();
                 e.Includes((query, _) => query.Include(x => x.Translations).OrderBy(x => x.Title));
-                if (dbType == DataBaseTypes.PostgreSQL)
-                {
-                    e.AddQueryFilter<InterventionTypePostgresLikeQueryFilter>();
-                }
-                else
-                {
-                    e.AddQueryFilter<InterventionTypeLikeQueryFilter>();
-                }
                 e.Related(item => item.Translations, item => item.Translations?.Prepare());
             })
             // Intervention
@@ -43,15 +38,9 @@ public static class InterventionServiceCollectionExtensions
             {
                 e.AddNormalizer<InterventionNormalizer>();
                 e.AddQueryFilter<InterventionQueryFilter>();
-                if (dbType == DataBaseTypes.PostgreSQL)
-                {
-                    e.AddQueryFilter<InterventionPostgresLikeQueryFilter>();
-                }
-                else
-                {
-                    e.AddQueryFilter<InterventionLikeQueryFilter>();
-                }
-
+                _ = dbType == DataBaseTypes.PostgreSQL
+                    ? e.AddQueryFilter<InterventionPostgresLikeQueryFilter>()
+                    : e.AddQueryFilter<InterventionLikeQueryFilter>();
                 e.Includes<InterventionIncludingQueryBuilder>();
                 e.SortBy((query, _) => query
                     .OrderByDescending(x => x.InterventionDate ?? x.Created)
