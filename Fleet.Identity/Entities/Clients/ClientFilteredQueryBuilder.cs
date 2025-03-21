@@ -1,19 +1,14 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Regira.Entities.EFcore.QueryBuilders;
 using Regira.Entities.EFcore.QueryBuilders.Abstractions;
 using Regira.Entities.Keywords.Abstractions;
-using Regira.Entities.Models;
 using Regira.Fleet.Identity.Models.Clients;
 
 namespace Regira.Fleet.Identity.Entities.Clients;
 
-public class ClientQueryBuilder(IEnumerable<IGlobalFilteredQueryBuilder> globalFilters, IQKeywordHelper qHelper) 
-    : QueryBuilder<Client, string, ClientSearchObject, EntitySortBy, ClientIncludes>(globalFilters)
+public class ClientFilteredQueryBuilder(IQKeywordHelper qHelper) : FilteredQueryBuilderBase<Client, string, ClientSearchObject>
 {
-    public override IQueryable<Client> Filter(IQueryable<Client> query, ClientSearchObject? so)
+    public override IQueryable<Client> Build(IQueryable<Client> query, ClientSearchObject? so)
     {
-        query = base.Filter(query, so);
-
         if (so != null)
         {
             // ID
@@ -49,27 +44,6 @@ public class ClientQueryBuilder(IEnumerable<IGlobalFilteredQueryBuilder> globalF
                 {
                     query = query.Where(x => EF.Functions.Like(x.NormalizedTitle, q.QW));
                 }
-            }
-        }
-
-        return query;
-    }
-
-    public override IQueryable<Client> AddIncludes(IQueryable<Client> query, IList<ClientSearchObject?>? so, IList<EntitySortBy>? sortByList, ClientIncludes? includes)
-    {
-        if (includes.HasValue)
-        {
-            if (includes.Value.HasFlag(ClientIncludes.Languages))
-            {
-                query = query.Include(x => x.Languages!.OrderBy(a => a.LangCode));
-            }
-            if (includes.Value.HasFlag(ClientIncludes.Subscriptions))
-            {
-                query = query.Include(x => x.Subscriptions!.OrderByDescending(s => s.EndDate ?? s.StartDate ?? s.Created));
-            }
-            else if (includes.Value.HasFlag(ClientIncludes.ActiveSubscription))
-            {
-                query = query.Include(x => x.Subscriptions!.Where(s => s.StartDate <= DateTime.Now && (s.EndDate == null || s.EndDate >= DateTime.Today)));
             }
         }
 

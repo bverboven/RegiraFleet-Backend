@@ -56,8 +56,8 @@ public static class ServiceCollectionExtensions
             .AddFleetEntities(options);
 
         // Attachments
-        fleetBuilder
-            .AddAttachmentServices(options.FileServiceFactory ?? throw new InvalidOperationException($"No implementation for {nameof(IFileService)} configured"));
+        //fleetBuilder
+        //    .AddAttachmentServices(options.FileServiceFactory ?? throw new InvalidOperationException($"No implementation for {nameof(IFileService)} configured"));
 
         return fleetBuilder;
     }
@@ -180,7 +180,12 @@ public static class ServiceCollectionExtensions
                 _ = options.DatabaseType == DataBaseTypes.PostgreSQL
                     ? c.AddGlobalFilterQueryBuilder<PgFilterHasNormalizedContentQueryBuilder>()
                     : c.AddGlobalFilterQueryBuilder<FilterHasNormalizedContentQueryBuilder>();
-            });
+            })
+            .WithAttachments(options.FileServiceFactory ?? throw new InvalidOperationException($"No implementation for {nameof(IFileService)} configured"));
+
+        //// Attachments
+        //builder
+        //    .AddAttachmentServices(options.FileServiceFactory ?? throw new InvalidOperationException($"No implementation for {nameof(IFileService)} configured"));
 
         // Entity Items
         builder.Entities

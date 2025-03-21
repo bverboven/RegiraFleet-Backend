@@ -17,12 +17,20 @@ using Regira.Security.Encryption;
 using Regira.Serializing.Abstractions;
 using Regira.Serializing.Newtonsoft.Json;
 using Regira.Web.Swagger.Security;
+using Serilog;
 using JsonSerializer = Regira.Serializing.Newtonsoft.Json.JsonSerializer;
 
 namespace Regira.Fleet.Manager.Api.Infrastructure;
 
 public static class HostingExtensions
 {
+    public static WebApplicationBuilder ConfigureSerilog(this WebApplicationBuilder builder)
+    {
+        builder.Host.UseSerilog((context, configuration) => configuration
+            .ReadFrom.Configuration(context.Configuration)
+        );
+        return builder;
+    }
     public static IServiceCollection AddApi(this IServiceCollection services)
     {
 
@@ -88,11 +96,14 @@ public static class HostingExtensions
                 var dataDirectory = config["Data:Directory"];
                 c.DatabaseType = config["Database:Fleet:Type"]!;
                 c.ConnectionString = config["Database:Fleet:ConnectionString"]!;
-                var fsConfig = new FileSystemOptions
+                c.ConfigureStorageService(_ =>
                 {
-                    RootFolder = dataDirectory!
-                };
-                c.ConfigureStorageService(_ => new BinaryFileService(fsConfig));
+                    var fsConfig = new FileSystemOptions
+                    {
+                        RootFolder = dataDirectory!
+                    };
+                    return new BinaryFileService(fsConfig);
+                });
             });
 
         services

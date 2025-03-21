@@ -24,7 +24,9 @@ public static class HostingExtensions
 {
     public static WebApplicationBuilder ConfigureSerilog(this WebApplicationBuilder builder)
     {
-        builder.Host.UseSerilog((context, configuration) => configuration.ReadFrom.Configuration(context.Configuration));
+        builder.Host.UseSerilog((context, configuration) => configuration
+            .ReadFrom.Configuration(context.Configuration)
+        );
         return builder;
     }
     public static IServiceCollection AddApi(this IServiceCollection services)

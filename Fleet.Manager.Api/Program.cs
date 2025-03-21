@@ -1,19 +1,42 @@
+using System.Reflection;
 using Regira.Fleet.Manager.Api.Infrastructure;
+using Serilog;
 
 // prevent date errors in Postgres
 AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
 
-var builder = WebApplication.CreateBuilder(args);
+Log.Logger = new LoggerConfiguration()
+    .WriteTo.Console()
+    .CreateLogger();
 
-// services
-builder.Services
-    .AddApi()
-    .AddServices(builder.Configuration)
-    .AddIdentity(builder.Configuration)
-    ;
+Log.Information($"Starting {Assembly.GetExecutingAssembly().GetName().Name}");
 
-var app = builder.Build();
+try
+{
+    var builder = WebApplication.CreateBuilder(args)
+        .ConfigureSerilog();
 
-app.ConfigureApp();
+    // services
+    builder.Services
+        .AddApi()
+        .AddServices(builder.Configuration)
+        .AddIdentity(builder.Configuration);
 
-app.Run();
+    var app = builder.Build();
+
+    app.ConfigureApp();
+
+    app.Run();
+}
+catch (Exception ex)
+{
+    // Host error, logger might not be instanciated
+    Log.Error(ex, "Host failed");
+}
+finally
+{
+    Console.WriteLine("Press enter to exit");
+    Console.ReadLine();
+
+    Log.CloseAndFlush();
+}

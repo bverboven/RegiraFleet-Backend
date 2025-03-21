@@ -6,7 +6,7 @@ namespace Regira.Fleet.Identity.Entities.Users;
 public static class FleetUserCollectionExtensions
 {
     public static void UpdateEntityChildCollection<TEntity, TChild, TChildKey>(this DbContext dbContext, TEntity original, TEntity modified, Func<TEntity, ICollection<TChild>?> childrenGetter, Action<TEntity, ICollection<TChild>> childrenSetter, Action<TChild?, TChild>? processExtra = null)
-    where TChild : class, IEntity<TChildKey>
+        where TChild : class, IEntity<TChildKey>
     {
         var originalChildCollection = childrenGetter(original);
         var modifiedChildCollection = childrenGetter(modified);
