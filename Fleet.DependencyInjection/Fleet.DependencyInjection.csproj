@@ -11,7 +11,7 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="Regira.Entities.DependencyInjection" Version="4.6.1" />
+        <PackageReference Include="Regira.Entities.DependencyInjection" Version="4.6.2" />
     </ItemGroup>
 
     <ItemGroup>
