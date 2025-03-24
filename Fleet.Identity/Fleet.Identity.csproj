@@ -15,9 +15,9 @@
     <ItemGroup>
         <PackageReference Include="Regira.Common" Version="4.3.0" />
         <PackageReference Include="Regira.Office" Version="4.3.0" />
-        <PackageReference Include="Regira.Entities.DependencyInjection" Version="4.6.2" />
+        <PackageReference Include="Regira.Entities.DependencyInjection" Version="4.6.3" />
         <PackageReference Include="Regira.Security" Version="4.3.1" />
-        <PackageReference Include="Regira.Security.Authentication" Version="4.3.0" />
+        <PackageReference Include="Regira.Security.Authentication" Version="4.3.1" />
     </ItemGroup>
 
     <ItemGroup>

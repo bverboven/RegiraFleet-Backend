@@ -1,5 +1,5 @@
 ﻿using System.Security.Claims;
-using IdentityModel;
+using Duende.IdentityModel;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
