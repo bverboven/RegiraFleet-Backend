@@ -151,16 +151,16 @@ public static class ServiceCollectionExtensions
 
         builder.Entities
             // Entity context
-            .AddClients()
+            .AddTenants()
             .AddFleetUsers(options.DatabaseType);
 
         return builder;
     }
-    public static IServiceCollection AddClientClaims(this IServiceCollection services)
+    public static IServiceCollection AddTenantClaims(this IServiceCollection services)
     {
         services
               .AddHttpContextAccessor()
-              .AddTransient<IClientUserClaimsService, IdentityClientUserClaimsService>()
+              .AddTransient<ITenantUserClaimsService, IdentityTenantUserClaimsService>()
               ;
 
         return services;
@@ -198,8 +198,8 @@ public static class ServiceCollectionExtensions
             .AddClaimsPrincipalFactory<FleetUserClaimsPrincipalFactory>()
             .AddDefaultTokenProviders();
 
-        // Client UserClaims
-        services.AddClientClaims();
+        // Tenant UserClaims
+        services.AddTenantClaims();
 
         if (options.MailerFactory != null)
         {

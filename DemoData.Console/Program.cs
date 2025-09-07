@@ -3,12 +3,12 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Regira.Fleet.Clients;
 using Regira.Fleet.Core.Abstractions;
 using Regira.Fleet.Data;
 using Regira.Fleet.DependencyInjection;
 using Regira.Fleet.Identity.Data;
 using Regira.Fleet.Identity.DependencyInjection;
+using Regira.Fleet.Tenants;
 using Regira.IO.Storage.FileSystem;
 using Regira.Security.Abstractions;
 using Regira.Security.Encryption;
@@ -29,7 +29,7 @@ await accountContext.Database.EnsureDeletedAsync();
 await accountContext.Database.MigrateAsync();
 
 var accountSeeder = host.Services.GetRequiredService<AccountSeeder>();
-var clients = await accountSeeder.Seed();
+var tenants = await accountSeeder.Seed();
 
 var fleetContext = host.Services.GetRequiredService<FleetContextBase>();
 if (!fleetContext.Database.GetDbConnection().Database.Contains("demo", StringComparison.OrdinalIgnoreCase))
@@ -41,7 +41,7 @@ await fleetContext.Database.EnsureDeletedAsync();
 await fleetContext.Database.MigrateAsync();
 
 var dataSeeder = host.Services.GetRequiredService<DataSeeder>();
-await dataSeeder.Seed(clients);
+await dataSeeder.Seed(tenants);
 
 Console.WriteLine("Created Host");
 
@@ -101,8 +101,8 @@ static void ConfigureServices(HostBuilderContext context, IServiceCollection ser
         c.ConfigureStorageService(_ => new BinaryFileService(fsConfig));
     });
 
-    // make ClientContext writable for demo data
-    services.AddSingleton<WritableClientContext>();
-    services.AddSingleton<IClientContext>(p => p.GetRequiredService<WritableClientContext>());
+    // make TenantContext writable for demo data
+    services.AddSingleton<WritableTenantContext>();
+    services.AddSingleton<ITenantContext>(p => p.GetRequiredService<WritableTenantContext>());
 }
 #endregion

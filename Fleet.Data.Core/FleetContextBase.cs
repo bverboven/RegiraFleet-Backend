@@ -39,10 +39,10 @@ public abstract class FleetContextBase(DbContextOptions options) : DbContext(opt
         // Interventions
         modelBuilder.Entity<InterventionType>(entity =>
         {
-            entity.HasIndex(e => e.ClientId);
-            entity.HasIndex(e => new { e.ClientId, e.Code })
+            entity.HasIndex(e => e.TenantId);
+            entity.HasIndex(e => new { e.TenantId, e.Code })
                 .IsUnique();
-            entity.HasIndex(e => new { e.ClientId, e.Title })
+            entity.HasIndex(e => new { e.TenantId, e.Title })
                 .IsUnique();
             entity.HasIndex(e => e.NormalizedTitle);
         });
@@ -52,7 +52,7 @@ public abstract class FleetContextBase(DbContextOptions options) : DbContext(opt
         });
         modelBuilder.Entity<Intervention>(entity =>
         {
-            entity.HasIndex(e => e.ClientId);
+            entity.HasIndex(e => e.TenantId);
 
             // Labels
             entity.HasMany(e => e.Labels)
@@ -84,9 +84,9 @@ public abstract class FleetContextBase(DbContextOptions options) : DbContext(opt
         });
         modelBuilder.Entity<Operator>(entity =>
         {
-            entity.HasIndex(e => e.ClientId);
+            entity.HasIndex(e => e.TenantId);
             entity
-                .HasIndex(e => new { e.ClientId, e.Code })
+                .HasIndex(e => new { e.TenantId, e.Code })
                 .IsUnique();
             entity.HasIndex(e => e.NormalizedTitle);
 
@@ -118,17 +118,17 @@ public abstract class FleetContextBase(DbContextOptions options) : DbContext(opt
         // Vehicles
         modelBuilder.Entity<Brand>(entity =>
         {
-            entity.HasIndex(e => e.ClientId);
-            entity.HasIndex(e => new { e.ClientId, e.Code })
+            entity.HasIndex(e => e.TenantId);
+            entity.HasIndex(e => new { e.TenantId, e.Code })
                 .IsUnique();
-            entity.HasIndex(e => new { e.ClientId, e.Title })
+            entity.HasIndex(e => new { e.TenantId, e.Title })
                 .IsUnique();
             entity.HasIndex(e => e.NormalizedTitle);
         });
         modelBuilder.Entity<Vehicle>(entity =>
         {
-            entity.HasIndex(e => e.ClientId);
-            entity.HasIndex(e => new { e.ClientId, e.Code })
+            entity.HasIndex(e => e.TenantId);
+            entity.HasIndex(e => new { e.TenantId, e.Code })
                 .IsUnique();
             entity.HasIndex(cd => cd.NormalizedTitle);
 
@@ -146,10 +146,10 @@ public abstract class FleetContextBase(DbContextOptions options) : DbContext(opt
         });
         modelBuilder.Entity<VehicleType>(entity =>
         {
-            entity.HasIndex(e => e.ClientId);
-            entity.HasIndex(e => new { e.ClientId, e.Code })
+            entity.HasIndex(e => e.TenantId);
+            entity.HasIndex(e => new { e.TenantId, e.Code })
                 .IsUnique();
-            entity.HasIndex(e => new { e.ClientId, e.Title })
+            entity.HasIndex(e => new { e.TenantId, e.Title })
                 .IsUnique();
             entity.HasIndex(e => e.NormalizedTitle);
         });

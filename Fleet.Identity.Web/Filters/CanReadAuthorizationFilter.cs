@@ -14,7 +14,7 @@ public class CanReadAuthorizationFilter : IAuthorizationFilter
         // make sure he can start a new one when requested
         if (isAuthenticated && !isAuthenticating)
         {
-            var hasReadClaim = context.HttpContext.User.HasClaim(c => c is { Type: ClientClaimTypes.Permission, Value: ClientPermissions.CanRead });
+            var hasReadClaim = context.HttpContext.User.HasClaim(c => c is { Type: TenantClaimTypes.Permission, Value: TenantPermissions.CanRead });
             if (!hasReadClaim)
             {
                 context.Result = new ForbidResult();

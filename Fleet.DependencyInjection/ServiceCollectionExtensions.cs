@@ -9,7 +9,6 @@ using Regira.Entities.DependencyInjection.ServiceBuilders.Extensions;
 using Regira.Entities.EFcore.Attachments;
 using Regira.Entities.EFcore.Normalizing;
 using Regira.Entities.EFcore.Primers;
-using Regira.Fleet.Clients;
 using Regira.Fleet.Core.Abstractions;
 using Regira.Fleet.Core.Constants;
 using Regira.Fleet.Core.DependencyInjection;
@@ -26,6 +25,7 @@ using Regira.Fleet.Models.EntityLabels;
 using Regira.Fleet.Models.InterventionOperators.Operators;
 using Regira.Fleet.Models.Interventions;
 using Regira.Fleet.Models.Vehicles;
+using Regira.Fleet.Tenants;
 using Regira.IO.Storage.Abstractions;
 using Regira.Normalizing.Models;
 using FilterHasNormalizedContentQueryBuilder = Regira.Entities.EFcore.QueryBuilders.GlobalFilterBuilders.FilterHasNormalizedContentQueryBuilder;
@@ -147,7 +147,7 @@ public static class ServiceCollectionExtensions
     {
         builder.Services
               .AddHttpContextAccessor()
-              //.AddTransient<IClientUserClaimsService, IdentityClientUserClaimsService>()
+              //.AddTransient<ITenantUserClaimsService, IdentityTenantUserClaimsService>()
               ;
 
         return builder;
@@ -155,7 +155,7 @@ public static class ServiceCollectionExtensions
     public static FleetServiceBuilder AddAppContexts(this FleetServiceBuilder builder)
     {
         builder.Services
-              .AddScoped<IClientContext, ClientContext>()
+              .AddScoped<ITenantContext, TenantContext>()
               .AddScoped<ICultureContext, CultureContext>()
               .AddScoped<IFleetAppContext, FleetAppContext>();
 
@@ -171,9 +171,9 @@ public static class ServiceCollectionExtensions
                 c.AddNormalizer<IEntityLabel, EntityLabelNormalizer>();
                 c.UseDefaults(ed => ed.ConfigureNormalizing(o => o.Transform = TextTransform.ToUpperCase));
 
-                // make sure only allowed clientId items are loaded
-                c.AddGlobalFilterQueryBuilder<FilterHasClientQueryBuilder>();
-                c.AddPrimer<HasClientPrimer>();
+                // make sure only allowed tenantId items are loaded
+                c.AddGlobalFilterQueryBuilder<FilterHasTenantQueryBuilder>();
+                c.AddPrimer<HasTenantPrimer>();
                 c.AddPrimer<ArchivablePrimer>();
 
                 // Postgres ILike?

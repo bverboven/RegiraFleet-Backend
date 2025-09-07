@@ -70,10 +70,10 @@ public class FleetUserRepository(AccountsContextBase dbContext, UserManager<Flee
             {
                 query = query.Include(x => x.UserClaims);
             }
-            if (includes.Value.HasFlag(FleetUserIncludes.ClientClaims))
+            if (includes.Value.HasFlag(FleetUserIncludes.TenantClaims))
             {
-                query = query.Include(x => x.ClientClaims!)
-                    .ThenInclude(x => x.Client);
+                query = query.Include(x => x.TenantClaims!)
+                    .ThenInclude(x => x.Tenant);
             }
         }
 
@@ -155,9 +155,9 @@ public class FleetUserRepository(AccountsContextBase dbContext, UserManager<Flee
                 claim.UserId = model.Id;
             }
         }
-        if (model.ClientClaims?.Any() == true)
+        if (model.TenantClaims?.Any() == true)
         {
-            foreach (var claim in model.ClientClaims)
+            foreach (var claim in model.TenantClaims)
             {
                 claim.UserId = model.Id;
             }
@@ -213,7 +213,7 @@ public class FleetUserRepository(AccountsContextBase dbContext, UserManager<Flee
         }
 
         var originalModel = mapper.Map<FleetUserModel>(original);
-        dbContext.UpdateEntityChildCollection<FleetUserModel, ClientUserClaim, int>(originalModel, item, model => model.ClientClaims, (model, collection) => model.ClientClaims = collection);
+        dbContext.UpdateEntityChildCollection<FleetUserModel, TenantUserClaim, int>(originalModel, item, model => model.TenantClaims, (model, collection) => model.TenantClaims = collection);
         return Task.CompletedTask;
     }
 

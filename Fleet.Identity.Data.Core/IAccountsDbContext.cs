@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using Regira.Fleet.Identity.Models.Clients;
-using Regira.Fleet.Identity.Models.Clients.Subscriptions;
+using Regira.Fleet.Identity.Models.Tenants;
+using Regira.Fleet.Identity.Models.Tenants.Subscriptions;
 using Regira.Fleet.Identity.Models.Users;
 using Regira.Fleet.Identity.Models.Users.Claims;
 
@@ -13,9 +13,9 @@ public interface IAccountsDbContext
     DbSet<IdentityUserClaim<string>> UserClaims { get; set; }
     DbSet<IdentityRole> Roles { get; set; }
 
-    DbSet<Client> Clients { get; set; }
-    DbSet<ClientSubscription> ClientSubscriptions { get; set; }
-    DbSet<ClientUserClaim> ClientUserClaims { get; set; }
+    DbSet<Tenant> Tenants { get; set; }
+    DbSet<TenantSubscription> TenantSubscriptions { get; set; }
+    DbSet<TenantUserClaim> TenantUserClaims { get; set; }
 
     Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
 }

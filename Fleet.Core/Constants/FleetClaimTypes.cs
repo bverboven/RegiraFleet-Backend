@@ -5,7 +5,7 @@ public static class FleetClaimTypes
 
     public const string Permission = "permissions";
 
-    public const string ClientId = "client";
+    public const string TenantId = "tenant";
     public const string Culture = "culture";
     //public const string GivenName = "given_name";
     //public const string LastName = "last_name";

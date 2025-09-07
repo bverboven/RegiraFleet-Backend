@@ -17,7 +17,7 @@ public class Vehicle : IFleetEntity, IEntityWithSerial, IHasCode, IArchivable, I
     [StringLength(32)]
     public string Guid { get; set; } = System.Guid.NewGuid().ToString("N");
     [StringLength(32)]
-    public string ClientId { get; set; } = null!;
+    public string TenantId { get; set; } = null!;
     public int? BrandId { get; set; }
     public int? VehicleTypeId { get; set; }
     [Required]

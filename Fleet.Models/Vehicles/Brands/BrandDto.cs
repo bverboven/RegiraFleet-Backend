@@ -4,7 +4,7 @@ public class BrandDto
 {
     public int Id { get; set; }
     public string Guid { get; set; } = null!;
-    public string ClientId { get; set; } = null!;
+    public string TenantId { get; set; } = null!;
     public string? Code { get; set; }
     public string Title { get; set; } = null!;
     public string? Description { get; set; }

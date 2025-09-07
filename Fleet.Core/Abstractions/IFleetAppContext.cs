@@ -2,6 +2,6 @@
 
 public interface IFleetAppContext
 {
-    IClientContext Client { get; }
+    ITenantContext Tenant { get; }
     ICultureContext Culture { get; }
 }

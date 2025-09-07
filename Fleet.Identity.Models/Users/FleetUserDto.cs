@@ -1,4 +1,4 @@
-﻿using Regira.Fleet.Identity.Models.Clients;
+﻿using Regira.Fleet.Identity.Models.Tenants;
 using Regira.Fleet.Identity.Models.Users.Claims;
 
 namespace Regira.Fleet.Identity.Models.Users;
@@ -15,6 +15,6 @@ public class FleetUserDto
     public string? Culture { get; set; }
 
     public ICollection<UserClaimDto>? UserClaims { get; set; }
-    public ICollection<ClientUserClaimDto>? ClientClaims { get; set; }
-    public ICollection<ClientDto>? Clients { get; set; }
+    public ICollection<TenantUserClaimDto>? TenantClaims { get; set; }
+    public ICollection<TenantDto>? Tenants { get; set; }
 }

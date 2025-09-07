@@ -13,10 +13,10 @@ public class UserQueryFilter: FilteredQueryBuilderBase<FleetUser, string, FleetU
             // ID
             query = query.FilterId(so.Id);
             query = query.FilterIds(so.Ids);
-            // Client
-            if (!string.IsNullOrWhiteSpace(so.ClientId))
+            // Tenant
+            if (!string.IsNullOrWhiteSpace(so.TenantId))
             {
-                query = query.Where(x => x.ClientClaims!.Any(c => c.ClientId == so.ClientId));
+                query = query.Where(x => x.TenantClaims!.Any(c => c.TenantId == so.TenantId));
             }
             // Culture
             if (!string.IsNullOrWhiteSpace(so.Culture))

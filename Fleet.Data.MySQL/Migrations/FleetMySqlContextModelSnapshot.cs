@@ -17,12 +17,12 @@ namespace Regira.Fleet.Data.MySQL.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "9.0.2")
+                .HasAnnotation("ProductVersion", "9.0.8")
                 .HasAnnotation("Relational:MaxIdentifierLength", 64);
 
             MySqlModelBuilderExtensions.AutoIncrementColumns(modelBuilder);
 
-            modelBuilder.Entity("Regira.Entities.Attachments.Models.Attachment<int>", b =>
+            modelBuilder.Entity("Regira.Entities.Attachments.Models.Attachment", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -211,12 +211,6 @@ namespace Regira.Fleet.Data.MySQL.Migrations
 
                     MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<string>("ClientId")
-                        .IsRequired()
-                        .HasMaxLength(32)
-                        .HasColumnType("varchar(32)")
-                        .HasColumnName("client_id");
-
                     b.Property<string>("Code")
                         .HasMaxLength(8)
                         .HasColumnType("varchar(8)")
@@ -264,6 +258,12 @@ namespace Regira.Fleet.Data.MySQL.Migrations
                         .HasColumnType("varchar(256)")
                         .HasColumnName("normalized_title");
 
+                    b.Property<string>("TenantId")
+                        .IsRequired()
+                        .HasMaxLength(32)
+                        .HasColumnType("varchar(32)")
+                        .HasColumnName("tenant_id");
+
                     b.Property<string>("Title")
                         .IsRequired()
                         .HasMaxLength(128)
@@ -273,15 +273,15 @@ namespace Regira.Fleet.Data.MySQL.Migrations
                     b.HasKey("Id")
                         .HasName("pk_intervention_operators");
 
-                    b.HasIndex("ClientId")
-                        .HasDatabaseName("ix_intervention_operators_client_id");
-
                     b.HasIndex("NormalizedTitle")
                         .HasDatabaseName("ix_intervention_operators_normalized_title");
 
-                    b.HasIndex("ClientId", "Code")
+                    b.HasIndex("TenantId")
+                        .HasDatabaseName("ix_intervention_operators_tenant_id");
+
+                    b.HasIndex("TenantId", "Code")
                         .IsUnique()
-                        .HasDatabaseName("ix_intervention_operators_client_id_code");
+                        .HasDatabaseName("ix_intervention_operators_tenant_id_code");
 
                     b.ToTable("intervention_operators", (string)null);
                 });
@@ -402,12 +402,6 @@ namespace Regira.Fleet.Data.MySQL.Migrations
 
                     MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<string>("ClientId")
-                        .IsRequired()
-                        .HasMaxLength(32)
-                        .HasColumnType("varchar(32)")
-                        .HasColumnName("client_id");
-
                     b.Property<string>("Code")
                         .HasMaxLength(8)
                         .HasColumnType("varchar(8)")
@@ -440,6 +434,12 @@ namespace Regira.Fleet.Data.MySQL.Migrations
                         .HasColumnType("varchar(256)")
                         .HasColumnName("normalized_title");
 
+                    b.Property<string>("TenantId")
+                        .IsRequired()
+                        .HasMaxLength(32)
+                        .HasColumnType("varchar(32)")
+                        .HasColumnName("tenant_id");
+
                     b.Property<string>("Title")
                         .IsRequired()
                         .HasMaxLength(64)
@@ -449,19 +449,19 @@ namespace Regira.Fleet.Data.MySQL.Migrations
                     b.HasKey("Id")
                         .HasName("pk_intervention_types");
 
-                    b.HasIndex("ClientId")
-                        .HasDatabaseName("ix_intervention_types_client_id");
-
                     b.HasIndex("NormalizedTitle")
                         .HasDatabaseName("ix_intervention_types_normalized_title");
 
-                    b.HasIndex("ClientId", "Code")
-                        .IsUnique()
-                        .HasDatabaseName("ix_intervention_types_client_id_code");
+                    b.HasIndex("TenantId")
+                        .HasDatabaseName("ix_intervention_types_tenant_id");
 
-                    b.HasIndex("ClientId", "Title")
+                    b.HasIndex("TenantId", "Code")
                         .IsUnique()
-                        .HasDatabaseName("ix_intervention_types_client_id_title");
+                        .HasDatabaseName("ix_intervention_types_tenant_id_code");
+
+                    b.HasIndex("TenantId", "Title")
+                        .IsUnique()
+                        .HasDatabaseName("ix_intervention_types_tenant_id_title");
 
                     b.ToTable("intervention_types", (string)null);
                 });
@@ -514,12 +514,6 @@ namespace Regira.Fleet.Data.MySQL.Migrations
 
                     MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<string>("ClientId")
-                        .IsRequired()
-                        .HasMaxLength(32)
-                        .HasColumnType("varchar(32)")
-                        .HasColumnName("client_id");
-
                     b.Property<DateTime>("Created")
                         .HasColumnType("datetime(6)")
                         .HasColumnName("created");
@@ -562,6 +556,12 @@ namespace Regira.Fleet.Data.MySQL.Migrations
                     b.Property<int>("OperatorId")
                         .HasColumnType("int")
                         .HasColumnName("operator_id");
+
+                    b.Property<string>("TenantId")
+                        .IsRequired()
+                        .HasMaxLength(32)
+                        .HasColumnType("varchar(32)")
+                        .HasColumnName("tenant_id");
 
                     b.Property<int>("VehicleId")
                         .HasColumnType("int")
@@ -628,12 +628,6 @@ namespace Regira.Fleet.Data.MySQL.Migrations
 
                     MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<string>("ClientId")
-                        .IsRequired()
-                        .HasMaxLength(32)
-                        .HasColumnType("varchar(32)")
-                        .HasColumnName("client_id");
-
                     b.Property<DateTime>("Created")
                         .HasColumnType("datetime(6)")
                         .HasColumnName("created");
@@ -673,6 +667,12 @@ namespace Regira.Fleet.Data.MySQL.Migrations
                         .HasColumnType("int")
                         .HasColumnName("operator_id");
 
+                    b.Property<string>("TenantId")
+                        .IsRequired()
+                        .HasMaxLength(32)
+                        .HasColumnType("varchar(32)")
+                        .HasColumnName("tenant_id");
+
                     b.Property<int>("VehicleId")
                         .HasColumnType("int")
                         .HasColumnName("vehicle_id");
@@ -680,14 +680,14 @@ namespace Regira.Fleet.Data.MySQL.Migrations
                     b.HasKey("Id")
                         .HasName("pk_interventions");
 
-                    b.HasIndex("ClientId")
-                        .HasDatabaseName("ix_interventions_client_id");
-
                     b.HasIndex("InterventionTypeId")
                         .HasDatabaseName("ix_interventions_intervention_type_id");
 
                     b.HasIndex("OperatorId")
                         .HasDatabaseName("ix_interventions_operator_id");
+
+                    b.HasIndex("TenantId")
+                        .HasDatabaseName("ix_interventions_tenant_id");
 
                     b.HasIndex("VehicleId")
                         .HasDatabaseName("ix_interventions_vehicle_id");
@@ -847,12 +847,6 @@ namespace Regira.Fleet.Data.MySQL.Migrations
 
                     MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<string>("ClientId")
-                        .IsRequired()
-                        .HasMaxLength(32)
-                        .HasColumnType("varchar(32)")
-                        .HasColumnName("client_id");
-
                     b.Property<string>("Code")
                         .HasMaxLength(8)
                         .HasColumnType("varchar(8)")
@@ -885,6 +879,12 @@ namespace Regira.Fleet.Data.MySQL.Migrations
                         .HasColumnType("varchar(256)")
                         .HasColumnName("normalized_title");
 
+                    b.Property<string>("TenantId")
+                        .IsRequired()
+                        .HasMaxLength(32)
+                        .HasColumnType("varchar(32)")
+                        .HasColumnName("tenant_id");
+
                     b.Property<string>("Title")
                         .IsRequired()
                         .HasMaxLength(64)
@@ -894,19 +894,19 @@ namespace Regira.Fleet.Data.MySQL.Migrations
                     b.HasKey("Id")
                         .HasName("pk_vehicle_brands");
 
-                    b.HasIndex("ClientId")
-                        .HasDatabaseName("ix_vehicle_brands_client_id");
-
                     b.HasIndex("NormalizedTitle")
                         .HasDatabaseName("ix_vehicle_brands_normalized_title");
 
-                    b.HasIndex("ClientId", "Code")
-                        .IsUnique()
-                        .HasDatabaseName("ix_vehicle_brands_client_id_code");
+                    b.HasIndex("TenantId")
+                        .HasDatabaseName("ix_vehicle_brands_tenant_id");
 
-                    b.HasIndex("ClientId", "Title")
+                    b.HasIndex("TenantId", "Code")
                         .IsUnique()
-                        .HasDatabaseName("ix_vehicle_brands_client_id_title");
+                        .HasDatabaseName("ix_vehicle_brands_tenant_id_code");
+
+                    b.HasIndex("TenantId", "Title")
+                        .IsUnique()
+                        .HasDatabaseName("ix_vehicle_brands_tenant_id_title");
 
                     b.ToTable("vehicle_brands", (string)null);
                 });
@@ -923,12 +923,6 @@ namespace Regira.Fleet.Data.MySQL.Migrations
                     b.Property<int?>("BrandId")
                         .HasColumnType("int")
                         .HasColumnName("brand_id");
-
-                    b.Property<string>("ClientId")
-                        .IsRequired()
-                        .HasMaxLength(32)
-                        .HasColumnType("varchar(32)")
-                        .HasColumnName("client_id");
 
                     b.Property<string>("Code")
                         .IsRequired()
@@ -983,6 +977,12 @@ namespace Regira.Fleet.Data.MySQL.Migrations
                         .HasColumnType("varchar(256)")
                         .HasColumnName("normalized_title");
 
+                    b.Property<string>("TenantId")
+                        .IsRequired()
+                        .HasMaxLength(32)
+                        .HasColumnType("varchar(32)")
+                        .HasColumnName("tenant_id");
+
                     b.Property<int?>("VehicleTypeId")
                         .HasColumnType("int")
                         .HasColumnName("vehicle_type_id");
@@ -993,18 +993,18 @@ namespace Regira.Fleet.Data.MySQL.Migrations
                     b.HasIndex("BrandId")
                         .HasDatabaseName("ix_vehicles_brand_id");
 
-                    b.HasIndex("ClientId")
-                        .HasDatabaseName("ix_vehicles_client_id");
-
                     b.HasIndex("NormalizedTitle")
                         .HasDatabaseName("ix_vehicles_normalized_title");
+
+                    b.HasIndex("TenantId")
+                        .HasDatabaseName("ix_vehicles_tenant_id");
 
                     b.HasIndex("VehicleTypeId")
                         .HasDatabaseName("ix_vehicles_vehicle_type_id");
 
-                    b.HasIndex("ClientId", "Code")
+                    b.HasIndex("TenantId", "Code")
                         .IsUnique()
-                        .HasDatabaseName("ix_vehicles_client_id_code");
+                        .HasDatabaseName("ix_vehicles_tenant_id_code");
 
                     b.ToTable("vehicles", (string)null);
                 });
@@ -1125,12 +1125,6 @@ namespace Regira.Fleet.Data.MySQL.Migrations
 
                     MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<string>("ClientId")
-                        .IsRequired()
-                        .HasMaxLength(32)
-                        .HasColumnType("varchar(32)")
-                        .HasColumnName("client_id");
-
                     b.Property<string>("Code")
                         .HasMaxLength(8)
                         .HasColumnType("varchar(8)")
@@ -1163,6 +1157,12 @@ namespace Regira.Fleet.Data.MySQL.Migrations
                         .HasColumnType("varchar(256)")
                         .HasColumnName("normalized_title");
 
+                    b.Property<string>("TenantId")
+                        .IsRequired()
+                        .HasMaxLength(32)
+                        .HasColumnType("varchar(32)")
+                        .HasColumnName("tenant_id");
+
                     b.Property<string>("Title")
                         .IsRequired()
                         .HasMaxLength(64)
@@ -1172,19 +1172,19 @@ namespace Regira.Fleet.Data.MySQL.Migrations
                     b.HasKey("Id")
                         .HasName("pk_vehicle_types");
 
-                    b.HasIndex("ClientId")
-                        .HasDatabaseName("ix_vehicle_types_client_id");
-
                     b.HasIndex("NormalizedTitle")
                         .HasDatabaseName("ix_vehicle_types_normalized_title");
 
-                    b.HasIndex("ClientId", "Code")
-                        .IsUnique()
-                        .HasDatabaseName("ix_vehicle_types_client_id_code");
+                    b.HasIndex("TenantId")
+                        .HasDatabaseName("ix_vehicle_types_tenant_id");
 
-                    b.HasIndex("ClientId", "Title")
+                    b.HasIndex("TenantId", "Code")
                         .IsUnique()
-                        .HasDatabaseName("ix_vehicle_types_client_id_title");
+                        .HasDatabaseName("ix_vehicle_types_tenant_id_code");
+
+                    b.HasIndex("TenantId", "Title")
+                        .IsUnique()
+                        .HasDatabaseName("ix_vehicle_types_tenant_id_title");
 
                     b.ToTable("vehicle_types", (string)null);
                 });
@@ -1248,7 +1248,7 @@ namespace Regira.Fleet.Data.MySQL.Migrations
 
             modelBuilder.Entity("Regira.Fleet.Models.InterventionOperators.Operators.OperatorAttachment", b =>
                 {
-                    b.HasOne("Regira.Entities.Attachments.Models.Attachment<int>", "Attachment")
+                    b.HasOne("Regira.Entities.Attachments.Models.Attachment", "Attachment")
                         .WithMany()
                         .HasForeignKey("AttachmentId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -1330,7 +1330,7 @@ namespace Regira.Fleet.Data.MySQL.Migrations
 
             modelBuilder.Entity("Regira.Fleet.Models.Interventions.Actions.InterventionActionAttachment", b =>
                 {
-                    b.HasOne("Regira.Entities.Attachments.Models.Attachment<int>", "Attachment")
+                    b.HasOne("Regira.Entities.Attachments.Models.Attachment", "Attachment")
                         .WithMany()
                         .HasForeignKey("AttachmentId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -1375,7 +1375,7 @@ namespace Regira.Fleet.Data.MySQL.Migrations
 
             modelBuilder.Entity("Regira.Fleet.Models.Interventions.InterventionAttachment", b =>
                 {
-                    b.HasOne("Regira.Entities.Attachments.Models.Attachment<int>", "Attachment")
+                    b.HasOne("Regira.Entities.Attachments.Models.Attachment", "Attachment")
                         .WithMany()
                         .HasForeignKey("AttachmentId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -1431,7 +1431,7 @@ namespace Regira.Fleet.Data.MySQL.Migrations
 
             modelBuilder.Entity("Regira.Fleet.Models.Vehicles.VehicleAttachment", b =>
                 {
-                    b.HasOne("Regira.Entities.Attachments.Models.Attachment<int>", "Attachment")
+                    b.HasOne("Regira.Entities.Attachments.Models.Attachment", "Attachment")
                         .WithMany()
                         .HasForeignKey("AttachmentId")
                         .OnDelete(DeleteBehavior.Cascade)

@@ -2,8 +2,8 @@
 
 namespace Regira.Fleet.Core.Models;
 
-public class FleetAppContext(IClientContext clientContext, ICultureContext cultureContext) : IFleetAppContext
+public class FleetAppContext(ITenantContext tenantContext, ICultureContext cultureContext) : IFleetAppContext
 {
-    public IClientContext Client => clientContext;
+    public ITenantContext Tenant => tenantContext;
     public ICultureContext Culture => cultureContext;
 }

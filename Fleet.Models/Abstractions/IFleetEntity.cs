@@ -3,7 +3,7 @@ using Regira.Fleet.Core.Abstractions;
 
 namespace Regira.Fleet.Models.Abstractions;
 
-public interface IFleetEntity : IEntity<int>, IHasTimestamps, IHasClientId
+public interface IFleetEntity : IEntity<int>, IHasTimestamps, IHasTenantId
 {
     string Guid { get; set; }
 }

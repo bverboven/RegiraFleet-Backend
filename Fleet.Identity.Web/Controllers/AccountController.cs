@@ -114,7 +114,7 @@ public class AccountController(ITokenHelper tokenHelper, FleetUserIdentityManage
             return Unauthorized();
         }
         var principal = await claimsFactory.CreateAsync(user);
-        var permissions = principal.Claims.Where(c => c.Type == ClientClaimTypes.Permission).Select(c => c.Value);
+        var permissions = principal.Claims.Where(c => c.Type == TenantClaimTypes.Permission).Select(c => c.Value);
         return Ok(permissions);
     }
 

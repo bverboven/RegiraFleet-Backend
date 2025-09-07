@@ -17,7 +17,7 @@ namespace Regira.Fleet.Identity.Data.SqlServer.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "8.0.3")
+                .HasAnnotation("ProductVersion", "9.0.8")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
@@ -199,7 +199,51 @@ namespace Regira.Fleet.Identity.Data.SqlServer.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
-            modelBuilder.Entity("Regira.Fleet.Identity.Models.Clients.Client", b =>
+            modelBuilder.Entity("Regira.Fleet.Identity.Models.Tenants.Subscriptions.TenantSubscription", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasColumnName("id");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("Created")
+                        .HasColumnType("datetime2")
+                        .HasColumnName("created");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("nvarchar(max)")
+                        .HasColumnName("description");
+
+                    b.Property<DateTime?>("EndDate")
+                        .HasColumnType("datetime2")
+                        .HasColumnName("end_date");
+
+                    b.Property<DateTime?>("LastModified")
+                        .HasColumnType("datetime2")
+                        .HasColumnName("last_modified");
+
+                    b.Property<DateTime>("StartDate")
+                        .HasColumnType("datetime2")
+                        .HasColumnName("start_date");
+
+                    b.Property<string>("TenantId")
+                        .IsRequired()
+                        .HasMaxLength(32)
+                        .HasColumnType("nvarchar(32)")
+                        .HasColumnName("tenant_id");
+
+                    b.HasKey("Id")
+                        .HasName("pk_tenant_subscriptions");
+
+                    b.HasIndex("TenantId")
+                        .HasDatabaseName("ix_tenant_subscriptions_tenant_id");
+
+                    b.ToTable("tenant_subscriptions", (string)null);
+                });
+
+            modelBuilder.Entity("Regira.Fleet.Identity.Models.Tenants.Tenant", b =>
                 {
                     b.Property<string>("Id")
                         .HasMaxLength(32)
@@ -240,73 +284,30 @@ namespace Regira.Fleet.Identity.Data.SqlServer.Migrations
                         .HasColumnName("title");
 
                     b.HasKey("Id")
-                        .HasName("pk_clients");
+                        .HasName("pk_tenants");
 
-                    b.ToTable("clients", (string)null);
+                    b.ToTable("tenants", (string)null);
                 });
 
-            modelBuilder.Entity("Regira.Fleet.Identity.Models.Clients.ClientLanguage", b =>
+            modelBuilder.Entity("Regira.Fleet.Identity.Models.Tenants.TenantLanguage", b =>
                 {
-                    b.Property<string>("ClientId")
+                    b.Property<string>("TenantId")
+                        .HasMaxLength(32)
                         .HasColumnType("nvarchar(32)")
-                        .HasColumnName("client_id");
+                        .HasColumnName("tenant_id");
 
                     b.Property<string>("LangCode")
                         .HasMaxLength(2)
                         .HasColumnType("nvarchar(2)")
                         .HasColumnName("lang_code");
 
-                    b.HasKey("ClientId", "LangCode")
-                        .HasName("pk_client_languages");
+                    b.HasKey("TenantId", "LangCode")
+                        .HasName("pk_tenant_languages");
 
-                    b.ToTable("client_languages", (string)null);
+                    b.ToTable("tenant_languages", (string)null);
                 });
 
-            modelBuilder.Entity("Regira.Fleet.Identity.Models.Clients.Subscriptions.ClientSubscription", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasColumnName("id");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("ClientId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(32)")
-                        .HasColumnName("client_id");
-
-                    b.Property<DateTime>("Created")
-                        .HasColumnType("datetime2")
-                        .HasColumnName("created");
-
-                    b.Property<string>("Description")
-                        .HasColumnType("nvarchar(max)")
-                        .HasColumnName("description");
-
-                    b.Property<DateTime?>("EndDate")
-                        .HasColumnType("datetime2")
-                        .HasColumnName("end_date");
-
-                    b.Property<DateTime?>("LastModified")
-                        .HasColumnType("datetime2")
-                        .HasColumnName("last_modified");
-
-                    b.Property<DateTime?>("StartDate")
-                        .IsRequired()
-                        .HasColumnType("datetime2")
-                        .HasColumnName("start_date");
-
-                    b.HasKey("Id")
-                        .HasName("pk_client_subscriptions");
-
-                    b.HasIndex("ClientId")
-                        .HasDatabaseName("ix_client_subscriptions_client_id");
-
-                    b.ToTable("client_subscriptions", (string)null);
-                });
-
-            modelBuilder.Entity("Regira.Fleet.Identity.Models.Users.Claims.ClientUserClaim", b =>
+            modelBuilder.Entity("Regira.Fleet.Identity.Models.Users.Claims.TenantUserClaim", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -326,15 +327,15 @@ namespace Regira.Fleet.Identity.Data.SqlServer.Migrations
                         .HasColumnType("nvarchar(256)")
                         .HasColumnName("claim_value");
 
-                    b.Property<string>("ClientId")
-                        .IsRequired()
-                        .HasMaxLength(32)
-                        .HasColumnType("nvarchar(32)")
-                        .HasColumnName("client_id");
-
                     b.Property<DateTime>("Created")
                         .HasColumnType("datetime2")
                         .HasColumnName("created");
+
+                    b.Property<string>("TenantId")
+                        .IsRequired()
+                        .HasMaxLength(32)
+                        .HasColumnType("nvarchar(32)")
+                        .HasColumnName("tenant_id");
 
                     b.Property<string>("UserId")
                         .IsRequired()
@@ -343,20 +344,20 @@ namespace Regira.Fleet.Identity.Data.SqlServer.Migrations
                         .HasColumnName("user_id");
 
                     b.HasKey("Id")
-                        .HasName("pk_client_user_claims");
+                        .HasName("pk_tenant_user_claims");
 
-                    b.HasIndex("ClientId")
-                        .HasDatabaseName("ix_client_user_claims_client_id");
+                    b.HasIndex("TenantId")
+                        .HasDatabaseName("ix_tenant_user_claims_tenant_id");
 
                     b.HasIndex("UserId")
-                        .HasDatabaseName("ix_client_user_claims_user_id");
+                        .HasDatabaseName("ix_tenant_user_claims_user_id");
 
-                    b.HasIndex("ClientId", "UserId", "ClaimType", "ClaimValue")
+                    b.HasIndex("TenantId", "UserId", "ClaimType", "ClaimValue")
                         .IsUnique()
-                        .HasDatabaseName("ix_client_user_claims_client_id_user_id_claim_type_claim_value")
+                        .HasDatabaseName("ix_tenant_user_claims_tenant_id_user_id_claim_type_claim_value")
                         .HasFilter("[claim_value] IS NOT NULL");
 
-                    b.ToTable("client_user_claims", (string)null);
+                    b.ToTable("tenant_user_claims", (string)null);
                 });
 
             modelBuilder.Entity("Regira.Fleet.Identity.Models.Users.FleetUser", b =>
@@ -517,50 +518,50 @@ namespace Regira.Fleet.Identity.Data.SqlServer.Migrations
                         .HasConstraintName("fk_asp_net_user_tokens_asp_net_users_user_id");
                 });
 
-            modelBuilder.Entity("Regira.Fleet.Identity.Models.Clients.ClientLanguage", b =>
+            modelBuilder.Entity("Regira.Fleet.Identity.Models.Tenants.Subscriptions.TenantSubscription", b =>
                 {
-                    b.HasOne("Regira.Fleet.Identity.Models.Clients.Client", null)
-                        .WithMany("Languages")
-                        .HasForeignKey("ClientId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired()
-                        .HasConstraintName("fk_client_languages_clients_client_id");
-                });
-
-            modelBuilder.Entity("Regira.Fleet.Identity.Models.Clients.Subscriptions.ClientSubscription", b =>
-                {
-                    b.HasOne("Regira.Fleet.Identity.Models.Clients.Client", "Client")
+                    b.HasOne("Regira.Fleet.Identity.Models.Tenants.Tenant", "Tenant")
                         .WithMany("Subscriptions")
-                        .HasForeignKey("ClientId")
+                        .HasForeignKey("TenantId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
-                        .HasConstraintName("fk_client_subscriptions_clients_client_id");
+                        .HasConstraintName("fk_tenant_subscriptions_tenants_tenant_id");
 
-                    b.Navigation("Client");
+                    b.Navigation("Tenant");
                 });
 
-            modelBuilder.Entity("Regira.Fleet.Identity.Models.Users.Claims.ClientUserClaim", b =>
+            modelBuilder.Entity("Regira.Fleet.Identity.Models.Tenants.TenantLanguage", b =>
                 {
-                    b.HasOne("Regira.Fleet.Identity.Models.Clients.Client", "Client")
-                        .WithMany("UserClaims")
-                        .HasForeignKey("ClientId")
+                    b.HasOne("Regira.Fleet.Identity.Models.Tenants.Tenant", null)
+                        .WithMany("Languages")
+                        .HasForeignKey("TenantId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
-                        .HasConstraintName("fk_client_user_claims_clients_client_id");
+                        .HasConstraintName("fk_tenant_languages_tenants_tenant_id");
+                });
+
+            modelBuilder.Entity("Regira.Fleet.Identity.Models.Users.Claims.TenantUserClaim", b =>
+                {
+                    b.HasOne("Regira.Fleet.Identity.Models.Tenants.Tenant", "Tenant")
+                        .WithMany("UserClaims")
+                        .HasForeignKey("TenantId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("fk_tenant_user_claims_tenants_tenant_id");
 
                     b.HasOne("Regira.Fleet.Identity.Models.Users.FleetUser", "User")
-                        .WithMany("ClientClaims")
+                        .WithMany("TenantClaims")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
-                        .HasConstraintName("fk_client_user_claims_users_user_id");
+                        .HasConstraintName("fk_tenant_user_claims_users_user_id");
 
-                    b.Navigation("Client");
+                    b.Navigation("Tenant");
 
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("Regira.Fleet.Identity.Models.Clients.Client", b =>
+            modelBuilder.Entity("Regira.Fleet.Identity.Models.Tenants.Tenant", b =>
                 {
                     b.Navigation("Languages");
 
@@ -571,7 +572,7 @@ namespace Regira.Fleet.Identity.Data.SqlServer.Migrations
 
             modelBuilder.Entity("Regira.Fleet.Identity.Models.Users.FleetUser", b =>
                 {
-                    b.Navigation("ClientClaims");
+                    b.Navigation("TenantClaims");
 
                     b.Navigation("UserClaims");
                 });

@@ -1,8 +1,8 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
-using Regira.Fleet.Identity.Models.Clients;
-using Regira.Fleet.Identity.Models.Clients.Subscriptions;
+using Regira.Fleet.Identity.Models.Tenants;
+using Regira.Fleet.Identity.Models.Tenants.Subscriptions;
 using Regira.Fleet.Identity.Models.Users;
 using Regira.Fleet.Identity.Models.Users.Claims;
 
@@ -10,24 +10,24 @@ namespace Regira.Fleet.Identity.Data;
 
 public abstract class AccountsContextBase(DbContextOptions options) : IdentityDbContext<FleetUser, IdentityRole, string>(options), IAccountsDbContext
 {
-    public DbSet<Client> Clients { get; set; } = null!;
-    public DbSet<ClientSubscription> ClientSubscriptions { get; set; } = null!;
-    public DbSet<ClientUserClaim> ClientUserClaims { get; set; } = null!;
+    public DbSet<Tenant> Tenants { get; set; } = null!;
+    public DbSet<TenantSubscription> TenantSubscriptions { get; set; } = null!;
+    public DbSet<TenantUserClaim> TenantUserClaims { get; set; } = null!;
 
 
     protected override void OnModelCreating(ModelBuilder builder)
     {
         base.OnModelCreating(builder);
 
-        builder.Entity<ClientLanguage>(entity =>
+        builder.Entity<TenantLanguage>(entity =>
         {
-            entity.HasKey(e => new { e.ClientId, e.LangCode });
+            entity.HasKey(e => new { e.TenantId, e.LangCode });
         });
-        builder.Entity<ClientUserClaim>(entity =>
+        builder.Entity<TenantUserClaim>(entity =>
         {
-            entity.HasIndex(e => e.ClientId);
+            entity.HasIndex(e => e.TenantId);
             entity.HasIndex(e => e.UserId);
-            entity.HasIndex(e => new { e.ClientId, e.UserId, e.ClaimType, e.ClaimValue })
+            entity.HasIndex(e => new { e.TenantId, e.UserId, e.ClaimType, e.ClaimValue })
                 .IsUnique();
         });
 
@@ -47,7 +47,7 @@ public abstract class AccountsContextBase(DbContextOptions options) : IdentityDb
             entity.HasMany(e => e.UserClaims)
                 .WithOne()
                 .HasForeignKey(e => e.UserId);
-            entity.HasMany(e => e.ClientClaims)
+            entity.HasMany(e => e.TenantClaims)
                 .WithOne(e => e.User)
                 .HasForeignKey(e => e.UserId)
                 .HasPrincipalKey(e => e.Id);

@@ -5,7 +5,7 @@ public enum FleetUserIncludes
 {
     None = 0,
     UserClaims = 1 << 0,
-    ClientClaims = 1 << 1,
-    Claims = UserClaims | ClientClaims,
+    TenantClaims = 1 << 1,
+    Claims = UserClaims | TenantClaims,
     All = Claims
 }

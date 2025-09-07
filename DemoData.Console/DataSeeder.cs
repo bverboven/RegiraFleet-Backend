@@ -1,9 +1,8 @@
 ﻿using Bogus;
 using Microsoft.EntityFrameworkCore;
 using Regira.Entities.Abstractions;
-using Regira.Fleet.Clients;
 using Regira.Fleet.Data;
-using Regira.Fleet.Identity.Models.Clients;
+using Regira.Fleet.Identity.Models.Tenants;
 using Regira.Fleet.Models.InterventionOperators.Addresses;
 using Regira.Fleet.Models.InterventionOperators.ContactData;
 using Regira.Fleet.Models.InterventionOperators.Operators;
@@ -13,12 +12,13 @@ using Regira.Fleet.Models.InterventionTypes;
 using Regira.Fleet.Models.Vehicles;
 using Regira.Fleet.Models.Vehicles.Brands;
 using Regira.Fleet.Models.Vehicles.VehicleTypes;
+using Regira.Fleet.Tenants;
 using Regira.Utilities;
 using Regira.Web.Utilities;
 
 namespace DemoData.Console;
 
-public class DataSeeder(FleetContextBase dbContext, WritableClientContext clientContext, IEntityService<Brand> brandService,
+public class DataSeeder(FleetContextBase dbContext, WritableTenantContext tenantContext, IEntityService<Brand> brandService,
     IEntityService<Intervention> interventionService, IEntityService<InterventionType> interventionTypeService,
     IEntityService<VehicleType> vehicleTypeService, IEntityService<Operator> operatorService, IEntityService<Vehicle> vehicleService)
 {
@@ -54,154 +54,154 @@ public class DataSeeder(FleetContextBase dbContext, WritableClientContext client
         {"VWG", "Volkswagen"},
         {"VLV", "Volvo"}
     };
-    private IList<Client> _clients = null!;
-    private Client PublicTransport => _clients.Single(x => x.Code == "TRA");
-    private Client Police => _clients.Single(x => x.Code == "POL");
-    private Client FireBrigade => _clients.Single(x => x.Code == "BWR");
-    private Client Ambulance => _clients.Single(x => x.Code == "AMB");
+    private IList<Tenant> _tenants = null!;
+    private Tenant PublicTransport => _tenants.Single(x => x.Code == "TRA");
+    private Tenant Police => _tenants.Single(x => x.Code == "POL");
+    private Tenant FireBrigade => _tenants.Single(x => x.Code == "BWR");
+    private Tenant Ambulance => _tenants.Single(x => x.Code == "AMB");
 
 
-    public async Task Seed(IList<Client> clients, int factor = 1)
+    public async Task Seed(IList<Tenant> tenants, int factor = 1)
     {
         _factor = factor;
-        _clients = clients;
-        foreach (var client in _clients)
+        _tenants = tenants;
+        foreach (var tenant in _tenants)
         {
-            clientContext.ClientId = client.Id;
-            await SeedBrands(client.Id);
-            await SeedInterventionTypes(client.Id);
-            await SeedVehicleTypes(client.Id);
-            await SeedOperators(client.Id);
-            await SeedVehicles(client.Id);
-            await SeedInterventions(client.Id);
+            tenantContext.TenantId = tenant.Id;
+            await SeedBrands(tenant.Id);
+            await SeedInterventionTypes(tenant.Id);
+            await SeedVehicleTypes(tenant.Id);
+            await SeedOperators(tenant.Id);
+            await SeedVehicles(tenant.Id);
+            await SeedInterventions(tenant.Id);
         }
     }
 
-    public async Task SeedBrands(string clientId)
+    public async Task SeedBrands(string tenantId)
     {
         var items = await dbContext.VehicleBrands
-            .Where(x => x.ClientId == clientId)
+            .Where(x => x.TenantId == tenantId)
             .ToListAsync();
 
         if (!items.Any())
         {
             items.AddRange([
-                new() { ClientId = PublicTransport.Id, Code = "BYD", Title = "BYD" },
-                new() { ClientId = PublicTransport.Id, Code = "CIT", Title = "Citroën" },
-                new() { ClientId = PublicTransport.Id, Code = "HOO", Title = "Van Hool" },
-                new() { ClientId = PublicTransport.Id, Code = "REN", Title = "Renault" }
+                new() { TenantId = PublicTransport.Id, Code = "BYD", Title = "BYD" },
+                new() { TenantId = PublicTransport.Id, Code = "CIT", Title = "Citroën" },
+                new() { TenantId = PublicTransport.Id, Code = "HOO", Title = "Van Hool" },
+                new() { TenantId = PublicTransport.Id, Code = "REN", Title = "Renault" }
             ]);
-            items.AddRange(CarBrands.Select(b => new Brand { ClientId = Police.Id, Code = b.Key, Title = b.Value }));
+            items.AddRange(CarBrands.Select(b => new Brand { TenantId = Police.Id, Code = b.Key, Title = b.Value }));
             items.AddRange([
-                new() { ClientId = FireBrigade.Id, Code = "BMW", Title = "BMW" },
-                new() { ClientId = FireBrigade.Id, Code = "FOR", Title = "Ford" },
-                new() { ClientId = FireBrigade.Id, Code = "MER", Title = "Mercedes" },
-                new() { ClientId = FireBrigade.Id, Code = "PEU", Title = "Peugeot" },
-                new() { ClientId = FireBrigade.Id, Code = "REN", Title = "Renault" },
-                new() { ClientId = FireBrigade.Id, Code = "VLV", Title = "Volvo" }
+                new() { TenantId = FireBrigade.Id, Code = "BMW", Title = "BMW" },
+                new() { TenantId = FireBrigade.Id, Code = "FOR", Title = "Ford" },
+                new() { TenantId = FireBrigade.Id, Code = "MER", Title = "Mercedes" },
+                new() { TenantId = FireBrigade.Id, Code = "PEU", Title = "Peugeot" },
+                new() { TenantId = FireBrigade.Id, Code = "REN", Title = "Renault" },
+                new() { TenantId = FireBrigade.Id, Code = "VLV", Title = "Volvo" }
             ]);
             items.AddRange([
-                new() { ClientId = Ambulance.Id, Code = "BMW", Title = "BMW" },
-                new() { ClientId = Ambulance.Id, Code = "FOR", Title = "Ford" },
-                new() { ClientId = Ambulance.Id, Code = "FIA", Title = "Fiat" },
-                new() { ClientId = Ambulance.Id, Code = "MER", Title = "Mercedes" },
-                new() { ClientId = Ambulance.Id, Code = "PEU", Title = "Peugeot" },
-                new() { ClientId = Ambulance.Id, Code = "REN", Title = "Renault" },
-                new() { ClientId = Ambulance.Id, Code = "VLV", Title = "Volvo" }
+                new() { TenantId = Ambulance.Id, Code = "BMW", Title = "BMW" },
+                new() { TenantId = Ambulance.Id, Code = "FOR", Title = "Ford" },
+                new() { TenantId = Ambulance.Id, Code = "FIA", Title = "Fiat" },
+                new() { TenantId = Ambulance.Id, Code = "MER", Title = "Mercedes" },
+                new() { TenantId = Ambulance.Id, Code = "PEU", Title = "Peugeot" },
+                new() { TenantId = Ambulance.Id, Code = "REN", Title = "Renault" },
+                new() { TenantId = Ambulance.Id, Code = "VLV", Title = "Volvo" }
             ]);
 
-            foreach (var item in items.Where(x => x.ClientId == clientId))
+            foreach (var item in items.Where(x => x.TenantId == tenantId))
             {
                 await brandService.Add(item);
             }
             await brandService.SaveChanges();
         }
     }
-    public async Task SeedInterventionTypes(string clientId)
+    public async Task SeedInterventionTypes(string tenantId)
     {
         var items = await dbContext.InterventionTypes
-            .Where(x => x.ClientId == clientId)
+            .Where(x => x.TenantId == tenantId)
             .ToListAsync();
 
         if (!items.Any())
         {
             items.AddRange([
-                new() { ClientId = PublicTransport.Id, Code = "MAIN", Title = "Onderhoud" },
-                new() { ClientId = PublicTransport.Id, Code = "TIRE", Title = "Banden" },
-                new() { ClientId = PublicTransport.Id, Code = "BRAKE", Title = "Remmen" },
-                new() { ClientId = PublicTransport.Id, Code = "BODY", Title = "Carrosserie" }
+                new() { TenantId = PublicTransport.Id, Code = "MAIN", Title = "Onderhoud" },
+                new() { TenantId = PublicTransport.Id, Code = "TIRE", Title = "Banden" },
+                new() { TenantId = PublicTransport.Id, Code = "BRAKE", Title = "Remmen" },
+                new() { TenantId = PublicTransport.Id, Code = "BODY", Title = "Carrosserie" }
             ]);
             items.AddRange([
-                new() { ClientId = Police.Id, Code = "MAIN", Title = "Onderhoud" },
-                new() { ClientId = Police.Id, Code = "TIRE", Title = "Banden" },
-                new() { ClientId = Police.Id, Code = "BRAKE", Title = "Remmen" },
-                new() { ClientId = Police.Id, Code = "BODY", Title = "Carrosserie" },
-                new() { ClientId = Police.Id, Code = "ROT", Title = "Rotor" }
+                new() { TenantId = Police.Id, Code = "MAIN", Title = "Onderhoud" },
+                new() { TenantId = Police.Id, Code = "TIRE", Title = "Banden" },
+                new() { TenantId = Police.Id, Code = "BRAKE", Title = "Remmen" },
+                new() { TenantId = Police.Id, Code = "BODY", Title = "Carrosserie" },
+                new() { TenantId = Police.Id, Code = "ROT", Title = "Rotor" }
             ]);
             items.AddRange([
-                new() { ClientId = FireBrigade.Id, Code = "MAIN", Title = "Onderhoud" },
-                new() { ClientId = FireBrigade.Id, Code = "TIRE", Title = "Banden" },
-                new() { ClientId = FireBrigade.Id, Code = "BRAKE", Title = "Remmen" },
-                new() { ClientId = FireBrigade.Id, Code = "BODY", Title = "Carrosserie" },
-                new() { ClientId = FireBrigade.Id, Code = "ROT", Title = "Rotor" }
+                new() { TenantId = FireBrigade.Id, Code = "MAIN", Title = "Onderhoud" },
+                new() { TenantId = FireBrigade.Id, Code = "TIRE", Title = "Banden" },
+                new() { TenantId = FireBrigade.Id, Code = "BRAKE", Title = "Remmen" },
+                new() { TenantId = FireBrigade.Id, Code = "BODY", Title = "Carrosserie" },
+                new() { TenantId = FireBrigade.Id, Code = "ROT", Title = "Rotor" }
             ]);
             items.AddRange([
-                new() { ClientId = Ambulance.Id, Code = "MAIN", Title = "Onderhoud" },
-                new() { ClientId = Ambulance.Id, Code = "TIRE", Title = "Banden" },
-                new() { ClientId = Ambulance.Id, Code = "BRAKE", Title = "Remmen" },
-                new() { ClientId = Ambulance.Id, Code = "BODY", Title = "Carrosserie" }
+                new() { TenantId = Ambulance.Id, Code = "MAIN", Title = "Onderhoud" },
+                new() { TenantId = Ambulance.Id, Code = "TIRE", Title = "Banden" },
+                new() { TenantId = Ambulance.Id, Code = "BRAKE", Title = "Remmen" },
+                new() { TenantId = Ambulance.Id, Code = "BODY", Title = "Carrosserie" }
             ]);
 
-            foreach (var item in items.Where(x => x.ClientId == clientId))
+            foreach (var item in items.Where(x => x.TenantId == tenantId))
             {
                 await interventionTypeService.Add(item);
             }
             await interventionTypeService.SaveChanges();
         }
     }
-    public async Task SeedVehicleTypes(string clientId)
+    public async Task SeedVehicleTypes(string tenantId)
     {
         var items = await dbContext.VehicleTypes
-            .Where(x => x.ClientId == clientId)
+            .Where(x => x.TenantId == tenantId)
             .ToListAsync();
 
         if (!items.Any())
         {
 
             items.AddRange([
-                new() { ClientId = PublicTransport.Id, Code = "BUS", Title = "Bus" },
-                new() { ClientId = PublicTransport.Id, Code = "TRA", Title = "Tram" },
-                new() { ClientId = PublicTransport.Id, Code = "HTR", Title = "Paardentram", IsArchived = true },
-                new() { ClientId = PublicTransport.Id, Code = "EXEC", Title = "Directiewagen" }
+                new() { TenantId = PublicTransport.Id, Code = "BUS", Title = "Bus" },
+                new() { TenantId = PublicTransport.Id, Code = "TRA", Title = "Tram" },
+                new() { TenantId = PublicTransport.Id, Code = "HTR", Title = "Paardentram", IsArchived = true },
+                new() { TenantId = PublicTransport.Id, Code = "EXEC", Title = "Directiewagen" }
             ]);
             items.AddRange([
-                new() { ClientId = Police.Id, Code = "COMBI", Title = "Combi" },
-                new() { ClientId = Police.Id, Code = "MOTOR", Title = "Motorbike" },
-                new() { ClientId = Police.Id, Code = "UAV", Title = "Drone" },
-                new() { ClientId = Police.Id, Code = "EXEC", Title = "Directiewagen" }
+                new() { TenantId = Police.Id, Code = "COMBI", Title = "Combi" },
+                new() { TenantId = Police.Id, Code = "MOTOR", Title = "Motorbike" },
+                new() { TenantId = Police.Id, Code = "UAV", Title = "Drone" },
+                new() { TenantId = Police.Id, Code = "EXEC", Title = "Directiewagen" }
             ]);
             items.AddRange([
-                new() { ClientId = FireBrigade.Id, Code = "TRU", Title = "Brandweerwagen" },
-                new() { ClientId = FireBrigade.Id, Code = "UGV", Title = "Drone (grond)" },
-                new() { ClientId = FireBrigade.Id, Code = "UAV", Title = "Drone (lucht)" }
+                new() { TenantId = FireBrigade.Id, Code = "TRU", Title = "Brandweerwagen" },
+                new() { TenantId = FireBrigade.Id, Code = "UGV", Title = "Drone (grond)" },
+                new() { TenantId = FireBrigade.Id, Code = "UAV", Title = "Drone (lucht)" }
             ]);
             items.AddRange([
-                new() { ClientId = Ambulance.Id, Code = "AMB", Title = "Ziekenwagen" },
-                new() { ClientId = Ambulance.Id, Code = "MOT", Title = "Motor" },
-                new() { ClientId = Ambulance.Id, Code = "EXEC", Title = "Directiewagen" }
+                new() { TenantId = Ambulance.Id, Code = "AMB", Title = "Ziekenwagen" },
+                new() { TenantId = Ambulance.Id, Code = "MOT", Title = "Motor" },
+                new() { TenantId = Ambulance.Id, Code = "EXEC", Title = "Directiewagen" }
             ]);
 
-            foreach (var item in items.Where(x => x.ClientId == clientId))
+            foreach (var item in items.Where(x => x.TenantId == tenantId))
             {
                 await vehicleTypeService.Add(item);
             }
             await vehicleTypeService.SaveChanges();
         }
     }
-    public async Task SeedOperators(string clientId)
+    public async Task SeedOperators(string tenantId)
     {
         var interventionTypes = await dbContext.InterventionTypes
-            .Where(x => x.ClientId == clientId)
+            .Where(x => x.TenantId == tenantId)
             .AsNoTracking()
             .ToArrayAsync();
 
@@ -229,21 +229,21 @@ public class DataSeeder(FleetContextBase dbContext, WritableClientContext client
         }
         await operatorService.SaveChanges();
     }
-    public async Task SeedVehicles(string clientId)
+    public async Task SeedVehicles(string tenantId)
     {
         var brands = await dbContext.VehicleBrands
-            .Where(x => x.ClientId == clientId)
+            .Where(x => x.TenantId == tenantId)
             .AsNoTracking()
             .ToArrayAsync();
         var types = await dbContext.VehicleTypes
-            .Where(x => x.ClientId == clientId)
+            .Where(x => x.TenantId == tenantId)
             .AsNoTracking()
             .ToArrayAsync();
 
         var codes = new Queue<int>(Enumerable.Range(0, 1000 * _factor).Select((_, i) => i + 1).Shuffle().Take(100 * _factor));
 
         var items = new Faker<Vehicle>()
-            .RuleFor(x => x.ClientId, _ => clientId)
+            .RuleFor(x => x.TenantId, _ => tenantId)
             .RuleFor(x => x.Code, _ => codes.Dequeue().ToString().PadLeft(3, '0'))
             .RuleFor(x => x.BrandId, f => f.PickRandom(brands).Id)
             .RuleFor(x => x.Model, (f, _) => f.Vehicle.Model())
@@ -256,24 +256,24 @@ public class DataSeeder(FleetContextBase dbContext, WritableClientContext client
         }
         await vehicleService.SaveChanges();
     }
-    public async Task SeedInterventions(string clientId)
+    public async Task SeedInterventions(string tenantId)
     {
         var vehicleIds = await dbContext.Vehicles
-            .Where(x => x.ClientId == clientId)
+            .Where(x => x.TenantId == tenantId)
             .Select(x => x.Id)
             .ToArrayAsync();
         var suppliers = await dbContext.InterventionOperators
             .Include(x => x.InterventionTypes)
-            .Where(x => x.ClientId == clientId && x.InterventionTypes!.Any())
+            .Where(x => x.TenantId == tenantId && x.InterventionTypes!.Any())
             .Select(x => new { x.Id, InterventionTypeIds = x.InterventionTypes!.Select(y => y.InterventionTypeId) })
             .ToArrayAsync();
         var typeIds = await dbContext.InterventionTypes
-            .Where(x => x.ClientId == clientId)
+            .Where(x => x.TenantId == tenantId)
             .Select(x => x.Id)
             .ToArrayAsync();
 
         var items = new Faker<Intervention>()
-            .RuleFor(x => x.ClientId, _ => clientId)
+            .RuleFor(x => x.TenantId, _ => tenantId)
             .RuleFor(x => x.VehicleId, (f) => f.PickRandom(vehicleIds))
             .RuleFor(x => x.OperatorId, (f) => f.PickRandom(suppliers).Id)
             .RuleFor(x => x.InterventionTypeId, (f, x) => (suppliers.FirstOrDefault(s => s.Id == x.OperatorId)

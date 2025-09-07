@@ -1,7 +1,7 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Identity;
-using Regira.Fleet.Identity.Models.Clients;
-using Regira.Fleet.Identity.Models.Clients.Subscriptions;
+using Regira.Fleet.Identity.Models.Tenants;
+using Regira.Fleet.Identity.Models.Tenants.Subscriptions;
 using Regira.Fleet.Identity.Models.Users;
 using Regira.Fleet.Identity.Models.Users.Claims;
 
@@ -17,12 +17,12 @@ public class IdentityProfile : Profile
                 model.IsEmailConfirmed = item.EmailConfirmed;
             })
             .ReverseMap();
-        CreateMap<ClientUserClaim, ClientUserClaimDto>().ReverseMap();
+        CreateMap<TenantUserClaim, TenantUserClaimDto>().ReverseMap();
         CreateMap<FleetUserModel, FleetUserDto>()
             .ForMember(e => e.UserClaims, e => e.Ignore())
             .AfterMap((model, dto, ctx) =>
             {
-                dto.Clients = ctx.Mapper.Map<List<ClientDto>>(model.Clients);
+                dto.Tenants = ctx.Mapper.Map<List<TenantDto>>(model.Tenants);
                 dto.UserClaims = model.UserClaims?.Select(x => new UserClaimDto { Id = x.Id, ClaimType = x.ClaimType!, ClaimValue = x.ClaimValue }).ToList();
                 //dto.GivenName = dto.UserClaims?.FirstOrDefault(c => c.ClaimType == FleetClaimTypes.GivenName)?.ClaimValue;
                 //dto.LastName = dto.UserClaims?.FirstOrDefault(c => c.ClaimType == FleetClaimTypes.LastName)?.ClaimValue;
@@ -64,25 +64,25 @@ public class IdentityProfile : Profile
                     //}
                     model.UserClaims = userClaims;
                 }
-                if (dto.ClientClaims != null)
+                if (dto.TenantClaims != null)
                 {
-                    model.ClientClaims = ctx.Mapper.Map<List<ClientUserClaim>>(dto.ClientClaims);
+                    model.TenantClaims = ctx.Mapper.Map<List<TenantUserClaim>>(dto.TenantClaims);
                 }
             });
 
-        CreateMap<Client, ClientDto>()
+        CreateMap<Tenant, TenantDto>()
             .ForMember(e => e.Languages, e => e.Ignore())
             .AfterMap((model, dto) =>
             {
                 dto.Languages = model.Languages?.Select(l => l.LangCode).ToList();
             });
-        CreateMap<ClientInputDto, Client>()
+        CreateMap<TenantInputDto, Tenant>()
             .ForMember(e => e.Languages, e => e.Ignore())
             .AfterMap((dto, model) =>
             {
-                model.Languages = dto.Languages?.Select(l => new ClientLanguage { ClientId = model.Id, LangCode = l }).ToList();
+                model.Languages = dto.Languages?.Select(l => new TenantLanguage { TenantId = model.Id, LangCode = l }).ToList();
             });
-        CreateMap<ClientSubscription, ClientSubscriptionDto>();
-        CreateMap<ClientSubscriptionInputDto, ClientSubscription>();
+        CreateMap<TenantSubscription, TenantSubscriptionDto>();
+        CreateMap<TenantSubscriptionInputDto, TenantSubscription>();
     }
 }

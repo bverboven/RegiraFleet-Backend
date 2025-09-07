@@ -1,5 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Regira.Fleet.Identity.Models.Clients;
+using Regira.Fleet.Identity.Models.Tenants;
 
 namespace Regira.Fleet.Identity.Data.PostgreSQL;
 
@@ -15,9 +15,9 @@ public class AccountsPostgresContext(DbContextOptions<AccountsPostgresContext> o
     {
         base.OnModelCreating(builder);
 
-        builder.Entity<ClientLanguage>(entity =>
+        builder.Entity<TenantLanguage>(entity =>
         {
-            entity.ToTable("client_languages");
+            entity.ToTable("tenant_languages");
         });
     }
 }

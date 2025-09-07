@@ -1,5 +1,4 @@
-﻿using System.Security.Claims;
-using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
@@ -14,15 +13,16 @@ using Regira.Fleet.Identity.Web.Models;
 using Regira.Fleet.Manager.Api.Models;
 using Regira.Serializing.Abstractions;
 using Regira.Utilities;
+using System.Security.Claims;
 
 namespace Regira.Fleet.Manager.Api.Controllers;
 
 [ApiController]
 [Route("users")]
-//public class UserController(UserManager<FleetUser> userManager, AccountsContextBase dbContext, ISerializer serializer, IClientContext clientContext) : ControllerBase
-public class UserController(UserManager<FleetUser> userManager, IAccountsDbContext dbContext, ISerializer serializer, IClientContext clientContext) : ControllerBase
+//public class UserController(UserManager<FleetUser> userManager, AccountsContextBase dbContext, ISerializer serializer, ITenantContext tenantContext) : ControllerBase
+public class UserController(UserManager<FleetUser> userManager, IAccountsDbContext dbContext, ISerializer serializer, ITenantContext tenantContext) : ControllerBase
 {
-    static readonly string[] ALLOWED_PERMISSIONS = [ClientPermissions.CanRead, ClientPermissions.CanWrite];
+    static readonly string[] ALLOWED_PERMISSIONS = [TenantPermissions.CanRead, TenantPermissions.CanWrite];
 
     [HttpPost("personal-data")]
     public async Task<IActionResult> ChangePersonalData(ChangePersonalDataInput model)
@@ -46,26 +46,26 @@ public class UserController(UserManager<FleetUser> userManager, IAccountsDbConte
 
     [Authorize(FleetPolicies.AdminPolicy)]
     [HttpGet]
-    public async Task<IActionResult> ListClientUsers()
+    public async Task<IActionResult> ListTenantUsers()
     {
-        var clientId = User.FindFirstValue(FleetClaimTypes.ClientId);
+        var tenantId = User.FindFirstValue(FleetClaimTypes.TenantId);
         var items = await dbContext.Users
             .Include(u => u.UserClaims)
-            .Include(u => u.ClientClaims!.Where(x => x.ClientId == clientId))
-            .Where(u => u.ClientClaims!.Any(x => x.ClientId == clientId))
+            .Include(u => u.TenantClaims!.Where(x => x.TenantId == tenantId))
+            .Where(u => u.TenantClaims!.Any(x => x.TenantId == tenantId))
             .AsNoTrackingWithIdentityResolution()
             .ToListAsync();
 
         var models = items
-            .Select(x => new ClientUserDto
+            .Select(x => new TenantUserDto
             {
                 Id = x.Id,
                 Email = x.Email!,
                 IsEmailConfirmed = x.EmailConfirmed,
                 HasPassword = !string.IsNullOrWhiteSpace(x.PasswordHash),
                 DisplayName = $"{x.GivenName} {x.LastName}".Trim(),
-                Permissions = x.ClientClaims!
-                    .Where(claim => claim.ClientId == clientId)
+                Permissions = x.TenantClaims!
+                    .Where(claim => claim.TenantId == tenantId)
                     .Select(c => c.ClaimValue)
                     .ToList()!
             });
@@ -75,7 +75,7 @@ public class UserController(UserManager<FleetUser> userManager, IAccountsDbConte
 
     [Authorize(FleetPolicies.AdminPolicy)]
     [HttpPost]
-    public async Task<IActionResult> Save(ClientUserInputDto model, [FromServices] IEmailSender mailer)
+    public async Task<IActionResult> Save(TenantUserInputDto model, [FromServices] IEmailSender mailer)
     {
         var user = await userManager.FindByEmailAsync(model.Email);
         if (user == null)
@@ -108,7 +108,7 @@ Token: {token}
             await mailer.SendEmailAsync(model.Email, "Welcome at Regira Fleetmanager", body);
         }
 
-        await SaveClientClaims(user, model.Permissions);
+        await SaveTenantClaims(user, model.Permissions);
 
         return Ok();
     }
@@ -167,25 +167,25 @@ Token: {token}
         return Ok();
     }
 
-    protected async Task SaveClientClaims(FleetUser user, ICollection<string>? inputPermissions)
+    protected async Task SaveTenantClaims(FleetUser user, ICollection<string>? inputPermissions)
     {
-        var currentClaims = await dbContext.ClientUserClaims
-            .Where(x => x.ClientId == clientContext.ClientId && x.UserId == user.Id)
+        var currentClaims = await dbContext.TenantUserClaims
+            .Where(x => x.TenantId == tenantContext.TenantId && x.UserId == user.Id)
             .ToListAsync();
         var currentPermissions = currentClaims
             .Select(x => x.ClaimValue)
             .ToArray();
 
-        var claimsToAdd = new List<ClientUserClaim>();
+        var claimsToAdd = new List<TenantUserClaim>();
         if (inputPermissions != null)
         {
             foreach (var permission in inputPermissions)
             {
                 if (!currentPermissions.Contains(permission))
                 {
-                    claimsToAdd.Add(new ClientUserClaim
+                    claimsToAdd.Add(new TenantUserClaim
                     {
-                        ClientId = clientContext.ClientId!,
+                        TenantId = tenantContext.TenantId!,
                         UserId = user.Id,
                         ClaimType = FleetClaimTypes.Permission,
                         ClaimValue = permission
@@ -196,14 +196,14 @@ Token: {token}
             claimsToAdd = claimsToAdd.FindAll(c => ALLOWED_PERMISSIONS.Contains(c.ClaimValue));
             if (claimsToAdd.Any())
             {
-                dbContext.ClientUserClaims.AddRange(claimsToAdd);
+                dbContext.TenantUserClaims.AddRange(claimsToAdd);
             }
             var claimsToRemove = currentClaims
                 .Where(c => inputPermissions.All(p => p != c.ClaimValue))
                 .ToArray();
             if (claimsToRemove.Any())
             {
-                dbContext.ClientUserClaims.RemoveRange(claimsToRemove);
+                dbContext.TenantUserClaims.RemoveRange(claimsToRemove);
             }
             await dbContext.SaveChangesAsync();
         }

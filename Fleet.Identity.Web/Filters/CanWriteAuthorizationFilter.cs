@@ -16,7 +16,7 @@ public class CanWriteAuthorizationFilter : IAuthorizationFilter
             var action = context.RouteData.Values["action"]?.ToString();
             if (WriteActions.Any(a => a.Equals(action, StringComparison.InvariantCultureIgnoreCase)))
             {
-                var hasWriteClaim = context.HttpContext.User.HasClaim(c => c is { Type: ClientClaimTypes.Permission, Value: ClientPermissions.CanWrite });
+                var hasWriteClaim = context.HttpContext.User.HasClaim(c => c is { Type: TenantClaimTypes.Permission, Value: TenantPermissions.CanWrite });
                 if (!hasWriteClaim)
                 {
                     context.Result = new ForbidResult();

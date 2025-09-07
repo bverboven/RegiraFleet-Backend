@@ -2,7 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using Regira.Fleet.Core.Constants;
 using Regira.Fleet.Identity.Data;
-using Regira.Fleet.Identity.Models.Clients;
+using Regira.Fleet.Identity.Models.Tenants;
 using Regira.Fleet.Identity.Models.Users;
 using Regira.Fleet.Identity.Models.Users.Claims;
 using Regira.Fleet.Identity.Services;
@@ -12,12 +12,12 @@ namespace DemoData.Console;
 
 public class AccountSeeder(FleetUserIdentityManager userManager, RoleManager<IdentityRole> roleManager, AccountsContextBase accountsContext)
 {
-    public async Task<IList<Client>> Seed()
+    public async Task<IList<Tenant>> Seed()
     {
-        IList<Client> clients = await accountsContext.Clients.ToListAsync();
-        if (clients.Any())
+        IList<Tenant> tenants = await accountsContext.Tenants.ToListAsync();
+        if (tenants.Any())
         {
-            return clients;
+            return tenants;
         }
 
         // SuperUser
@@ -26,19 +26,19 @@ public class AccountSeeder(FleetUserIdentityManager userManager, RoleManager<Ide
         await roleManager.CreateAsync(new IdentityRole(FleetClaimTypes.SuperUser));
         await userManager.AddToRoleAsync(superUser, FleetClaimTypes.SuperUser);
 
-        clients = await SeedClients();
+        tenants = await SeedTenants();
 
-        foreach (var client in clients)
+        foreach (var tenant in tenants)
         {
             var permissions = new Dictionary<string, string[]>{
-                    { "read" , [ClientPermissions.CanRead] },
-                    { "write" , [ClientPermissions.CanRead, ClientPermissions.CanWrite] },
-                    { "admin" , [ClientPermissions.Administrator, ClientPermissions.CanRead, ClientPermissions.CanWrite]
+                    { "read" , [TenantPermissions.CanRead] },
+                    { "write" , [TenantPermissions.CanRead, TenantPermissions.CanWrite] },
+                    { "admin" , [TenantPermissions.Administrator, TenantPermissions.CanRead, TenantPermissions.CanWrite]
                     }
                 };
             foreach (var permission in permissions)
             {
-                var username = $"{client.Code}_{permission.Key}".ToLower();
+                var username = $"{tenant.Code}_{permission.Key}".ToLower();
                 var user = await userManager.FindByNameAsync(username);
 
                 if (user == null)
@@ -48,7 +48,7 @@ public class AccountSeeder(FleetUserIdentityManager userManager, RoleManager<Ide
                         UserName = username,
                         Email = $"{username}@regira.com",
                         Culture = "nl-BE",
-                        GivenName = client.Code.Capitalize(),
+                        GivenName = tenant.Code.Capitalize(),
                         LastName = $"({permission.Key})"
                     };
                     var userResponse = await userManager.CreateAsync(user, permission.Key == "admin" ? "admin" : "demo");
@@ -56,12 +56,12 @@ public class AccountSeeder(FleetUserIdentityManager userManager, RoleManager<Ide
                     {
                         // Identity claims
                         //await userManager.AddClaimsAsync(user, new[] {
-                        //    new Claim(FleetClaimTypes.GivenName, client.Code.Capitalize()!),
+                        //    new Claim(FleetClaimTypes.GivenName, tenant.Code.Capitalize()!),
                         //    new Claim(FleetClaimTypes.LastName, $"({permission.Key})"),
                         //});
-                        // ClientUser claims
-                        var userClaims = permission.Value.Select(p => new ClientUserClaim { ClientId = client.Id, UserId = user.Id, ClaimType = ClientClaimTypes.Permission, ClaimValue = p });
-                        accountsContext.ClientUserClaims.AddRange(userClaims);
+                        // TenantUser claims
+                        var userClaims = permission.Value.Select(p => new TenantUserClaim { TenantId = tenant.Id, UserId = user.Id, ClaimType = TenantClaimTypes.Permission, ClaimValue = p });
+                        accountsContext.TenantUserClaims.AddRange(userClaims);
                     }
                 }
             }
@@ -69,11 +69,11 @@ public class AccountSeeder(FleetUserIdentityManager userManager, RoleManager<Ide
 
         await accountsContext.SaveChangesAsync();
 
-        return clients;
+        return tenants;
     }
-    public async Task<IList<Client>> SeedClients()
+    public async Task<IList<Tenant>> SeedTenants()
     {
-        var items = await accountsContext.Clients.ToListAsync();
+        var items = await accountsContext.Tenants.ToListAsync();
         if (!items.Any())
         {
             items.AddRange([
@@ -82,7 +82,7 @@ public class AccountSeeder(FleetUserIdentityManager userManager, RoleManager<Ide
                 new() { Code = "BWR", Title = "Brandweer", Id = "1b615c0096c04eb2975ef84463aa8257", DefaultCulture="en-US" },
                 new() { Code = "AMB", Title = "Ambulance", Id = "f64a75e938b64dfaae5eab03fe541972" }
             ]);
-            accountsContext.Clients.AddRange(items);
+            accountsContext.Tenants.AddRange(items);
             await accountsContext.SaveChangesAsync();
         }
 

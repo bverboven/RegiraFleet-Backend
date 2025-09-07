@@ -21,5 +21,5 @@ public class FleetUserInputDto
     public string? Culture { get; set; }
 
     public ICollection<UserClaimDto>? UserClaims { get; set; }
-    public ICollection<ClientUserClaimDto>? ClientClaims { get; set; }
+    public ICollection<TenantUserClaimDto>? TenantClaims { get; set; }
 }

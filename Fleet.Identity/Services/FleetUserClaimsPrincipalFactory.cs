@@ -8,7 +8,7 @@ using Regira.Fleet.Identity.Models.Users;
 namespace Regira.Fleet.Identity.Services;
 
 public class FleetUserClaimsPrincipalFactory(FleetUserIdentityManager userManager, RoleManager<IdentityRole> roleManager,
-    IOptions<IdentityOptions> options, IEnumerable<IClientUserClaimsService> clientUserClaimsService)
+    IOptions<IdentityOptions> options, IEnumerable<ITenantUserClaimsService> tenantUserClaimsService)
     : UserClaimsPrincipalFactory<FleetUser, IdentityRole>(userManager, roleManager, options)
 {
     protected override async Task<ClaimsIdentity> GenerateClaimsAsync(FleetUser user)
@@ -33,7 +33,7 @@ public class FleetUserClaimsPrincipalFactory(FleetUserIdentityManager userManage
             identity.AddClaim(new Claim(FleetClaimTypes.Permission, FleetClaimTypes.SuperUser));
         }
 
-        foreach (var claimService in clientUserClaimsService)
+        foreach (var claimService in tenantUserClaimsService)
         {
             await claimService.Process(identity);
         }
