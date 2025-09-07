@@ -139,7 +139,7 @@ public class StatisticsController(StatisticsService statsService, IExcelManager 
     protected FileResult GetExcel(IList<IDictionary<string, object?>> stats, string sheetName, string filename)
     {
         var sheet = new ExcelSheet { Data = stats.Cast<object>().ToList(), Name = sheetName };
-        using var excelFile = excelManager.Create(sheet);
+        using var excelFile = excelManager.Create([sheet]);
         Response.Headers.Append("Access-Control-Expose-Headers", "content-disposition");
         return File(excelFile.GetBytes()!, ContentTypeUtility.GetContentType(filename), filename);
     }
