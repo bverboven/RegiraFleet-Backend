@@ -3,12 +3,8 @@ using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Regira.DAL.EFcore.Services;
-using Regira.Entities.DependencyInjection.Mapping;
-using Regira.Entities.DependencyInjection.QueryBuilders;
-using Regira.Entities.DependencyInjection.ServiceBuilders.Extensions;
 using Regira.Entities.EFcore.Normalizing;
 using Regira.Entities.EFcore.Primers;
-using Regira.Entities.EFcore.QueryBuilders.GlobalFilterBuilders;
 using Regira.Fleet.Core.Abstractions;
 using Regira.Fleet.Core.Constants;
 using Regira.Fleet.Core.DependencyInjection;
@@ -16,13 +12,9 @@ using Regira.Fleet.Identity.Data;
 using Regira.Fleet.Identity.Data.MySQL;
 using Regira.Fleet.Identity.Data.PostgreSQL;
 using Regira.Fleet.Identity.Data.SqlServer;
-using Regira.Fleet.Identity.DependencyInjection.Entities;
-using Regira.Fleet.Identity.Models;
 using Regira.Fleet.Identity.Models.Users;
 using Regira.Fleet.Identity.Services;
 using Regira.IO.Storage.Abstractions;
-using Regira.Normalizing.Models;
-using PgFilterHasNormalizedContentQueryBuilder = Regira.Fleet.Identity.Data.PostgreSQL.QueryBuilders.FilterHasNormalizedContentQueryBuilder;
 
 namespace Regira.Fleet.Identity.DependencyInjection;
 
@@ -128,34 +120,6 @@ public static class ServiceCollectionExtensions
         });
     }
 
-    public static FleetServiceBuilder AddFleetEntities(this FleetServiceBuilder builder, FleetHostingOptions options)
-    {
-        builder.Services
-             // Entity context
-             .UseEntities<AccountsContextBase>(c =>
-             {
-                 c.UseAutoMapper([typeof(IdentityProfile).Assembly]);
-                 c.UseDefaults(ed => ed.ConfigureNormalizing(o => o.Transform = TextTransform.ToUpperCase));
-
-                 c.AddGlobalFilterQueryBuilder<FilterIdsQueryBuilder<string>>();
-                 if (options.DatabaseType == DataBaseTypes.PostgreSQL)
-                 {
-                     c.AddGlobalFilterQueryBuilder<PgFilterHasNormalizedContentQueryBuilder>();
-                 }
-                 else
-                 {
-                     c.AddGlobalFilterQueryBuilder<FilterHasNormalizedContentQueryBuilder>();
-                 }
-             });
-
-
-        builder.Entities
-            // Entity context
-            .AddTenants()
-            .AddFleetUsers(options.DatabaseType);
-
-        return builder;
-    }
     public static IServiceCollection AddTenantClaims(this IServiceCollection services)
     {
         services

@@ -2,10 +2,11 @@
 using Regira.Fleet.Models.EntityLabels;
 using Regira.Fleet.Models.InterventionTypes;
 using Regira.Fleet.Models.Translations;
+using Regira.Fleet.Models.Vehicles;
 using Regira.Fleet.Models.Vehicles.Brands;
 using Regira.Fleet.Models.Vehicles.VehicleTypes;
 
-namespace Regira.Fleet.Models.Vehicles;
+namespace Regira.Fleet.DependencyInjection.Mapping;
 
 public class VehicleProfile : Profile
 {

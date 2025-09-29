@@ -6,7 +6,7 @@ using Regira.Fleet.Models.InterventionOperators.ContactData;
 using Regira.Fleet.Models.InterventionOperators.Operators;
 using Regira.Fleet.Models.InterventionTypes;
 
-namespace Regira.Fleet.Models.InterventionOperators;
+namespace Regira.Fleet.DependencyInjection.Mapping;
 
 public class OperatorProfile : Profile
 {

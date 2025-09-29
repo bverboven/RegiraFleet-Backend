@@ -6,6 +6,7 @@ using Newtonsoft.Json.Converters;
 using Regira.Fleet.Core.Constants;
 using Regira.Fleet.Identity.Authorization;
 using Regira.Fleet.Identity.DependencyInjection;
+using Regira.Fleet.Identity.DependencyInjection.Mapping;
 using Regira.Fleet.Identity.Models;
 using Regira.Fleet.Identity.Web.DependencyInjection;
 using Regira.IO.Storage.FileSystem;
@@ -61,8 +62,6 @@ public static class HostingExtensions
         //services.AddGlobalExceptionHandling();
 
         services.AddTransient<ISerializer, JsonSerializer>();
-
-        services.AddAutoMapper(typeof(IdentityProfile).Assembly);
 
         services
             // Api routing

@@ -1,7 +1,8 @@
 ﻿using AutoMapper;
+using Regira.Fleet.Models.InterventionTypes;
 using Regira.Fleet.Models.Translations;
 
-namespace Regira.Fleet.Models.InterventionTypes;
+namespace Regira.Fleet.DependencyInjection.Mapping;
 
 public class InterventionTypeProfile : Profile
 {

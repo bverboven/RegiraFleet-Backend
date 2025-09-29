@@ -1,5 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using Regira.Entities.Web.Attachments.Models;
+using Regira.Entities.Mapping.Models;
 using Regira.Fleet.Models.Addresses;
 using Regira.Fleet.Models.EntityLabels;
 using Regira.Fleet.Models.InterventionOperators.ContactData;

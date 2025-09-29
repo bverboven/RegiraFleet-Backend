@@ -12,7 +12,7 @@
 
     <ItemGroup>
         <ProjectReference Include="..\Fleet.Data.Core\Fleet.Data.Core.csproj" />
-        <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="9.0.8" />
+        <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="9.0.9" />
         <PackageReference Include="Pomelo.EntityFrameworkCore.MySql" Version="9.0.0" />
     </ItemGroup>
 

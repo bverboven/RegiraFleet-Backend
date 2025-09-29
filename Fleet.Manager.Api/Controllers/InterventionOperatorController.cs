@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Regira.Entities.Mapping.Models;
 using Regira.Entities.Models;
 using Regira.Entities.Web.Attachments.Abstractions;
-using Regira.Entities.Web.Attachments.Models;
 using Regira.Entities.Web.Controllers.Abstractions;
 using Regira.Fleet.Models.InterventionOperators.Operators;
 

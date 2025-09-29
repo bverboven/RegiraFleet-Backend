@@ -1,6 +1,6 @@
 ﻿using Regira.DAL.Paging;
-using Regira.Entities.Abstractions;
 using Regira.Entities.Models;
+using Regira.Entities.Services.Abstractions;
 using Regira.Fleet.Core.Abstractions;
 using Regira.Globalization;
 using Regira.Utilities;

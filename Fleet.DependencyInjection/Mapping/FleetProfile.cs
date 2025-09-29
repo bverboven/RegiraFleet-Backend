@@ -1,10 +1,6 @@
 ﻿using AutoMapper;
-using Regira.Fleet.Models.InterventionOperators;
-using Regira.Fleet.Models.Interventions;
-using Regira.Fleet.Models.InterventionTypes;
-using Regira.Fleet.Models.Vehicles;
 
-namespace Regira.Fleet.Models;
+namespace Regira.Fleet.DependencyInjection.Mapping;
 
 public class FleetProfile : Profile
 {

@@ -1,8 +1,8 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using System.Data;
+using System.Data.Common;
+using Microsoft.EntityFrameworkCore;
 using Regira.Fleet.Core.Abstractions;
 using Regira.Fleet.Data;
-using System.Data;
-using System.Data.Common;
 
 namespace Regira.Fleet.Statistics;
 

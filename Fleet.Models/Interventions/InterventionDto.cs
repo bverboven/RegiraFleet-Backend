@@ -1,4 +1,4 @@
-﻿using Regira.Entities.Web.Attachments.Models;
+﻿using Regira.Entities.Mapping.Models;
 using Regira.Fleet.Models.EntityLabels;
 using Regira.Fleet.Models.InterventionOperators.Operators;
 using Regira.Fleet.Models.Interventions.Invoices;

@@ -1,35 +1,22 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Regira.DAL.EFcore.Services;
-using Regira.Entities.DependencyInjection.Mapping;
-using Regira.Entities.DependencyInjection.Normalizers;
-using Regira.Entities.DependencyInjection.Primers;
-using Regira.Entities.DependencyInjection.QueryBuilders;
-using Regira.Entities.DependencyInjection.ServiceBuilders.Extensions;
 using Regira.Entities.EFcore.Attachments;
 using Regira.Entities.EFcore.Normalizing;
 using Regira.Entities.EFcore.Primers;
 using Regira.Fleet.Core.Abstractions;
 using Regira.Fleet.Core.Constants;
 using Regira.Fleet.Core.DependencyInjection;
-using Regira.Fleet.Core.GlobalQueryFilters;
 using Regira.Fleet.Core.Models;
 using Regira.Fleet.Data;
 using Regira.Fleet.Data.MySQL;
 using Regira.Fleet.Data.PostgreSQL;
 using Regira.Fleet.Data.SqlServer;
-using Regira.Fleet.DependencyInjection.Entities;
-using Regira.Fleet.Entities.EntityLabels;
-using Regira.Fleet.Models;
-using Regira.Fleet.Models.EntityLabels;
 using Regira.Fleet.Models.InterventionOperators.Operators;
 using Regira.Fleet.Models.Interventions;
 using Regira.Fleet.Models.Vehicles;
 using Regira.Fleet.Tenants;
 using Regira.IO.Storage.Abstractions;
-using Regira.Normalizing.Models;
-using FilterHasNormalizedContentQueryBuilder = Regira.Entities.EFcore.QueryBuilders.GlobalFilterBuilders.FilterHasNormalizedContentQueryBuilder;
-using PgFilterHasNormalizedContentQueryBuilder = Regira.Fleet.Data.PostgreSQL.QueryBuilders.FilterHasNormalizedContentQueryBuilder;
 
 namespace Regira.Fleet.DependencyInjection;
 
@@ -158,45 +145,6 @@ public static class ServiceCollectionExtensions
               .AddScoped<ITenantContext, TenantContext>()
               .AddScoped<ICultureContext, CultureContext>()
               .AddScoped<IFleetAppContext, FleetAppContext>();
-
-        return builder;
-    }
-    public static FleetServiceBuilder AddFleetEntities(this FleetServiceBuilder builder, FleetHostingOptions options)
-    {
-        builder.Services
-            //Entity context
-            .UseEntities<FleetContextBase>(c =>
-            {
-                c.UseAutoMapper([typeof(FleetProfile).Assembly]);
-                c.AddNormalizer<IEntityLabel, EntityLabelNormalizer>();
-                c.UseDefaults(ed => ed.ConfigureNormalizing(o => o.Transform = TextTransform.ToUpperCase));
-
-                // make sure only allowed tenantId items are loaded
-                c.AddGlobalFilterQueryBuilder<FilterHasTenantQueryBuilder>();
-                c.AddPrimer<HasTenantPrimer>();
-                c.AddPrimer<ArchivablePrimer>();
-
-                // Postgres ILike?
-                _ = options.DatabaseType == DataBaseTypes.PostgreSQL
-                    ? c.AddGlobalFilterQueryBuilder<PgFilterHasNormalizedContentQueryBuilder>()
-                    : c.AddGlobalFilterQueryBuilder<FilterHasNormalizedContentQueryBuilder>();
-            })
-            .WithAttachments(options.FileServiceFactory ?? throw new InvalidOperationException($"No implementation for {nameof(IFileService)} configured"));
-
-        //// Attachments
-        //builder
-        //    .AddAttachmentServices(options.FileServiceFactory ?? throw new InvalidOperationException($"No implementation for {nameof(IFileService)} configured"));
-
-        // Entity Items
-        builder.Entities
-           // Countries
-           .AddCountries()
-           // Interventions
-           .AddInterventions(options.DatabaseType)
-           // Vehicles
-           .AddVehicles(options.DatabaseType)
-           // InterventionOperators
-           .AddOperators(options.DatabaseType);
 
         return builder;
     }

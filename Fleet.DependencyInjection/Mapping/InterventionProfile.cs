@@ -1,8 +1,9 @@
 ﻿using AutoMapper;
 using Regira.Fleet.Models.EntityLabels;
+using Regira.Fleet.Models.Interventions;
 using Regira.Fleet.Models.Interventions.Invoices;
 
-namespace Regira.Fleet.Models.Interventions;
+namespace Regira.Fleet.DependencyInjection.Mapping;
 
 public class InterventionProfile : Profile
 {

@@ -5,7 +5,7 @@ using Regira.Fleet.Identity.Models.Tenants.Subscriptions;
 using Regira.Fleet.Identity.Models.Users;
 using Regira.Fleet.Identity.Models.Users.Claims;
 
-namespace Regira.Fleet.Identity.Models;
+namespace Regira.Fleet.Identity.DependencyInjection.Mapping;
 
 public class IdentityProfile : Profile
 {

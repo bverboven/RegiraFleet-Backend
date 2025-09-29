@@ -1,6 +1,6 @@
 ﻿using Bogus;
 using Microsoft.EntityFrameworkCore;
-using Regira.Entities.Abstractions;
+using Regira.Entities.Services.Abstractions;
 using Regira.Fleet.Data;
 using Regira.Fleet.Identity.Models.Tenants;
 using Regira.Fleet.Models.InterventionOperators.Addresses;
