@@ -16,8 +16,8 @@
 
     <ItemGroup>
         <PackageReference Include="Regira.Globalization.LibPhoneNumber" Version="4.8.0" />
-        <PackageReference Include="Regira.Entities.Mapping.AutoMapper" Version="4.1.0" />
-        <PackageReference Include="Regira.Entities.Mapping.Mapster" Version="4.1.0" />
+        <PackageReference Include="Regira.Entities.Mapping.AutoMapper" Version="4.1.1" />
+        <PackageReference Include="Regira.Entities.Mapping.Mapster" Version="4.1.1" />
     </ItemGroup>
 
     <ItemGroup>

@@ -36,7 +36,7 @@ public class VehicleIncludingQueryBuilder()
             // Attachments
             if (includes.Value.HasFlag(VehicleIncludes.Attachments))
             {
-                query = query.Include(x => x.Attachments!)
+                query = query.Include(x => x.Attachments!.OrderBy(a => a.SortOrder))
                     .ThenInclude(a => a.Attachment);
             }
         }

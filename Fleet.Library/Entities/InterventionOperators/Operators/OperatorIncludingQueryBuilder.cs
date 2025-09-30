@@ -33,7 +33,7 @@ public class OperatorIncludingQueryBuilder : IIncludableQueryBuilder<Operator, i
             if (includes.Value.HasFlag(OperatorIncludes.Attachments))
             {
                 query = query
-                    .Include(x => x.Attachments!)
+                    .Include(x => x.Attachments!.OrderBy(a => a.SortOrder))
                     .ThenInclude(a => a.Attachment);
             }
         }

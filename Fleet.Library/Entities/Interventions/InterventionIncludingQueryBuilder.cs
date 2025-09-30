@@ -44,7 +44,7 @@ public class InterventionIncludingQueryBuilder : IIncludableQueryBuilder<Interve
             // Attachments
             if (includes.Value.HasFlag(InterventionIncludes.Attachments))
             {
-                query = query.Include(x => x.Attachments!)
+                query = query.Include(x => x.Attachments!.OrderBy(a => a.SortOrder))
                     .ThenInclude(a => a.Attachment);
             }
         }
