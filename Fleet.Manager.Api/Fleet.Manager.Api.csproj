@@ -23,12 +23,12 @@
     </ItemGroup>
 
     <ItemGroup>
-        <PackageReference Include="Regira.Office.Excel.NpoiMapper" Version="4.10.0" />
-        <PackageReference Include="Regira.Office.Excel.EPPlus" Version="4.10.0" />
-        <PackageReference Include="Regira.Office.Mail.SendGrid" Version="4.10.0" />
-        <PackageReference Include="Regira.Security" Version="4.8.0" />
-        <PackageReference Include="Regira.Serializing.Newtonsoft" Version="4.8.0" />
-        <PackageReference Include="Regira.Web.Swagger" Version="4.8.0" />
+        <PackageReference Include="Regira.Office.Excel.NpoiMapper" Version="4.11.0" />
+        <PackageReference Include="Regira.Office.Excel.EPPlus" Version="4.11.0" />
+        <PackageReference Include="Regira.Office.Mail.SendGrid" Version="4.11.0" />
+        <PackageReference Include="Regira.Security" Version="4.9.0" />
+        <PackageReference Include="Regira.Serializing.Newtonsoft" Version="4.9.0" />
+        <PackageReference Include="Regira.Web.Swagger" Version="4.9.0" />
     </ItemGroup>
 
     <ItemGroup>
