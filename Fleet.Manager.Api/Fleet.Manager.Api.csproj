@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
     <PropertyGroup>
-        <TargetFramework>net9.0</TargetFramework>
+        <TargetFramework>net10.0</TargetFramework>
         <RootNamespace>Regira.Fleet.Manager.Api</RootNamespace>
         <AssemblyName>Regira.Fleet.Manager.Api</AssemblyName>
         <UserSecretsId>bbdb45a3-5938-4049-af56-7790fb6bd144</UserSecretsId>

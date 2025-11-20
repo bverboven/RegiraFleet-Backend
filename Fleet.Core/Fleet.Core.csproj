@@ -9,7 +9,7 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="Regira.Entities.DependencyInjection" Version="4.12.1" />
+	    <PackageReference Include="Regira.Entities.DependencyInjection" Version="4.12.1" />
     </ItemGroup>
 
 </Project>

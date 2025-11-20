@@ -240,7 +240,7 @@ public class DataSeeder(FleetContextBase dbContext, WritableTenantContext tenant
             .AsNoTracking()
             .ToArrayAsync();
 
-        var codes = new Queue<int>(Enumerable.Range(0, 1000 * _factor).Select((_, i) => i + 1).Shuffle().Take(100 * _factor));
+        var codes = new Queue<int>(Enumerable.Shuffle(Enumerable.Range(0, 1000 * _factor).Select((_, i) => i + 1)).Take(100 * _factor));
 
         var items = new Faker<Vehicle>()
             .RuleFor(x => x.TenantId, _ => tenantId)
@@ -276,12 +276,13 @@ public class DataSeeder(FleetContextBase dbContext, WritableTenantContext tenant
             .RuleFor(x => x.TenantId, _ => tenantId)
             .RuleFor(x => x.VehicleId, (f) => f.PickRandom(vehicleIds))
             .RuleFor(x => x.OperatorId, (f) => f.PickRandom(suppliers).Id)
-            .RuleFor(x => x.InterventionTypeId, (f, x) => (suppliers.FirstOrDefault(s => s.Id == x.OperatorId)
-                ?.InterventionTypeIds
-                .Shuffle()
-                .FirstOrDefault())
-                ?? f.PickRandom(typeIds)
-            )
+            .RuleFor(x => x.InterventionTypeId, (f, x) =>
+            {
+                var ids = suppliers.FirstOrDefault(s => s.Id == x.OperatorId)?.InterventionTypeIds;
+                return ids != null
+                    ? Enumerable.Shuffle(ids).FirstOrDefault()
+                    : f.PickRandom(typeIds);
+            })
             .RuleFor(x => x.Mileage, (f) => (int)(Math.Floor((decimal)f.Random.Number(0, 999_999) / 1000) * 1000))
             .RuleFor(x => x.InterventionDate, f => f.Date.Between(DateTime.Today.AddYears(-5), DateTime.Today))
             .RuleFor(x => x.Invoice, (_, x) => GenerateInvoice(x))
