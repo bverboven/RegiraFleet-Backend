@@ -2,12 +2,11 @@
 using Regira.Entities.DependencyInjection.QueryBuilders;
 using Regira.Entities.DependencyInjection.ServiceBuilders.Extensions;
 using Regira.Entities.EFcore.QueryBuilders.GlobalFilterBuilders;
-using Regira.Entities.Mapping.AutoMapper;
+using Regira.Entities.Mapping.Mapster;
 using Regira.Fleet.Core.Constants;
 using Regira.Fleet.Core.DependencyInjection;
 using Regira.Fleet.Identity.Data;
 using Regira.Fleet.Identity.DependencyInjection.Entities;
-using Regira.Fleet.Identity.DependencyInjection.Mapping;
 using Regira.Normalizing.Models;
 
 
@@ -22,7 +21,8 @@ public class FleetServiceBuilder(IServiceCollection services, FleetHostingOption
             // Entity context
             .UseEntities<AccountsContextBase>(c =>
             {
-                c.UseAutoMapper((_, o) => o.AddProfile(typeof(IdentityProfile)));
+                c.UseMapsterMapping();
+                //c.UseAutoMapper((_, o) => o.AddProfile(typeof(IdentityProfile)));
                 c.UseDefaults(ed => ed.ConfigureNormalizing(o => o.Transform = TextTransform.ToUpperCase));
 
                 c.AddGlobalFilterQueryBuilder<FilterIdsQueryBuilder<string>>();

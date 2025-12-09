@@ -1,6 +1,6 @@
-﻿using System.Text.Json.Serialization;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
+﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.OpenApi;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using Regira.Fleet.DependencyInjection;
@@ -16,8 +16,8 @@ using Regira.Security.Abstractions;
 using Regira.Security.Encryption;
 using Regira.Serializing.Abstractions;
 using Regira.Serializing.Newtonsoft.Json;
-using Regira.Web.Swagger.Security;
 using Serilog;
+using System.Text.Json.Serialization;
 using JsonSerializer = Regira.Serializing.Newtonsoft.Json.JsonSerializer;
 
 namespace Regira.Fleet.Manager.Api.Infrastructure;
@@ -78,9 +78,21 @@ public static class HostingExtensions
                     )
             )
             // Swagger (with auth)
-            .AddSwaggerGen(c =>
+            .AddOpenApi()
+            .AddSwaggerGen(options =>
             {
-                c.AddJwtAuthentication();
+                options.AddSecurityDefinition("bearer", new OpenApiSecurityScheme
+                {
+                    Type = SecuritySchemeType.Http,
+                    Scheme = "bearer",
+                    BearerFormat = "JWT",
+                    Description = "JWT Authorization header using the Bearer scheme."
+                });
+
+                options.AddSecurityRequirement(document => new OpenApiSecurityRequirement
+                {
+                    [new OpenApiSecuritySchemeReference("bearer", document)] = []
+                });
             })
             // necessary services
             .AddHttpContextAccessor()
@@ -134,7 +146,7 @@ public static class HostingExtensions
 
     public static WebApplication ConfigureApp(this WebApplication app)
     {
-        app.UseSwagger();
+        app.UseSwagger(options => options.OpenApiVersion = OpenApiSpecVersion.OpenApi3_1);
         app.UseSwaggerUI();
 
         app.UseHttpsRedirection();

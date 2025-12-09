@@ -9,18 +9,18 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="10.0.0">
+        <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="10.0.1">
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
-        <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="10.0.0" />
-        <PackageReference Include="Microsoft.Extensions.Configuration.UserSecrets" Version="10.0.0" />
-        <PackageReference Include="Microsoft.Extensions.Hosting" Version="10.0.0" />
-        <PackageReference Include="Regira.Security" Version="4.9.0" />
+        <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="10.0.1" />
+        <PackageReference Include="Microsoft.Extensions.Configuration.UserSecrets" Version="10.0.1" />
+        <PackageReference Include="Microsoft.Extensions.Hosting" Version="10.0.1" />
+        <PackageReference Include="Regira.Security" Version="5.0.0" />
     </ItemGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\Fleet.Data.MySQL\Fleet.Data.MySQL.csproj" />
+        <!--<ProjectReference Include="..\Fleet.Data.MySQL\Fleet.Data.MySQL.csproj" />-->
         <ProjectReference Include="..\Fleet.Data.PostgreSQL\Fleet.Data.PostgreSQL.csproj" />
         <ProjectReference Include="..\Fleet.Data.SqlServer\Fleet.Data.SqlServer.csproj" />
         <ProjectReference Include="..\Fleet.Identity.Data.MySQL\Fleet.Identity.Data.MySQL.csproj" />

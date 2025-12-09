@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <TargetFramework>net9.0</TargetFramework>
+        <TargetFramework>net10.0</TargetFramework>
         <RootNamespace>Regira.Fleet.Data.PostgreSQL</RootNamespace>
         <AssemblyName>Regira.Fleet.Data.PostgreSQL</AssemblyName>
         <Authors>B.Verboven</Authors>
@@ -12,7 +12,7 @@
 
     <ItemGroup>
         <ProjectReference Include="..\Fleet.Data.Core\Fleet.Data.Core.csproj" />
-        <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="9.0.4" />
+        <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="10.0.0" />
     </ItemGroup>
 
 </Project>
