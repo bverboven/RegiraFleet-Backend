@@ -5,7 +5,7 @@ using Microsoft.Extensions.Hosting;
 //using Regira.Fleet.Data.MySQL;
 using Regira.Fleet.Data.PostgreSQL;
 using Regira.Fleet.Data.SqlServer;
-using Regira.Fleet.Identity.Data.MySQL;
+//using Regira.Fleet.Identity.Data.MySQL;
 using Regira.Fleet.Identity.Data.PostgreSQL;
 using Regira.Fleet.Identity.Data.SqlServer;
 

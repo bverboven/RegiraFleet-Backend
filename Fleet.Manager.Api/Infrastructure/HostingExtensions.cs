@@ -78,7 +78,7 @@ public static class HostingExtensions
                     )
             )
             // Swagger (with auth)
-            .AddOpenApi()
+            //.AddOpenApi()
             .AddSwaggerGen(options =>
             {
                 options.AddSecurityDefinition("bearer", new OpenApiSecurityScheme
@@ -146,6 +146,7 @@ public static class HostingExtensions
 
     public static WebApplication ConfigureApp(this WebApplication app)
     {
+        //app.MapOpenApi();
         app.UseSwagger(options => options.OpenApiVersion = OpenApiSpecVersion.OpenApi3_1);
         app.UseSwaggerUI();
 

@@ -45,7 +45,8 @@ public static class InterventionServiceCollectionExtensions
                 e.SortBy((query, _) => query
                     .OrderByDescending(x => x.InterventionDate ?? x.Created)
                     //.OrderByDescending(x => x.Invoices!.Max(i => i.InvoiceDate))
-                    .ThenByDescending(x => x.Id));
+                    .ThenByDescending(x => x.Id)
+                );
                 e.Related(item => item.Labels, item => item.Labels?.Prepare());
                 e.UseMapping<InterventionDto, InterventionInputDto>();
                 e.HasAttachments(item => item.Attachments);
