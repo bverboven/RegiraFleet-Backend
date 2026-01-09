@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 17
-VisualStudioVersion = 17.8.34525.116
+# Visual Studio Version 18
+VisualStudioVersion = 18.0.11222.15
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Fleet.Library", "Fleet.Library\Fleet.Library.csproj", "{94760880-1AC7-4421-8560-4C19236A9191}"
 EndProject
@@ -52,6 +52,11 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Fleet.Data.SqlServer", "Fleet.Data.SqlServer\Fleet.Data.SqlServer.csproj", "{261DF799-E9AA-4C4F-9571-CAB18C333622}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Fleet.Identity.Data.SqlServer", "Fleet.Identity.Data.SqlServer\Fleet.Identity.Data.SqlServer.csproj", "{27C69017-59DA-4A4E-B889-C890E4A378ED}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{DBFEF4AA-14C0-436B-AE1D-82C9198C94BB}"
+	ProjectSection(SolutionItems) = preProject
+		.gitignore = .gitignore
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
