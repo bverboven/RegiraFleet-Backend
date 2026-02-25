@@ -11,7 +11,7 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <!--<ProjectReference Include="..\Fleet.Data.MySQL\Fleet.Data.MySQL.csproj" />-->
+        <ProjectReference Include="..\Fleet.Data.MySQL\Fleet.Data.MySQL.csproj" />
         <ProjectReference Include="..\Fleet.Data.PostgreSQL\Fleet.Data.PostgreSQL.csproj" />
         <ProjectReference Include="..\Fleet.Data.SqlServer\Fleet.Data.SqlServer.csproj" />
         <ProjectReference Include="..\Fleet.Library\Fleet.Library.csproj" />

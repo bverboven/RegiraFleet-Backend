@@ -9,7 +9,7 @@ using Regira.Fleet.Core.Constants;
 using Regira.Fleet.Core.DependencyInjection;
 using Regira.Fleet.Core.Models;
 using Regira.Fleet.Data;
-//using Regira.Fleet.Data.MySQL;
+using Regira.Fleet.Data.MySQL;
 using Regira.Fleet.Data.PostgreSQL;
 using Regira.Fleet.Data.SqlServer;
 using Regira.Fleet.Models.InterventionOperators.Operators;
@@ -54,7 +54,7 @@ public static class ServiceCollectionExtensions
         return builder.Options.DatabaseType switch
         {
             DataBaseTypes.PostgreSQL => builder.AddPgContext(builder.Options.ConnectionString),
-            //DataBaseTypes.MySQL => builder.AddMySqlContext(builder.Options.ConnectionString),
+            DataBaseTypes.MySQL => builder.AddMySqlContext(builder.Options.ConnectionString),
             DataBaseTypes.SqlServer => builder.AddSqlServerContext(builder.Options.ConnectionString),
             _ => throw new NotSupportedException($"Type {builder.Options.DatabaseType} not supported"),
         };
@@ -95,23 +95,23 @@ public static class ServiceCollectionExtensions
                      ;
              });
     }
-//    public static FleetServiceBuilder AddMySqlContext(this FleetServiceBuilder builder, string connectionString)
-//    {
-//        return builder.AddDbContext<FleetMySqlContext>(db =>
-//            {
-//                db.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString), o =>
-//                    {
-//                        o
-//                            .MigrationsAssembly(typeof(FleetMySqlContext).Assembly)
-//                            .UseQuerySplittingBehavior(QuerySplittingBehavior.SplitQuery);
-//                    })
-//#if DEBUG
-//                    .EnableDetailedErrors()
-//                    .EnableSensitiveDataLogging()
-//#endif
-//                    ;
-//            });
-//    }
+    public static FleetServiceBuilder AddMySqlContext(this FleetServiceBuilder builder, string connectionString)
+    {
+        return builder.AddDbContext<FleetMySqlContext>(db =>
+            {
+                db.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString), o =>
+                    {
+                        o
+                            .MigrationsAssembly(typeof(FleetMySqlContext).Assembly)
+                            .UseQuerySplittingBehavior(QuerySplittingBehavior.SplitQuery);
+                    })
+#if DEBUG
+                    .EnableDetailedErrors()
+                    .EnableSensitiveDataLogging()
+#endif
+                    ;
+            });
+    }
     public static FleetServiceBuilder AddSqlServerContext(this FleetServiceBuilder builder, string connectionString)
     {
         return builder.AddDbContext<FleetSqlServerContext>(db =>
