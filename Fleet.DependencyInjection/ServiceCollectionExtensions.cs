@@ -152,12 +152,12 @@ public static class ServiceCollectionExtensions
     {
         builder.Entities
             .WithAttachments(configure)
-            .ConfigureTypedAttachmentService(db => (
+            .ConfigureTypedAttachmentService(db =>
             [
                 db.InterventionAttachments.ToDescriptor<Intervention>(),
                 db.InterventionOperatorAttachments.ToDescriptor<Operator>(),
                 db.VehicleAttachments.ToDescriptor<Vehicle>()
-            ]));
+            ]);
 
         return builder;
     }
