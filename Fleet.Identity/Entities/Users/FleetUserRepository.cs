@@ -11,6 +11,7 @@ using Regira.Fleet.Identity.Models.Users.Claims;
 using Regira.Utilities;
 
 namespace Regira.Fleet.Identity.Entities.Users;
+
 public class FleetUserRepository(AccountsContextBase dbContext, UserManager<FleetUser> userManager, IEnumerable<IFilteredQueryBuilder<FleetUser, string, FleetUserSearchObject>> queryFilters, IMapper mapper)
     : IEntityRepository<FleetUserModel, string, FleetUserSearchObject, EntitySortBy, FleetUserIncludes>
 {
@@ -130,8 +131,15 @@ public class FleetUserRepository(AccountsContextBase dbContext, UserManager<Flee
             await Add(model);
         }
     }
-    public Task Remove(FleetUserModel item)
-        => userManager.DeleteAsync(mapper.Map<FleetUser>(item));
+
+    public async Task Remove(FleetUserModel item)
+    {
+        var user = await userManager.FindByIdAsync(item.Id);
+        if (user != null)
+        {
+            await userManager.DeleteAsync(user);
+        }
+    }
 
     public void PrepareItem(FleetUserModel model, FleetUser? original)
     {
