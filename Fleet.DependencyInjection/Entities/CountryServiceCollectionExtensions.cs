@@ -14,7 +14,7 @@ public static class CountryServiceCollectionExtensions
             .For<Country, string>(e =>
             {
                 e.UseEntityService<CountryRepository>();
-                e.AddMapping<CountryDto, CountryDto>();
+                //e.AddMapping<CountryDto, CountryDto>();
             });
         return services;
     }

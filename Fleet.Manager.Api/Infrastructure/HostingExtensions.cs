@@ -11,7 +11,7 @@ using Regira.Fleet.Identity.Web.Middleware;
 using Regira.Fleet.Statistics;
 using Regira.IO.Storage.FileSystem;
 using Regira.Office.Excel.Abstractions;
-using Regira.Office.Mail.SendGrid;
+using Regira.Office.Mail.MailGun;
 using Regira.Security.Abstractions;
 using Regira.Security.Encryption;
 using Regira.Serializing.Abstractions;
@@ -133,11 +133,21 @@ public static class HostingExtensions
                 var options = config.GetSection("Identity").Get<FleetIdentityOptions>()!;
                 o.SecretKey = options.SecretKey;
                 o.Audiences.AddRange(options.Audiences);
+                //o.AddMailer(_ =>
+                //{
+                //    var key = config["SendGrid:Key"];
+                //    ArgumentException.ThrowIfNullOrWhiteSpace(key, "SendGrid API key");
+                //    return new SendGridMailer(new SendGridConfig { Key = key });
+                //});
                 o.AddMailer(_ =>
                 {
-                    var key = config["SendGrid:Key"];
-                    ArgumentException.ThrowIfNullOrWhiteSpace(key, "SendGrid API key");
-                    return new SendGridMailer(new SendGridConfig { Key = key });
+                    var mailConfig = new MailgunConfig
+                    {
+                        Api = config["MailGun:Api"] ?? throw new NullReferenceException("Config missing for MailGun:Api"),
+                        Domain = config["MailGun:Domain"] ?? throw new NullReferenceException("Config missing for MailGun:Domain"),
+                        Key = config["MailGun::Key"] ?? throw new NullReferenceException("Config missing for MailGun:Key")
+                    };
+                    return new MailGunMailer(mailConfig);
                 });
             });
 

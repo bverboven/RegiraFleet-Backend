@@ -27,7 +27,8 @@
   <ItemGroup>
 	<PackageReference Include="Regira.Office.Excel.NpoiMapper" Version="5.0.1" />
 	<PackageReference Include="Regira.Office.Excel.EPPlus" Version="5.0.1" />
-	<PackageReference Include="Regira.Office.Mail.SendGrid" Version="5.0.1" />
+	<!--<PackageReference Include="Regira.Office.Mail.SendGrid" Version="5.0.1" />-->
+	<PackageReference Include="Regira.Office.Mail.MailGun" Version="5.0.1" />
 	<PackageReference Include="Regira.Security" Version="5.0.1" />
 	<PackageReference Include="Regira.Serializing.Newtonsoft" Version="5.0.1" />
   </ItemGroup>

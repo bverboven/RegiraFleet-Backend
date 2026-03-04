@@ -23,7 +23,6 @@
     <Project Path="Fleet.Models/Fleet.Models.csproj" />
   </Folder>
   <Folder Name="/Solution Items/">
-    <File Path=".github/instructions/add-entity.instructions.md" />
     <File Path=".gitignore" />
   </Folder>
   <Folder Name="/Tools/">

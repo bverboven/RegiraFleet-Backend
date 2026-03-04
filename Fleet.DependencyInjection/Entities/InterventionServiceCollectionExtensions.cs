@@ -47,10 +47,13 @@ public static class InterventionServiceCollectionExtensions
                     //.OrderByDescending(x => x.Invoices!.Max(i => i.InvoiceDate))
                     .ThenByDescending(x => x.Id)
                 );
-                e.Related(item => item.Labels, item => item.Labels?.Prepare());
-                e.UseMapping<InterventionDto, InterventionInputDto>();
-                e.HasAttachments(item => item.Attachments);
+
                 e.AddPrepper<InterventionPrepper>();
+                
+                e.Related(item => item.Labels, item => item.Labels?.Prepare());
+                e.HasAttachments(item => item.Attachments);
+                
+                //e.UseMapping<InterventionDto, InterventionInputDto>();
             });
         return services;
     }

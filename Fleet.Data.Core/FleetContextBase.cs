@@ -161,26 +161,4 @@ public abstract class FleetContextBase(DbContextOptions options) : DbContext(opt
         // Decimals
         modelBuilder.SetDecimalPrecisionConvention(9, 2);
     }
-
-    // AutoTruncate
-    //public override int SaveChanges()
-    //{
-    //    this.AutoTruncateStringsToMaxLengthForEntries();
-    //    return base.SaveChanges();
-    //}
-    //public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = new())
-    //{
-    //    this.AutoTruncateStringsToMaxLengthForEntries();
-    //    return base.SaveChangesAsync(cancellationToken);
-    //}
-    //public override int SaveChanges(bool acceptAllChangesOnSuccess)
-    //{
-    //    this.AutoTruncateStringsToMaxLengthForEntries();
-    //    return base.SaveChanges(acceptAllChangesOnSuccess);
-    //}
-    //public override Task<int> SaveChangesAsync(bool acceptAllChangesOnSuccess, CancellationToken cancellationToken = new())
-    //{
-    //    this.AutoTruncateStringsToMaxLengthForEntries();
-    //    return base.SaveChangesAsync(acceptAllChangesOnSuccess, cancellationToken);
-    //}
 }
