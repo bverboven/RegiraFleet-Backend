@@ -15,11 +15,24 @@ public class OperatorNormalizer(INormalizer defaultNormalizer, IdentificationNum
     {
         // KBO
         item.NormalizedIdentificationNumber = idNumberNormalizer.Normalize(item.IdentificationNumber);
+        
+        // Title
+        item.NormalizedTitle = DefaultPropertyNormalizer.Normalize(item.Title);
+
+        // NormalizedContent
+        var contentEntries = GetDefaultNormalizedContentEntries(item);
+        contentEntries.AddRange([
+            item.NormalizedIdentificationNumber
+        ]);
 
         // ContactData
         if (item.ContactData?.Any() == true)
         {
             await contactDataNormalizer.HandleNormalizeMany(item.ContactData);
+        }
+        if (item.ContactData?.Any() == true)
+        {
+            contentEntries.AddRange(item.ContactData.Select(a => a.NormalizedValue));
         }
 
         // Address
@@ -29,34 +42,13 @@ public class OperatorNormalizer(INormalizer defaultNormalizer, IdentificationNum
             {
                 addressNormalizer.Normalize(address, cultureContext.LangCode);
             }
-        }
-
-        if (item.Labels?.Any() == true)
-        {
-            await labelNormalizer.HandleNormalizeMany(item.Labels);
-        }
-
-        // Title
-        item.NormalizedTitle = DefaultPropertyNormalizer.Normalize(item.Title);
-
-        // NormalizedContent
-        var contentEntries = GetDefaultNormalizedContentEntries(item);
-        contentEntries.AddRange([
-            item.NormalizedIdentificationNumber?.ToUpper()
-        ]);
-
-        if (item.ContactData?.Any() == true)
-        {
-            contentEntries.AddRange(item.ContactData.Select(a => a.NormalizedValue));
-        }
-
-        if (item.Addresses?.Any() == true)
-        {
             contentEntries.AddRange(item.Addresses.Select(a => a.NormalizedContent));
         }
 
+        // Labels
         if (item.Labels?.Any() == true)
         {
+            await labelNormalizer.HandleNormalizeMany(item.Labels);
             contentEntries.AddRange(item.Labels.Select(a => a.NormalizedContent));
         }
 
