@@ -9,9 +9,9 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="Regira.Office" Version="5.0.1" />
-        <PackageReference Include="Regira.Security" Version="5.0.1" />
-        <PackageReference Include="Regira.Web" Version="5.0.1" />
+        <PackageReference Include="Regira.Office" Version="5.0.2" />
+        <PackageReference Include="Regira.Security" Version="5.0.2" />
+        <PackageReference Include="Regira.Web" Version="5.0.2" />
     </ItemGroup>
 
     <ItemGroup>
