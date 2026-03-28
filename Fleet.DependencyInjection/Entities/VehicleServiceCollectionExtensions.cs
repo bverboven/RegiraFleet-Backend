@@ -27,27 +27,27 @@ public static class VehicleServiceCollectionExtensions
             {
                 e.AddNormalizer<FleetEntityNormalizer<Brand>>();
                 _ = dbType == DataBaseTypes.PostgreSQL
-                    ? e.AddQueryFilter<BrandPostgresQueryFilter>()
-                    : e.AddQueryFilter<BrandQueryFilter>();
+                    ? e.AddFilter<BrandPostgresQueryFilter>()
+                    : e.AddFilter<BrandQueryFilter>();
             })
             // VehicleType
             .For<VehicleType, VehicleTypeSearchObject, EntitySortBy, EntityIncludes>(e =>
             {
                 e.AddNormalizer<FleetEntityNormalizer<VehicleType>>();
                 _ = dbType == DataBaseTypes.PostgreSQL
-                    ? e.AddQueryFilter<VehicleTypePostgresQueryFilter>()
-                    : e.AddQueryFilter<VehicleTypeQueryFilter>();
+                    ? e.AddFilter<VehicleTypePostgresQueryFilter>()
+                    : e.AddFilter<VehicleTypeQueryFilter>();
                 e.Related(item => item.Translations, item => item.Translations?.Prepare());
             })
             // Vehicle
             .For<Vehicle, VehicleSearchObject, EntitySortBy, VehicleIncludes>(e =>
             {
-                e.AddQueryFilter<VehicleFilteredQueryBuilder>();
+                e.AddFilter<VehicleFilteredQueryBuilder>();
                 _ = dbType == DataBaseTypes.PostgreSQL
-                    ? e.AddQueryFilter<VehiclePostgresLikeQueryFilter>()
-                    : e.AddQueryFilter<VehicleLikeQueryFilter>();
+                    ? e.AddFilter<VehiclePostgresLikeQueryFilter>()
+                    : e.AddFilter<VehicleLikeQueryFilter>();
                 e.SortBy((query, _) => query.OrderBy(x => x.Code));
-                e.Includes<VehicleIncludingQueryBuilder>();
+                e.AddIncludes<VehicleIncludingQueryBuilder>();
 
                 e.AddNormalizer<VehicleNormalizer>();
 

@@ -15,8 +15,8 @@ public static class TenantServiceCollectionExtensions
         services
             .For<Tenant, string, TenantSearchObject, EntitySortBy, TenantIncludes>(e =>
             {
-                e.AddQueryFilter<TenantFilteredQueryBuilder>();
-                e.Includes<TenantIncludableQueryBuilder>();
+                e.AddFilter<TenantFilteredQueryBuilder>();
+                e.AddIncludes<TenantIncludableQueryBuilder>();
                 e.Related<TenantSubscription, int>(c => c.Subscriptions);
             })
             .For<TenantSubscription, int, TenantSubscriptionSearchObject>();

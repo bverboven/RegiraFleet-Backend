@@ -20,14 +20,14 @@ public static class UserServiceCollectionExtensions
             .For<FleetUserModel, string, FleetUserSearchObject, EntitySortBy, FleetUserIncludes>(e =>
             {
                 e.HasRepository<FleetUserRepository>();
-                e.AddQueryFilter<FleetUser, string, FleetUserSearchObject, UserQueryFilter>();
+                e.AddFilter<FleetUser, string, FleetUserSearchObject, UserQueryFilter>();
                 if (dbType == DataBaseTypes.PostgreSQL)
                 {
-                    e.AddQueryFilter<FleetUser, string, FleetUserSearchObject, UserPostgresLikeQueryFilter>();
+                    e.AddFilter<FleetUser, string, FleetUserSearchObject, UserPostgresLikeQueryFilter>();
                 }
                 else
                 {
-                    e.AddQueryFilter<FleetUser, string, FleetUserSearchObject, UserLikeQueryFilter>();
+                    e.AddFilter<FleetUser, string, FleetUserSearchObject, UserLikeQueryFilter>();
                 }
                 
                 e.UseMapping<FleetUserDto, FleetUserInputDto>()

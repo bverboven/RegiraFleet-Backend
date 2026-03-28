@@ -32,11 +32,11 @@ public static class OperatorServiceCollectionExtensions
         services
             .For<Operator, OperatorSearchObject, EntitySortBy, OperatorIncludes>(e =>
             {
-                e.AddQueryFilter<OperatorFilteredQueryBuilder>();
+                e.AddFilter<OperatorFilteredQueryBuilder>();
                 _ = dbType == DataBaseTypes.PostgreSQL
-                    ? e.AddQueryFilter<OperatorFilteredPostgresLikeQueryBuilder>()
-                    : e.AddQueryFilter<OperatorFilteredLikeQueryBuilder>();
-                e.Includes<OperatorIncludingQueryBuilder>();
+                    ? e.AddFilter<OperatorFilteredPostgresLikeQueryBuilder>()
+                    : e.AddFilter<OperatorFilteredLikeQueryBuilder>();
+                e.AddIncludes<OperatorIncludingQueryBuilder>();
                 e.SortBy((query, _) => query.OrderBy(x => x.NormalizedTitle));
 
                 e.Related(item => item.Addresses, item => item.Addresses?.Prepare());
