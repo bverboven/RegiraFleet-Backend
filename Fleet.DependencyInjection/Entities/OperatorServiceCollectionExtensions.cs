@@ -1,6 +1,5 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Regira.Entities.DependencyInjection.Attachments;
-using Regira.Entities.DependencyInjection.Preppers;
 using Regira.Entities.DependencyInjection.ServiceBuilders.Abstractions;
 using Regira.Entities.Models;
 using Regira.Fleet.Core.Abstractions;
@@ -10,6 +9,10 @@ using Regira.Fleet.Data.Extensions;
 using Regira.Fleet.DependencyInjection.Postgres;
 using Regira.Fleet.Entities.InterventionOperators.Normalizers;
 using Regira.Fleet.Entities.InterventionOperators.Operators;
+using Regira.Fleet.Models.Addresses;
+using Regira.Fleet.Models.EntityLabels;
+using Regira.Fleet.Models.InterventionOperators.Addresses;
+using Regira.Fleet.Models.InterventionOperators.ContactData;
 using Regira.Fleet.Models.InterventionOperators.Operators;
 using Regira.Globalization.LibPhoneNumber;
 
@@ -29,25 +32,25 @@ public static class OperatorServiceCollectionExtensions
         services
             .For<Operator, OperatorSearchObject, EntitySortBy, OperatorIncludes>(e =>
             {
-                e.AddNormalizer<OperatorNormalizer>();
-                e.AddQueryFilter<OperatorFilteredQueryBuilder>();
+                e.AddFilter<OperatorFilteredQueryBuilder>();
                 _ = dbType == DataBaseTypes.PostgreSQL
-                    ? e.AddQueryFilter<OperatorFilteredPostgresLikeQueryBuilder>()
-                    : e.AddQueryFilter<OperatorFilteredLikeQueryBuilder>();
-                e.Includes<OperatorIncludingQueryBuilder>();
+                    ? e.AddFilter<OperatorFilteredPostgresLikeQueryBuilder>()
+                    : e.AddFilter<OperatorFilteredLikeQueryBuilder>();
+                e.AddIncludes<OperatorIncludingQueryBuilder>();
                 e.SortBy((query, _) => query.OrderBy(x => x.NormalizedTitle));
 
-                e.Related(item => item.Addresses);
-                e.Related(item => item.ContactData);
-                e.Related(item => item.Labels);
-                e.Prepare(item =>
-                {
-                    item.Addresses?.Prepare();
-                    item.ContactData?.Prepare();
-                    item.Labels?.Prepare();
-                });
-                e.AddPrepper<OperatorInterventionTypesPrepper>();
+                e.Related(item => item.Addresses, item => item.Addresses?.Prepare());
+                e.Related(item => item.ContactData, item => item.ContactData?.Prepare());
+                e.Related(item => item.Labels, item => item.Labels?.Prepare());
+                e.Related(item => item.InterventionTypes, item => item.InterventionTypes?.Prepare());
                 e.HasAttachments(item => item.Attachments);
+
+                //e.UseMapping<OperatorDto, OperatorInputDto>();
+                //e.AddMapping<OperatorAddress, AddressDto>();
+                //e.AddMapping<OperatorContactData, OperatorContactDataDto>();
+                //e.AddMapping<OperatorLabel, EntityLabelDto>();
+
+                e.AddNormalizer<OperatorNormalizer>();
             });
 
         return services;

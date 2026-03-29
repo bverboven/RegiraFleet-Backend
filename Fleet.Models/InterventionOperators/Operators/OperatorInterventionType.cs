@@ -1,14 +1,13 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Regira.Entities.Models.Abstractions;
 using Regira.Fleet.Models.InterventionTypes;
 
 namespace Regira.Fleet.Models.InterventionOperators.Operators;
 
-[PrimaryKey(nameof(OperatorId), nameof(InterventionTypeId))]
-public class OperatorInterventionType
+public class OperatorInterventionType : IEntityWithSerial
 {
+    public int Id { get; set; }
     public int OperatorId { get; set; }
     public int InterventionTypeId { get; set; }
 
-    public Operator? Operator { get; set; }
     public InterventionType? InterventionType { get; set; }
 }

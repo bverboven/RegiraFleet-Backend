@@ -3,24 +3,27 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
-using Regira.Fleet.Data.MySQL;
+using Regira.Fleet.Data.SqlServer;
 
 #nullable disable
 
-namespace Regira.Fleet.Data.MySQL.Migrations
+namespace Regira.Fleet.Data.SqlServer.Migrations
 {
-    [DbContext(typeof(FleetMySqlContext))]
-    partial class FleetMySqlContextModelSnapshot : ModelSnapshot
+    [DbContext(typeof(FleetSqlServerContext))]
+    [Migration("20260304171833_InitialMigration")]
+    partial class InitialMigration
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "9.0.8")
-                .HasAnnotation("Relational:MaxIdentifierLength", 64);
+                .HasAnnotation("ProductVersion", "10.0.3")
+                .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
-            MySqlModelBuilderExtensions.AutoIncrementColumns(modelBuilder);
+            SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
             modelBuilder.Entity("Regira.Entities.Attachments.Models.Attachment", b =>
                 {
@@ -29,24 +32,24 @@ namespace Regira.Fleet.Data.MySQL.Migrations
                         .HasColumnType("int")
                         .HasColumnName("id");
 
-                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("ContentType")
                         .HasMaxLength(128)
-                        .HasColumnType("varchar(128)")
+                        .HasColumnType("nvarchar(128)")
                         .HasColumnName("content_type");
 
                     b.Property<DateTime>("Created")
-                        .HasColumnType("datetime(6)")
+                        .HasColumnType("datetime2")
                         .HasColumnName("created");
 
                     b.Property<string>("FileName")
                         .HasMaxLength(256)
-                        .HasColumnType("varchar(256)")
+                        .HasColumnType("nvarchar(256)")
                         .HasColumnName("file_name");
 
                     b.Property<DateTime?>("LastModified")
-                        .HasColumnType("datetime(6)")
+                        .HasColumnType("datetime2")
                         .HasColumnName("last_modified");
 
                     b.Property<long>("Length")
@@ -55,7 +58,7 @@ namespace Regira.Fleet.Data.MySQL.Migrations
 
                     b.Property<string>("Path")
                         .HasMaxLength(1024)
-                        .HasColumnType("varchar(1024)")
+                        .HasColumnType("nvarchar(1024)")
                         .HasColumnName("path");
 
                     b.HasKey("Id")
@@ -71,36 +74,36 @@ namespace Regira.Fleet.Data.MySQL.Migrations
                         .HasColumnType("int")
                         .HasColumnName("id");
 
-                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Box")
                         .HasMaxLength(16)
-                        .HasColumnType("varchar(16)")
+                        .HasColumnType("nvarchar(16)")
                         .HasColumnName("box");
 
                     b.Property<string>("City")
                         .HasMaxLength(128)
-                        .HasColumnType("varchar(128)")
+                        .HasColumnType("nvarchar(128)")
                         .HasColumnName("city");
 
                     b.Property<string>("CountryCode")
                         .HasMaxLength(2)
-                        .HasColumnType("varchar(2)")
+                        .HasColumnType("nvarchar(2)")
                         .HasColumnName("country_code");
 
                     b.Property<string>("Description")
                         .HasMaxLength(512)
-                        .HasColumnType("varchar(512)")
+                        .HasColumnType("nvarchar(512)")
                         .HasColumnName("description");
 
                     b.Property<string>("NormalizedContent")
                         .HasMaxLength(2048)
-                        .HasColumnType("varchar(2048)")
+                        .HasColumnType("nvarchar(2048)")
                         .HasColumnName("normalized_content");
 
                     b.Property<string>("Number")
                         .HasMaxLength(16)
-                        .HasColumnType("varchar(16)")
+                        .HasColumnType("nvarchar(16)")
                         .HasColumnName("number");
 
                     b.Property<int>("OperatorId")
@@ -109,12 +112,12 @@ namespace Regira.Fleet.Data.MySQL.Migrations
 
                     b.Property<string>("PostBox")
                         .HasMaxLength(16)
-                        .HasColumnType("varchar(16)")
+                        .HasColumnType("nvarchar(16)")
                         .HasColumnName("post_box");
 
                     b.Property<string>("PostalCode")
                         .HasMaxLength(16)
-                        .HasColumnType("varchar(16)")
+                        .HasColumnType("nvarchar(16)")
                         .HasColumnName("postal_code");
 
                     b.Property<int>("SortOrder")
@@ -123,16 +126,19 @@ namespace Regira.Fleet.Data.MySQL.Migrations
 
                     b.Property<string>("Street")
                         .HasMaxLength(128)
-                        .HasColumnType("varchar(128)")
+                        .HasColumnType("nvarchar(128)")
                         .HasColumnName("street");
 
                     b.Property<string>("Title")
                         .HasMaxLength(64)
-                        .HasColumnType("varchar(64)")
+                        .HasColumnType("nvarchar(64)")
                         .HasColumnName("title");
 
                     b.HasKey("Id")
                         .HasName("pk_intervention_operator_addresses");
+
+                    b.HasIndex("NormalizedContent")
+                        .HasDatabaseName("ix_intervention_operator_addresses_normalized_content");
 
                     b.HasIndex("OperatorId")
                         .HasDatabaseName("ix_intervention_operator_addresses_operator_id");
@@ -147,10 +153,10 @@ namespace Regira.Fleet.Data.MySQL.Migrations
                         .HasColumnType("int")
                         .HasColumnName("id");
 
-                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<DateTime>("Created")
-                        .HasColumnType("datetime(6)")
+                        .HasColumnType("datetime2")
                         .HasColumnName("created");
 
                     b.Property<int>("DataType")
@@ -159,16 +165,16 @@ namespace Regira.Fleet.Data.MySQL.Migrations
 
                     b.Property<string>("Description")
                         .HasMaxLength(512)
-                        .HasColumnType("varchar(512)")
+                        .HasColumnType("nvarchar(512)")
                         .HasColumnName("description");
 
                     b.Property<DateTime?>("LastModified")
-                        .HasColumnType("datetime(6)")
+                        .HasColumnType("datetime2")
                         .HasColumnName("last_modified");
 
                     b.Property<string>("NormalizedValue")
                         .HasMaxLength(256)
-                        .HasColumnType("varchar(256)")
+                        .HasColumnType("nvarchar(256)")
                         .HasColumnName("normalized_value");
 
                     b.Property<int?>("OperatorId")
@@ -181,13 +187,13 @@ namespace Regira.Fleet.Data.MySQL.Migrations
 
                     b.Property<string>("Title")
                         .HasMaxLength(64)
-                        .HasColumnType("varchar(64)")
+                        .HasColumnType("nvarchar(64)")
                         .HasColumnName("title");
 
                     b.Property<string>("Value")
                         .IsRequired()
                         .HasMaxLength(256)
-                        .HasColumnType("varchar(256)")
+                        .HasColumnType("nvarchar(256)")
                         .HasColumnName("value");
 
                     b.HasKey("Id")
@@ -209,65 +215,65 @@ namespace Regira.Fleet.Data.MySQL.Migrations
                         .HasColumnType("int")
                         .HasColumnName("id");
 
-                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Code")
                         .HasMaxLength(8)
-                        .HasColumnType("varchar(8)")
+                        .HasColumnType("nvarchar(8)")
                         .HasColumnName("code");
 
                     b.Property<DateTime>("Created")
-                        .HasColumnType("datetime(6)")
+                        .HasColumnType("datetime2")
                         .HasColumnName("created");
 
                     b.Property<string>("Description")
-                        .HasColumnType("longtext")
+                        .HasColumnType("nvarchar(max)")
                         .HasColumnName("description");
 
                     b.Property<string>("Guid")
                         .IsRequired()
                         .HasMaxLength(32)
-                        .HasColumnType("varchar(32)")
+                        .HasColumnType("nvarchar(32)")
                         .HasColumnName("guid");
 
                     b.Property<string>("IdentificationNumber")
                         .HasMaxLength(64)
-                        .HasColumnType("varchar(64)")
+                        .HasColumnType("nvarchar(64)")
                         .HasColumnName("identification_number");
 
                     b.Property<bool>("IsArchived")
-                        .HasColumnType("tinyint(1)")
+                        .HasColumnType("bit")
                         .HasColumnName("is_archived");
 
                     b.Property<DateTime?>("LastModified")
-                        .HasColumnType("datetime(6)")
+                        .HasColumnType("datetime2")
                         .HasColumnName("last_modified");
 
                     b.Property<string>("NormalizedContent")
                         .HasMaxLength(2048)
-                        .HasColumnType("varchar(2048)")
+                        .HasColumnType("nvarchar(2048)")
                         .HasColumnName("normalized_content");
 
                     b.Property<string>("NormalizedIdentificationNumber")
                         .HasMaxLength(64)
-                        .HasColumnType("varchar(64)")
+                        .HasColumnType("nvarchar(64)")
                         .HasColumnName("normalized_identification_number");
 
                     b.Property<string>("NormalizedTitle")
                         .HasMaxLength(256)
-                        .HasColumnType("varchar(256)")
+                        .HasColumnType("nvarchar(256)")
                         .HasColumnName("normalized_title");
 
                     b.Property<string>("TenantId")
                         .IsRequired()
                         .HasMaxLength(32)
-                        .HasColumnType("varchar(32)")
+                        .HasColumnType("nvarchar(32)")
                         .HasColumnName("tenant_id");
 
                     b.Property<string>("Title")
                         .IsRequired()
                         .HasMaxLength(128)
-                        .HasColumnType("varchar(128)")
+                        .HasColumnType("nvarchar(128)")
                         .HasColumnName("title");
 
                     b.HasKey("Id")
@@ -281,7 +287,8 @@ namespace Regira.Fleet.Data.MySQL.Migrations
 
                     b.HasIndex("TenantId", "Code")
                         .IsUnique()
-                        .HasDatabaseName("ix_intervention_operators_tenant_id_code");
+                        .HasDatabaseName("ix_intervention_operators_tenant_id_code")
+                        .HasFilter("[code] IS NOT NULL");
 
                     b.ToTable("intervention_operators", (string)null);
                 });
@@ -293,7 +300,7 @@ namespace Regira.Fleet.Data.MySQL.Migrations
                         .HasColumnType("int")
                         .HasColumnName("id");
 
-                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<int>("AttachmentId")
                         .HasColumnType("int")
@@ -321,19 +328,29 @@ namespace Regira.Fleet.Data.MySQL.Migrations
 
             modelBuilder.Entity("Regira.Fleet.Models.InterventionOperators.Operators.OperatorInterventionType", b =>
                 {
-                    b.Property<int>("OperatorId")
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("int")
-                        .HasColumnName("operator_id");
+                        .HasColumnName("id");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<int>("InterventionTypeId")
                         .HasColumnType("int")
                         .HasColumnName("intervention_type_id");
 
-                    b.HasKey("OperatorId", "InterventionTypeId")
+                    b.Property<int>("OperatorId")
+                        .HasColumnType("int")
+                        .HasColumnName("operator_id");
+
+                    b.HasKey("Id")
                         .HasName("pk_intervention_operator_intervention_types");
 
                     b.HasIndex("InterventionTypeId")
                         .HasDatabaseName("ix_intervention_operator_intervention_types_intervention_type_id");
+
+                    b.HasIndex("OperatorId")
+                        .HasDatabaseName("ix_intervention_operator_intervention_types_operator_id");
 
                     b.ToTable("intervention_operator_intervention_types", (string)null);
                 });
@@ -345,24 +362,24 @@ namespace Regira.Fleet.Data.MySQL.Migrations
                         .HasColumnType("int")
                         .HasColumnName("id");
 
-                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<DateTime>("Created")
-                        .HasColumnType("datetime(6)")
+                        .HasColumnType("datetime2")
                         .HasColumnName("created");
 
                     b.Property<string>("LabelType")
                         .HasMaxLength(64)
-                        .HasColumnType("varchar(64)")
+                        .HasColumnType("nvarchar(64)")
                         .HasColumnName("label_type");
 
                     b.Property<DateTime?>("LastModified")
-                        .HasColumnType("datetime(6)")
+                        .HasColumnType("datetime2")
                         .HasColumnName("last_modified");
 
                     b.Property<string>("NormalizedContent")
                         .HasMaxLength(1024)
-                        .HasColumnType("varchar(1024)")
+                        .HasColumnType("nvarchar(1024)")
                         .HasColumnName("normalized_content");
 
                     b.Property<int>("ObjectId")
@@ -375,13 +392,13 @@ namespace Regira.Fleet.Data.MySQL.Migrations
 
                     b.Property<string>("Title")
                         .HasMaxLength(64)
-                        .HasColumnType("varchar(64)")
+                        .HasColumnType("nvarchar(64)")
                         .HasColumnName("title");
 
                     b.Property<string>("Value")
                         .IsRequired()
                         .HasMaxLength(512)
-                        .HasColumnType("varchar(512)")
+                        .HasColumnType("nvarchar(512)")
                         .HasColumnName("value");
 
                     b.HasKey("Id")
@@ -400,50 +417,50 @@ namespace Regira.Fleet.Data.MySQL.Migrations
                         .HasColumnType("int")
                         .HasColumnName("id");
 
-                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Code")
                         .HasMaxLength(8)
-                        .HasColumnType("varchar(8)")
+                        .HasColumnType("nvarchar(8)")
                         .HasColumnName("code");
 
                     b.Property<DateTime>("Created")
-                        .HasColumnType("datetime(6)")
+                        .HasColumnType("datetime2")
                         .HasColumnName("created");
 
                     b.Property<string>("Description")
-                        .HasColumnType("longtext")
+                        .HasColumnType("nvarchar(max)")
                         .HasColumnName("description");
 
                     b.Property<string>("Guid")
                         .IsRequired()
                         .HasMaxLength(32)
-                        .HasColumnType("varchar(32)")
+                        .HasColumnType("nvarchar(32)")
                         .HasColumnName("guid");
 
                     b.Property<bool>("IsArchived")
-                        .HasColumnType("tinyint(1)")
+                        .HasColumnType("bit")
                         .HasColumnName("is_archived");
 
                     b.Property<DateTime?>("LastModified")
-                        .HasColumnType("datetime(6)")
+                        .HasColumnType("datetime2")
                         .HasColumnName("last_modified");
 
                     b.Property<string>("NormalizedTitle")
                         .HasMaxLength(256)
-                        .HasColumnType("varchar(256)")
+                        .HasColumnType("nvarchar(256)")
                         .HasColumnName("normalized_title");
 
                     b.Property<string>("TenantId")
                         .IsRequired()
                         .HasMaxLength(32)
-                        .HasColumnType("varchar(32)")
+                        .HasColumnType("nvarchar(32)")
                         .HasColumnName("tenant_id");
 
                     b.Property<string>("Title")
                         .IsRequired()
                         .HasMaxLength(64)
-                        .HasColumnType("varchar(64)")
+                        .HasColumnType("nvarchar(64)")
                         .HasColumnName("title");
 
                     b.HasKey("Id")
@@ -457,7 +474,8 @@ namespace Regira.Fleet.Data.MySQL.Migrations
 
                     b.HasIndex("TenantId", "Code")
                         .IsUnique()
-                        .HasDatabaseName("ix_intervention_types_tenant_id_code");
+                        .HasDatabaseName("ix_intervention_types_tenant_id_code")
+                        .HasFilter("[code] IS NOT NULL");
 
                     b.HasIndex("TenantId", "Title")
                         .IsUnique()
@@ -474,7 +492,7 @@ namespace Regira.Fleet.Data.MySQL.Migrations
 
                     b.Property<string>("Culture")
                         .HasMaxLength(8)
-                        .HasColumnType("varchar(8)")
+                        .HasColumnType("nvarchar(8)")
                         .HasColumnName("culture");
 
                     b.Property<int>("Id")
@@ -487,13 +505,13 @@ namespace Regira.Fleet.Data.MySQL.Migrations
 
                     b.Property<string>("NormalizedTitle")
                         .HasMaxLength(64)
-                        .HasColumnType("varchar(64)")
+                        .HasColumnType("nvarchar(64)")
                         .HasColumnName("normalized_title");
 
                     b.Property<string>("Title")
                         .IsRequired()
                         .HasMaxLength(64)
-                        .HasColumnType("varchar(64)")
+                        .HasColumnType("nvarchar(64)")
                         .HasColumnName("title");
 
                     b.HasKey("ObjectId", "Culture")
@@ -512,20 +530,20 @@ namespace Regira.Fleet.Data.MySQL.Migrations
                         .HasColumnType("int")
                         .HasColumnName("id");
 
-                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<DateTime>("Created")
-                        .HasColumnType("datetime(6)")
+                        .HasColumnType("datetime2")
                         .HasColumnName("created");
 
                     b.Property<string>("Description")
-                        .HasColumnType("longtext")
+                        .HasColumnType("nvarchar(max)")
                         .HasColumnName("description");
 
                     b.Property<string>("Guid")
                         .IsRequired()
                         .HasMaxLength(32)
-                        .HasColumnType("varchar(32)")
+                        .HasColumnType("nvarchar(32)")
                         .HasColumnName("guid");
 
                     b.Property<int?>("InterventionId")
@@ -541,7 +559,7 @@ namespace Regira.Fleet.Data.MySQL.Migrations
                         .HasColumnName("invoice_id");
 
                     b.Property<DateTime?>("LastModified")
-                        .HasColumnType("datetime(6)")
+                        .HasColumnType("datetime2")
                         .HasColumnName("last_modified");
 
                     b.Property<int?>("Mileage")
@@ -550,7 +568,7 @@ namespace Regira.Fleet.Data.MySQL.Migrations
 
                     b.Property<string>("NormalizedContent")
                         .HasMaxLength(2048)
-                        .HasColumnType("varchar(2048)")
+                        .HasColumnType("nvarchar(2048)")
                         .HasColumnName("normalized_content");
 
                     b.Property<int>("OperatorId")
@@ -560,7 +578,7 @@ namespace Regira.Fleet.Data.MySQL.Migrations
                     b.Property<string>("TenantId")
                         .IsRequired()
                         .HasMaxLength(32)
-                        .HasColumnType("varchar(32)")
+                        .HasColumnType("nvarchar(32)")
                         .HasColumnName("tenant_id");
 
                     b.Property<int>("VehicleId")
@@ -589,7 +607,7 @@ namespace Regira.Fleet.Data.MySQL.Migrations
                         .HasColumnType("int")
                         .HasColumnName("id");
 
-                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<int>("AttachmentId")
                         .HasColumnType("int")
@@ -626,24 +644,24 @@ namespace Regira.Fleet.Data.MySQL.Migrations
                         .HasColumnType("int")
                         .HasColumnName("id");
 
-                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<DateTime>("Created")
-                        .HasColumnType("datetime(6)")
+                        .HasColumnType("datetime2")
                         .HasColumnName("created");
 
                     b.Property<string>("Description")
-                        .HasColumnType("longtext")
+                        .HasColumnType("nvarchar(max)")
                         .HasColumnName("description");
 
                     b.Property<string>("Guid")
                         .IsRequired()
                         .HasMaxLength(32)
-                        .HasColumnType("varchar(32)")
+                        .HasColumnType("nvarchar(32)")
                         .HasColumnName("guid");
 
                     b.Property<DateTime?>("InterventionDate")
-                        .HasColumnType("datetime(6)")
+                        .HasColumnType("datetime2")
                         .HasColumnName("intervention_date");
 
                     b.Property<int?>("InterventionTypeId")
@@ -651,7 +669,7 @@ namespace Regira.Fleet.Data.MySQL.Migrations
                         .HasColumnName("intervention_type_id");
 
                     b.Property<DateTime?>("LastModified")
-                        .HasColumnType("datetime(6)")
+                        .HasColumnType("datetime2")
                         .HasColumnName("last_modified");
 
                     b.Property<int?>("Mileage")
@@ -660,7 +678,7 @@ namespace Regira.Fleet.Data.MySQL.Migrations
 
                     b.Property<string>("NormalizedContent")
                         .HasMaxLength(2048)
-                        .HasColumnType("varchar(2048)")
+                        .HasColumnType("nvarchar(2048)")
                         .HasColumnName("normalized_content");
 
                     b.Property<int>("OperatorId")
@@ -670,7 +688,7 @@ namespace Regira.Fleet.Data.MySQL.Migrations
                     b.Property<string>("TenantId")
                         .IsRequired()
                         .HasMaxLength(32)
-                        .HasColumnType("varchar(32)")
+                        .HasColumnType("nvarchar(32)")
                         .HasColumnName("tenant_id");
 
                     b.Property<int>("VehicleId")
@@ -702,7 +720,7 @@ namespace Regira.Fleet.Data.MySQL.Migrations
                         .HasColumnType("int")
                         .HasColumnName("id");
 
-                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<int>("AttachmentId")
                         .HasColumnType("int")
@@ -735,24 +753,24 @@ namespace Regira.Fleet.Data.MySQL.Migrations
                         .HasColumnType("int")
                         .HasColumnName("id");
 
-                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<DateTime>("Created")
-                        .HasColumnType("datetime(6)")
+                        .HasColumnType("datetime2")
                         .HasColumnName("created");
 
                     b.Property<string>("LabelType")
                         .HasMaxLength(64)
-                        .HasColumnType("varchar(64)")
+                        .HasColumnType("nvarchar(64)")
                         .HasColumnName("label_type");
 
                     b.Property<DateTime?>("LastModified")
-                        .HasColumnType("datetime(6)")
+                        .HasColumnType("datetime2")
                         .HasColumnName("last_modified");
 
                     b.Property<string>("NormalizedContent")
                         .HasMaxLength(1024)
-                        .HasColumnType("varchar(1024)")
+                        .HasColumnType("nvarchar(1024)")
                         .HasColumnName("normalized_content");
 
                     b.Property<int>("ObjectId")
@@ -765,13 +783,13 @@ namespace Regira.Fleet.Data.MySQL.Migrations
 
                     b.Property<string>("Title")
                         .HasMaxLength(64)
-                        .HasColumnType("varchar(64)")
+                        .HasColumnType("nvarchar(64)")
                         .HasColumnName("title");
 
                     b.Property<string>("Value")
                         .IsRequired()
                         .HasMaxLength(512)
-                        .HasColumnType("varchar(512)")
+                        .HasColumnType("nvarchar(512)")
                         .HasColumnName("value");
 
                     b.HasKey("Id")
@@ -790,10 +808,10 @@ namespace Regira.Fleet.Data.MySQL.Migrations
                         .HasColumnType("int")
                         .HasColumnName("id");
 
-                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Description")
-                        .HasColumnType("longtext")
+                        .HasColumnType("nvarchar(max)")
                         .HasColumnName("description");
 
                     b.Property<int>("InterventionId")
@@ -801,12 +819,12 @@ namespace Regira.Fleet.Data.MySQL.Migrations
                         .HasColumnName("intervention_id");
 
                     b.Property<DateTime?>("InvoiceDate")
-                        .HasColumnType("datetime(6)")
+                        .HasColumnType("datetime2")
                         .HasColumnName("invoice_date");
 
                     b.Property<string>("InvoiceNumber")
                         .HasMaxLength(32)
-                        .HasColumnType("varchar(32)")
+                        .HasColumnType("nvarchar(32)")
                         .HasColumnName("invoice_number");
 
                     b.Property<decimal?>("PriceExcl")
@@ -845,50 +863,50 @@ namespace Regira.Fleet.Data.MySQL.Migrations
                         .HasColumnType("int")
                         .HasColumnName("id");
 
-                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Code")
                         .HasMaxLength(8)
-                        .HasColumnType("varchar(8)")
+                        .HasColumnType("nvarchar(8)")
                         .HasColumnName("code");
 
                     b.Property<DateTime>("Created")
-                        .HasColumnType("datetime(6)")
+                        .HasColumnType("datetime2")
                         .HasColumnName("created");
 
                     b.Property<string>("Description")
-                        .HasColumnType("longtext")
+                        .HasColumnType("nvarchar(max)")
                         .HasColumnName("description");
 
                     b.Property<string>("Guid")
                         .IsRequired()
                         .HasMaxLength(32)
-                        .HasColumnType("varchar(32)")
+                        .HasColumnType("nvarchar(32)")
                         .HasColumnName("guid");
 
                     b.Property<bool>("IsArchived")
-                        .HasColumnType("tinyint(1)")
+                        .HasColumnType("bit")
                         .HasColumnName("is_archived");
 
                     b.Property<DateTime?>("LastModified")
-                        .HasColumnType("datetime(6)")
+                        .HasColumnType("datetime2")
                         .HasColumnName("last_modified");
 
                     b.Property<string>("NormalizedTitle")
                         .HasMaxLength(256)
-                        .HasColumnType("varchar(256)")
+                        .HasColumnType("nvarchar(256)")
                         .HasColumnName("normalized_title");
 
                     b.Property<string>("TenantId")
                         .IsRequired()
                         .HasMaxLength(32)
-                        .HasColumnType("varchar(32)")
+                        .HasColumnType("nvarchar(32)")
                         .HasColumnName("tenant_id");
 
                     b.Property<string>("Title")
                         .IsRequired()
                         .HasMaxLength(64)
-                        .HasColumnType("varchar(64)")
+                        .HasColumnType("nvarchar(64)")
                         .HasColumnName("title");
 
                     b.HasKey("Id")
@@ -902,7 +920,8 @@ namespace Regira.Fleet.Data.MySQL.Migrations
 
                     b.HasIndex("TenantId", "Code")
                         .IsUnique()
-                        .HasDatabaseName("ix_vehicle_brands_tenant_id_code");
+                        .HasDatabaseName("ix_vehicle_brands_tenant_id_code")
+                        .HasFilter("[code] IS NOT NULL");
 
                     b.HasIndex("TenantId", "Title")
                         .IsUnique()
@@ -918,7 +937,7 @@ namespace Regira.Fleet.Data.MySQL.Migrations
                         .HasColumnType("int")
                         .HasColumnName("id");
 
-                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<int?>("BrandId")
                         .HasColumnType("int")
@@ -927,60 +946,60 @@ namespace Regira.Fleet.Data.MySQL.Migrations
                     b.Property<string>("Code")
                         .IsRequired()
                         .HasMaxLength(8)
-                        .HasColumnType("varchar(8)")
+                        .HasColumnType("nvarchar(8)")
                         .HasColumnName("code");
 
                     b.Property<DateTime>("Created")
-                        .HasColumnType("datetime(6)")
+                        .HasColumnType("datetime2")
                         .HasColumnName("created");
 
                     b.Property<string>("Description")
-                        .HasColumnType("longtext")
+                        .HasColumnType("nvarchar(max)")
                         .HasColumnName("description");
 
                     b.Property<string>("Guid")
                         .IsRequired()
                         .HasMaxLength(32)
-                        .HasColumnType("varchar(32)")
+                        .HasColumnType("nvarchar(32)")
                         .HasColumnName("guid");
 
                     b.Property<string>("IdentificationNumber")
                         .HasMaxLength(64)
-                        .HasColumnType("varchar(64)")
+                        .HasColumnType("nvarchar(64)")
                         .HasColumnName("identification_number");
 
                     b.Property<bool>("IsArchived")
-                        .HasColumnType("tinyint(1)")
+                        .HasColumnType("bit")
                         .HasColumnName("is_archived");
 
                     b.Property<DateTime?>("LastModified")
-                        .HasColumnType("datetime(6)")
+                        .HasColumnType("datetime2")
                         .HasColumnName("last_modified");
 
                     b.Property<string>("Model")
                         .HasMaxLength(64)
-                        .HasColumnType("varchar(64)")
+                        .HasColumnType("nvarchar(64)")
                         .HasColumnName("model");
 
                     b.Property<string>("NormalizedContent")
                         .HasMaxLength(2048)
-                        .HasColumnType("varchar(2048)")
+                        .HasColumnType("nvarchar(2048)")
                         .HasColumnName("normalized_content");
 
                     b.Property<string>("NormalizedIdentificationNumber")
                         .HasMaxLength(64)
-                        .HasColumnType("varchar(64)")
+                        .HasColumnType("nvarchar(64)")
                         .HasColumnName("normalized_identification_number");
 
                     b.Property<string>("NormalizedTitle")
                         .HasMaxLength(256)
-                        .HasColumnType("varchar(256)")
+                        .HasColumnType("nvarchar(256)")
                         .HasColumnName("normalized_title");
 
                     b.Property<string>("TenantId")
                         .IsRequired()
                         .HasMaxLength(32)
-                        .HasColumnType("varchar(32)")
+                        .HasColumnType("nvarchar(32)")
                         .HasColumnName("tenant_id");
 
                     b.Property<int?>("VehicleTypeId")
@@ -1016,7 +1035,7 @@ namespace Regira.Fleet.Data.MySQL.Migrations
                         .HasColumnType("int")
                         .HasColumnName("id");
 
-                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<int>("AttachmentId")
                         .HasColumnType("int")
@@ -1044,19 +1063,29 @@ namespace Regira.Fleet.Data.MySQL.Migrations
 
             modelBuilder.Entity("Regira.Fleet.Models.Vehicles.VehicleInterventionType", b =>
                 {
-                    b.Property<int>("VehicleId")
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("int")
-                        .HasColumnName("vehicle_id");
+                        .HasColumnName("id");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<int>("InterventionTypeId")
                         .HasColumnType("int")
                         .HasColumnName("intervention_type_id");
 
-                    b.HasKey("VehicleId", "InterventionTypeId")
+                    b.Property<int>("VehicleId")
+                        .HasColumnType("int")
+                        .HasColumnName("vehicle_id");
+
+                    b.HasKey("Id")
                         .HasName("pk_vehicle_intervention_types");
 
                     b.HasIndex("InterventionTypeId")
                         .HasDatabaseName("ix_vehicle_intervention_types_intervention_type_id");
+
+                    b.HasIndex("VehicleId")
+                        .HasDatabaseName("ix_vehicle_intervention_types_vehicle_id");
 
                     b.ToTable("vehicle_intervention_types", (string)null);
                 });
@@ -1068,24 +1097,24 @@ namespace Regira.Fleet.Data.MySQL.Migrations
                         .HasColumnType("int")
                         .HasColumnName("id");
 
-                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<DateTime>("Created")
-                        .HasColumnType("datetime(6)")
+                        .HasColumnType("datetime2")
                         .HasColumnName("created");
 
                     b.Property<string>("LabelType")
                         .HasMaxLength(64)
-                        .HasColumnType("varchar(64)")
+                        .HasColumnType("nvarchar(64)")
                         .HasColumnName("label_type");
 
                     b.Property<DateTime?>("LastModified")
-                        .HasColumnType("datetime(6)")
+                        .HasColumnType("datetime2")
                         .HasColumnName("last_modified");
 
                     b.Property<string>("NormalizedContent")
                         .HasMaxLength(1024)
-                        .HasColumnType("varchar(1024)")
+                        .HasColumnType("nvarchar(1024)")
                         .HasColumnName("normalized_content");
 
                     b.Property<int>("ObjectId")
@@ -1098,13 +1127,13 @@ namespace Regira.Fleet.Data.MySQL.Migrations
 
                     b.Property<string>("Title")
                         .HasMaxLength(64)
-                        .HasColumnType("varchar(64)")
+                        .HasColumnType("nvarchar(64)")
                         .HasColumnName("title");
 
                     b.Property<string>("Value")
                         .IsRequired()
                         .HasMaxLength(512)
-                        .HasColumnType("varchar(512)")
+                        .HasColumnType("nvarchar(512)")
                         .HasColumnName("value");
 
                     b.HasKey("Id")
@@ -1123,50 +1152,50 @@ namespace Regira.Fleet.Data.MySQL.Migrations
                         .HasColumnType("int")
                         .HasColumnName("id");
 
-                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Code")
                         .HasMaxLength(8)
-                        .HasColumnType("varchar(8)")
+                        .HasColumnType("nvarchar(8)")
                         .HasColumnName("code");
 
                     b.Property<DateTime>("Created")
-                        .HasColumnType("datetime(6)")
+                        .HasColumnType("datetime2")
                         .HasColumnName("created");
 
                     b.Property<string>("Description")
-                        .HasColumnType("longtext")
+                        .HasColumnType("nvarchar(max)")
                         .HasColumnName("description");
 
                     b.Property<string>("Guid")
                         .IsRequired()
                         .HasMaxLength(32)
-                        .HasColumnType("varchar(32)")
+                        .HasColumnType("nvarchar(32)")
                         .HasColumnName("guid");
 
                     b.Property<bool>("IsArchived")
-                        .HasColumnType("tinyint(1)")
+                        .HasColumnType("bit")
                         .HasColumnName("is_archived");
 
                     b.Property<DateTime?>("LastModified")
-                        .HasColumnType("datetime(6)")
+                        .HasColumnType("datetime2")
                         .HasColumnName("last_modified");
 
                     b.Property<string>("NormalizedTitle")
                         .HasMaxLength(256)
-                        .HasColumnType("varchar(256)")
+                        .HasColumnType("nvarchar(256)")
                         .HasColumnName("normalized_title");
 
                     b.Property<string>("TenantId")
                         .IsRequired()
                         .HasMaxLength(32)
-                        .HasColumnType("varchar(32)")
+                        .HasColumnType("nvarchar(32)")
                         .HasColumnName("tenant_id");
 
                     b.Property<string>("Title")
                         .IsRequired()
                         .HasMaxLength(64)
-                        .HasColumnType("varchar(64)")
+                        .HasColumnType("nvarchar(64)")
                         .HasColumnName("title");
 
                     b.HasKey("Id")
@@ -1180,7 +1209,8 @@ namespace Regira.Fleet.Data.MySQL.Migrations
 
                     b.HasIndex("TenantId", "Code")
                         .IsUnique()
-                        .HasDatabaseName("ix_vehicle_types_tenant_id_code");
+                        .HasDatabaseName("ix_vehicle_types_tenant_id_code")
+                        .HasFilter("[code] IS NOT NULL");
 
                     b.HasIndex("TenantId", "Title")
                         .IsUnique()
@@ -1197,7 +1227,7 @@ namespace Regira.Fleet.Data.MySQL.Migrations
 
                     b.Property<string>("Culture")
                         .HasMaxLength(8)
-                        .HasColumnType("varchar(8)")
+                        .HasColumnType("nvarchar(8)")
                         .HasColumnName("culture");
 
                     b.Property<int>("Id")
@@ -1206,13 +1236,13 @@ namespace Regira.Fleet.Data.MySQL.Migrations
 
                     b.Property<string>("NormalizedTitle")
                         .HasMaxLength(64)
-                        .HasColumnType("varchar(64)")
+                        .HasColumnType("nvarchar(64)")
                         .HasColumnName("normalized_title");
 
                     b.Property<string>("Title")
                         .IsRequired()
                         .HasMaxLength(64)
-                        .HasColumnType("varchar(64)")
+                        .HasColumnType("nvarchar(64)")
                         .HasColumnName("title");
 
                     b.Property<int?>("VehicleTypeId")
@@ -1235,7 +1265,7 @@ namespace Regira.Fleet.Data.MySQL.Migrations
                         .HasForeignKey("OperatorId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
-                        .HasConstraintName("fk_intervention_operator_addresses_intervention_operators_opera");
+                        .HasConstraintName("fk_intervention_operator_addresses_intervention_operators_operator_id");
                 });
 
             modelBuilder.Entity("Regira.Fleet.Models.InterventionOperators.ContactData.OperatorContactData", b =>
@@ -1243,7 +1273,7 @@ namespace Regira.Fleet.Data.MySQL.Migrations
                     b.HasOne("Regira.Fleet.Models.InterventionOperators.Operators.Operator", null)
                         .WithMany("ContactData")
                         .HasForeignKey("OperatorId")
-                        .HasConstraintName("fk_intervention_operator_contactdata_intervention_operators_ope");
+                        .HasConstraintName("fk_intervention_operator_contactdata_intervention_operators_operator_id");
                 });
 
             modelBuilder.Entity("Regira.Fleet.Models.InterventionOperators.Operators.OperatorAttachment", b =>
@@ -1260,7 +1290,7 @@ namespace Regira.Fleet.Data.MySQL.Migrations
                         .HasForeignKey("ObjectId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
-                        .HasConstraintName("fk_intervention_operator_attachments_intervention_operators_obj");
+                        .HasConstraintName("fk_intervention_operator_attachments_intervention_operators_object_id");
 
                     b.Navigation("Attachment");
                 });
@@ -1272,18 +1302,16 @@ namespace Regira.Fleet.Data.MySQL.Migrations
                         .HasForeignKey("InterventionTypeId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
-                        .HasConstraintName("fk_intervention_operator_intervention_types_intervention_types_");
+                        .HasConstraintName("fk_intervention_operator_intervention_types_intervention_types_intervention_type_id");
 
-                    b.HasOne("Regira.Fleet.Models.InterventionOperators.Operators.Operator", "Operator")
+                    b.HasOne("Regira.Fleet.Models.InterventionOperators.Operators.Operator", null)
                         .WithMany("InterventionTypes")
                         .HasForeignKey("OperatorId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
-                        .HasConstraintName("fk_intervention_operator_intervention_types_intervention_operat");
+                        .HasConstraintName("fk_intervention_operator_intervention_types_intervention_operators_operator_id");
 
                     b.Navigation("InterventionType");
-
-                    b.Navigation("Operator");
                 });
 
             modelBuilder.Entity("Regira.Fleet.Models.InterventionOperators.Operators.OperatorLabel", b =>
@@ -1301,7 +1329,7 @@ namespace Regira.Fleet.Data.MySQL.Migrations
                     b.HasOne("Regira.Fleet.Models.InterventionTypes.InterventionType", null)
                         .WithMany("Translations")
                         .HasForeignKey("InterventionTypeId")
-                        .HasConstraintName("fk_intervention_type_translations_intervention_types_interventi");
+                        .HasConstraintName("fk_intervention_type_translations_intervention_types_intervention_type_id");
                 });
 
             modelBuilder.Entity("Regira.Fleet.Models.Interventions.Actions.InterventionAction", b =>
@@ -1340,7 +1368,7 @@ namespace Regira.Fleet.Data.MySQL.Migrations
                     b.HasOne("Regira.Fleet.Models.Interventions.Actions.InterventionAction", null)
                         .WithMany("Attachments")
                         .HasForeignKey("InterventionActionId")
-                        .HasConstraintName("fk_intervention_action_attachment_intervention_actions_interven");
+                        .HasConstraintName("fk_intervention_action_attachment_intervention_actions_intervention_action_id");
 
                     b.Navigation("Attachment");
                 });
@@ -1455,9 +1483,9 @@ namespace Regira.Fleet.Data.MySQL.Migrations
                         .HasForeignKey("InterventionTypeId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
-                        .HasConstraintName("fk_vehicle_intervention_types_intervention_types_intervention_t");
+                        .HasConstraintName("fk_vehicle_intervention_types_intervention_types_intervention_type_id");
 
-                    b.HasOne("Regira.Fleet.Models.Vehicles.Vehicle", "Vehicle")
+                    b.HasOne("Regira.Fleet.Models.Vehicles.Vehicle", null)
                         .WithMany("InterventionTypes")
                         .HasForeignKey("VehicleId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -1465,8 +1493,6 @@ namespace Regira.Fleet.Data.MySQL.Migrations
                         .HasConstraintName("fk_vehicle_intervention_types_vehicles_vehicle_id");
 
                     b.Navigation("InterventionType");
-
-                    b.Navigation("Vehicle");
                 });
 
             modelBuilder.Entity("Regira.Fleet.Models.Vehicles.VehicleLabel", b =>

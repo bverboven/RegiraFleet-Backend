@@ -19,7 +19,7 @@ public class VehicleFilteredQueryBuilder(FleetContextBase dbContext) : FilteredQ
             // Model
             if (!string.IsNullOrWhiteSpace(so.Model))
             {
-                query = query.Where(x => x.Model!.Equals(so.Model, StringComparison.InvariantCultureIgnoreCase));
+                query = query.Where(x => x.Model!.Equals(so.Model));
             }
             // BrandId
             if (so.BrandId?.Any() == true)

@@ -3,45 +3,48 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
-using Regira.Fleet.Identity.Data.MySQL;
+using Regira.Fleet.Identity.Data.SqlServer;
 
 #nullable disable
 
-namespace Regira.Fleet.Identity.Data.MySQL.Migrations
+namespace Regira.Fleet.Identity.Data.SqlServer.Migrations
 {
-    [DbContext(typeof(AccountsMySqlContext))]
-    partial class AccountsMySqlContextModelSnapshot : ModelSnapshot
+    [DbContext(typeof(AccountsSqlServerContext))]
+    [Migration("20260304171859_InitialMigration")]
+    partial class InitialMigration
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "9.0.8")
-                .HasAnnotation("Relational:MaxIdentifierLength", 64);
+                .HasAnnotation("ProductVersion", "10.0.3")
+                .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
-            MySqlModelBuilderExtensions.AutoIncrementColumns(modelBuilder);
+            SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
                 {
                     b.Property<string>("Id")
                         .HasMaxLength(64)
-                        .HasColumnType("varchar(64)")
+                        .HasColumnType("nvarchar(64)")
                         .HasColumnName("id");
 
                     b.Property<string>("ConcurrencyStamp")
                         .IsConcurrencyToken()
-                        .HasColumnType("longtext")
+                        .HasColumnType("nvarchar(max)")
                         .HasColumnName("concurrency_stamp");
 
                     b.Property<string>("Name")
                         .HasMaxLength(256)
-                        .HasColumnType("varchar(256)")
+                        .HasColumnType("nvarchar(256)")
                         .HasColumnName("name");
 
                     b.Property<string>("NormalizedName")
                         .HasMaxLength(256)
-                        .HasColumnType("varchar(256)")
+                        .HasColumnType("nvarchar(256)")
                         .HasColumnName("normalized_name");
 
                     b.HasKey("Id")
@@ -49,7 +52,8 @@ namespace Regira.Fleet.Identity.Data.MySQL.Migrations
 
                     b.HasIndex("NormalizedName")
                         .IsUnique()
-                        .HasDatabaseName("RoleNameIndex");
+                        .HasDatabaseName("RoleNameIndex")
+                        .HasFilter("[normalized_name] IS NOT NULL");
 
                     b.ToTable("AspNetRoles", (string)null);
                 });
@@ -61,19 +65,19 @@ namespace Regira.Fleet.Identity.Data.MySQL.Migrations
                         .HasColumnType("int")
                         .HasColumnName("id");
 
-                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("ClaimType")
-                        .HasColumnType("longtext")
+                        .HasColumnType("nvarchar(max)")
                         .HasColumnName("claim_type");
 
                     b.Property<string>("ClaimValue")
-                        .HasColumnType("longtext")
+                        .HasColumnType("nvarchar(max)")
                         .HasColumnName("claim_value");
 
                     b.Property<string>("RoleId")
                         .IsRequired()
-                        .HasColumnType("varchar(64)")
+                        .HasColumnType("nvarchar(64)")
                         .HasColumnName("role_id");
 
                     b.HasKey("Id")
@@ -92,21 +96,21 @@ namespace Regira.Fleet.Identity.Data.MySQL.Migrations
                         .HasColumnType("int")
                         .HasColumnName("id");
 
-                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("ClaimType")
                         .HasMaxLength(64)
-                        .HasColumnType("varchar(64)")
+                        .HasColumnType("nvarchar(64)")
                         .HasColumnName("claim_type");
 
                     b.Property<string>("ClaimValue")
                         .HasMaxLength(256)
-                        .HasColumnType("varchar(256)")
+                        .HasColumnType("nvarchar(256)")
                         .HasColumnName("claim_value");
 
                     b.Property<string>("UserId")
                         .IsRequired()
-                        .HasColumnType("varchar(64)")
+                        .HasColumnType("nvarchar(64)")
                         .HasColumnName("user_id");
 
                     b.HasKey("Id")
@@ -122,23 +126,23 @@ namespace Regira.Fleet.Identity.Data.MySQL.Migrations
                 {
                     b.Property<string>("LoginProvider")
                         .HasMaxLength(256)
-                        .HasColumnType("varchar(256)")
+                        .HasColumnType("nvarchar(256)")
                         .HasColumnName("login_provider");
 
                     b.Property<string>("ProviderKey")
                         .HasMaxLength(256)
-                        .HasColumnType("varchar(256)")
+                        .HasColumnType("nvarchar(256)")
                         .HasColumnName("provider_key");
 
                     b.Property<string>("ProviderDisplayName")
                         .HasMaxLength(256)
-                        .HasColumnType("varchar(256)")
+                        .HasColumnType("nvarchar(256)")
                         .HasColumnName("provider_display_name");
 
                     b.Property<string>("UserId")
                         .IsRequired()
                         .HasMaxLength(64)
-                        .HasColumnType("varchar(64)")
+                        .HasColumnType("nvarchar(64)")
                         .HasColumnName("user_id");
 
                     b.HasKey("LoginProvider", "ProviderKey")
@@ -154,12 +158,12 @@ namespace Regira.Fleet.Identity.Data.MySQL.Migrations
                 {
                     b.Property<string>("UserId")
                         .HasMaxLength(64)
-                        .HasColumnType("varchar(64)")
+                        .HasColumnType("nvarchar(64)")
                         .HasColumnName("user_id");
 
                     b.Property<string>("RoleId")
                         .HasMaxLength(64)
-                        .HasColumnType("varchar(64)")
+                        .HasColumnType("nvarchar(64)")
                         .HasColumnName("role_id");
 
                     b.HasKey("UserId", "RoleId")
@@ -175,21 +179,21 @@ namespace Regira.Fleet.Identity.Data.MySQL.Migrations
                 {
                     b.Property<string>("UserId")
                         .HasMaxLength(64)
-                        .HasColumnType("varchar(64)")
+                        .HasColumnType("nvarchar(64)")
                         .HasColumnName("user_id");
 
                     b.Property<string>("LoginProvider")
                         .HasMaxLength(256)
-                        .HasColumnType("varchar(256)")
+                        .HasColumnType("nvarchar(256)")
                         .HasColumnName("login_provider");
 
                     b.Property<string>("Name")
                         .HasMaxLength(256)
-                        .HasColumnType("varchar(256)")
+                        .HasColumnType("nvarchar(256)")
                         .HasColumnName("name");
 
                     b.Property<string>("Value")
-                        .HasColumnType("longtext")
+                        .HasColumnType("nvarchar(max)")
                         .HasColumnName("value");
 
                     b.HasKey("UserId", "LoginProvider", "Name")
@@ -205,32 +209,32 @@ namespace Regira.Fleet.Identity.Data.MySQL.Migrations
                         .HasColumnType("int")
                         .HasColumnName("id");
 
-                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<DateTime>("Created")
-                        .HasColumnType("datetime(6)")
+                        .HasColumnType("datetime2")
                         .HasColumnName("created");
 
                     b.Property<string>("Description")
-                        .HasColumnType("longtext")
+                        .HasColumnType("nvarchar(max)")
                         .HasColumnName("description");
 
                     b.Property<DateTime?>("EndDate")
-                        .HasColumnType("datetime(6)")
+                        .HasColumnType("datetime2")
                         .HasColumnName("end_date");
 
                     b.Property<DateTime?>("LastModified")
-                        .HasColumnType("datetime(6)")
+                        .HasColumnType("datetime2")
                         .HasColumnName("last_modified");
 
                     b.Property<DateTime>("StartDate")
-                        .HasColumnType("datetime(6)")
+                        .HasColumnType("datetime2")
                         .HasColumnName("start_date");
 
                     b.Property<string>("TenantId")
                         .IsRequired()
                         .HasMaxLength(32)
-                        .HasColumnType("varchar(32)")
+                        .HasColumnType("nvarchar(32)")
                         .HasColumnName("tenant_id");
 
                     b.HasKey("Id")
@@ -246,40 +250,40 @@ namespace Regira.Fleet.Identity.Data.MySQL.Migrations
                 {
                     b.Property<string>("Id")
                         .HasMaxLength(32)
-                        .HasColumnType("varchar(32)")
+                        .HasColumnType("nvarchar(32)")
                         .HasColumnName("id");
 
                     b.Property<string>("Code")
                         .HasMaxLength(8)
-                        .HasColumnType("varchar(8)")
+                        .HasColumnType("nvarchar(8)")
                         .HasColumnName("code");
 
                     b.Property<DateTime>("Created")
-                        .HasColumnType("datetime(6)")
+                        .HasColumnType("datetime2")
                         .HasColumnName("created");
 
                     b.Property<string>("DefaultCulture")
                         .HasMaxLength(8)
-                        .HasColumnType("varchar(8)")
+                        .HasColumnType("nvarchar(8)")
                         .HasColumnName("default_culture");
 
                     b.Property<string>("Description")
-                        .HasColumnType("longtext")
+                        .HasColumnType("nvarchar(max)")
                         .HasColumnName("description");
 
                     b.Property<DateTime?>("LastModified")
-                        .HasColumnType("datetime(6)")
+                        .HasColumnType("datetime2")
                         .HasColumnName("last_modified");
 
                     b.Property<string>("NormalizedTitle")
                         .HasMaxLength(256)
-                        .HasColumnType("varchar(256)")
+                        .HasColumnType("nvarchar(256)")
                         .HasColumnName("normalized_title");
 
                     b.Property<string>("Title")
                         .IsRequired()
                         .HasMaxLength(64)
-                        .HasColumnType("varchar(64)")
+                        .HasColumnType("nvarchar(64)")
                         .HasColumnName("title");
 
                     b.HasKey("Id")
@@ -292,12 +296,12 @@ namespace Regira.Fleet.Identity.Data.MySQL.Migrations
                 {
                     b.Property<string>("TenantId")
                         .HasMaxLength(32)
-                        .HasColumnType("varchar(32)")
+                        .HasColumnType("nvarchar(32)")
                         .HasColumnName("tenant_id");
 
                     b.Property<string>("LangCode")
                         .HasMaxLength(2)
-                        .HasColumnType("varchar(2)")
+                        .HasColumnType("nvarchar(2)")
                         .HasColumnName("lang_code");
 
                     b.HasKey("TenantId", "LangCode")
@@ -313,33 +317,33 @@ namespace Regira.Fleet.Identity.Data.MySQL.Migrations
                         .HasColumnType("int")
                         .HasColumnName("id");
 
-                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("ClaimType")
                         .IsRequired()
                         .HasMaxLength(64)
-                        .HasColumnType("varchar(64)")
+                        .HasColumnType("nvarchar(64)")
                         .HasColumnName("claim_type");
 
                     b.Property<string>("ClaimValue")
                         .HasMaxLength(256)
-                        .HasColumnType("varchar(256)")
+                        .HasColumnType("nvarchar(256)")
                         .HasColumnName("claim_value");
 
                     b.Property<DateTime>("Created")
-                        .HasColumnType("datetime(6)")
+                        .HasColumnType("datetime2")
                         .HasColumnName("created");
 
                     b.Property<string>("TenantId")
                         .IsRequired()
                         .HasMaxLength(32)
-                        .HasColumnType("varchar(32)")
+                        .HasColumnType("nvarchar(32)")
                         .HasColumnName("tenant_id");
 
                     b.Property<string>("UserId")
                         .IsRequired()
                         .HasMaxLength(64)
-                        .HasColumnType("varchar(64)")
+                        .HasColumnType("nvarchar(64)")
                         .HasColumnName("user_id");
 
                     b.HasKey("Id")
@@ -353,7 +357,8 @@ namespace Regira.Fleet.Identity.Data.MySQL.Migrations
 
                     b.HasIndex("TenantId", "UserId", "ClaimType", "ClaimValue")
                         .IsUnique()
-                        .HasDatabaseName("ix_tenant_user_claims_tenant_id_user_id_claim_type_claim_value");
+                        .HasDatabaseName("ix_tenant_user_claims_tenant_id_user_id_claim_type_claim_value")
+                        .HasFilter("[claim_value] IS NOT NULL");
 
                     b.ToTable("tenant_user_claims", (string)null);
                 });
@@ -362,7 +367,7 @@ namespace Regira.Fleet.Identity.Data.MySQL.Migrations
                 {
                     b.Property<string>("Id")
                         .HasMaxLength(64)
-                        .HasColumnType("varchar(64)")
+                        .HasColumnType("nvarchar(64)")
                         .HasColumnName("id");
 
                     b.Property<int>("AccessFailedCount")
@@ -372,77 +377,77 @@ namespace Regira.Fleet.Identity.Data.MySQL.Migrations
                     b.Property<string>("ConcurrencyStamp")
                         .IsConcurrencyToken()
                         .HasMaxLength(64)
-                        .HasColumnType("varchar(64)")
+                        .HasColumnType("nvarchar(64)")
                         .HasColumnName("concurrency_stamp");
 
                     b.Property<string>("Culture")
                         .HasMaxLength(8)
-                        .HasColumnType("varchar(8)")
+                        .HasColumnType("nvarchar(8)")
                         .HasColumnName("culture");
 
                     b.Property<string>("Email")
                         .HasMaxLength(256)
-                        .HasColumnType("varchar(256)")
+                        .HasColumnType("nvarchar(256)")
                         .HasColumnName("email");
 
                     b.Property<bool>("EmailConfirmed")
-                        .HasColumnType("tinyint(1)")
+                        .HasColumnType("bit")
                         .HasColumnName("email_confirmed");
 
                     b.Property<string>("GivenName")
                         .HasMaxLength(64)
-                        .HasColumnType("varchar(64)")
+                        .HasColumnType("nvarchar(64)")
                         .HasColumnName("given_name");
 
                     b.Property<string>("LastName")
                         .HasMaxLength(64)
-                        .HasColumnType("varchar(64)")
+                        .HasColumnType("nvarchar(64)")
                         .HasColumnName("last_name");
 
                     b.Property<bool>("LockoutEnabled")
-                        .HasColumnType("tinyint(1)")
+                        .HasColumnType("bit")
                         .HasColumnName("lockout_enabled");
 
                     b.Property<DateTimeOffset?>("LockoutEnd")
-                        .HasColumnType("datetime(6)")
+                        .HasColumnType("datetimeoffset")
                         .HasColumnName("lockout_end");
 
                     b.Property<string>("NormalizedEmail")
                         .HasMaxLength(256)
-                        .HasColumnType("varchar(256)")
+                        .HasColumnType("nvarchar(256)")
                         .HasColumnName("normalized_email");
 
                     b.Property<string>("NormalizedUserName")
                         .HasMaxLength(256)
-                        .HasColumnType("varchar(256)")
+                        .HasColumnType("nvarchar(256)")
                         .HasColumnName("normalized_user_name");
 
                     b.Property<string>("PasswordHash")
                         .HasMaxLength(2048)
-                        .HasColumnType("varchar(2048)")
+                        .HasColumnType("nvarchar(2048)")
                         .HasColumnName("password_hash");
 
                     b.Property<string>("PhoneNumber")
                         .HasMaxLength(32)
-                        .HasColumnType("varchar(32)")
+                        .HasColumnType("nvarchar(32)")
                         .HasColumnName("phone_number");
 
                     b.Property<bool>("PhoneNumberConfirmed")
-                        .HasColumnType("tinyint(1)")
+                        .HasColumnType("bit")
                         .HasColumnName("phone_number_confirmed");
 
                     b.Property<string>("SecurityStamp")
                         .HasMaxLength(64)
-                        .HasColumnType("varchar(64)")
+                        .HasColumnType("nvarchar(64)")
                         .HasColumnName("security_stamp");
 
                     b.Property<bool>("TwoFactorEnabled")
-                        .HasColumnType("tinyint(1)")
+                        .HasColumnType("bit")
                         .HasColumnName("two_factor_enabled");
 
                     b.Property<string>("UserName")
                         .HasMaxLength(256)
-                        .HasColumnType("varchar(256)")
+                        .HasColumnType("nvarchar(256)")
                         .HasColumnName("user_name");
 
                     b.HasKey("Id")
@@ -453,7 +458,8 @@ namespace Regira.Fleet.Identity.Data.MySQL.Migrations
 
                     b.HasIndex("NormalizedUserName")
                         .IsUnique()
-                        .HasDatabaseName("UserNameIndex");
+                        .HasDatabaseName("UserNameIndex")
+                        .HasFilter("[normalized_user_name] IS NOT NULL");
 
                     b.ToTable("AspNetUsers", (string)null);
                 });

@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using Regira.Entities.DependencyInjection.QueryBuilders;
 using Regira.Entities.DependencyInjection.ServiceBuilders.Abstractions;
 using Regira.Entities.Models;
@@ -6,6 +7,7 @@ using Regira.Fleet.Core.Constants;
 using Regira.Fleet.Identity.DependencyInjection.Postgres;
 using Regira.Fleet.Identity.Entities.Users;
 using Regira.Fleet.Identity.Models.Users;
+using Regira.Fleet.Identity.Models.Users.Claims;
 
 namespace Regira.Fleet.Identity.DependencyInjection.Entities;
 
@@ -18,15 +20,55 @@ public static class UserServiceCollectionExtensions
             .For<FleetUserModel, string, FleetUserSearchObject, EntitySortBy, FleetUserIncludes>(e =>
             {
                 e.HasRepository<FleetUserRepository>();
-                e.AddQueryFilter<FleetUser, string, FleetUserSearchObject, UserQueryFilter>();
+                e.AddFilter<FleetUser, string, FleetUserSearchObject, UserQueryFilter>();
                 if (dbType == DataBaseTypes.PostgreSQL)
                 {
-                    e.AddQueryFilter<FleetUser, string, FleetUserSearchObject, UserPostgresLikeQueryFilter>();
+                    e.AddFilter<FleetUser, string, FleetUserSearchObject, UserPostgresLikeQueryFilter>();
                 }
                 else
                 {
-                    e.AddQueryFilter<FleetUser, string, FleetUserSearchObject, UserLikeQueryFilter>();
+                    e.AddFilter<FleetUser, string, FleetUserSearchObject, UserLikeQueryFilter>();
                 }
+                
+                e.UseMapping<FleetUserDto, FleetUserInputDto>()
+                    .AfterInput((dto, model) =>
+                    {
+                        if (string.IsNullOrWhiteSpace(model.UserName))
+                        {
+                            model.UserName = dto.Email;
+                        }
+                        if (dto.UserClaims != null)
+                        {
+                            var userClaims = dto.UserClaims
+                                .Select(x => new IdentityUserClaim<string> { Id = x.Id, ClaimType = x.ClaimType, ClaimValue = x.ClaimValue })
+                                .ToList();
+                            //if (!string.IsNullOrWhiteSpace(dto.GivenName))
+                            //{
+                            //    var claim = userClaims.FirstOrDefault(c => c.ClaimType == FleetClaimTypes.GivenName);
+                            //    if (claim != null)
+                            //    {
+                            //        claim.ClaimValue = dto.GivenName;
+                            //    }
+                            //    else
+                            //    {
+                            //        userClaims.Add(new IdentityUserClaim<string> { ClaimType = FleetClaimTypes.GivenName, ClaimValue = dto.GivenName });
+                            //    }
+                            //}
+                            //if (!string.IsNullOrWhiteSpace(dto.LastName))
+                            //{
+                            //    var claim = userClaims.FirstOrDefault(c => c.ClaimType == FleetClaimTypes.LastName);
+                            //    if (claim != null)
+                            //    {
+                            //        claim.ClaimValue = dto.LastName;
+                            //    }
+                            //    else
+                            //    {
+                            //        userClaims.Add(new IdentityUserClaim<string> { ClaimType = FleetClaimTypes.LastName, ClaimValue = dto.LastName });
+                            //    }
+                            //}
+                            model.UserClaims = userClaims;
+                        }
+                    });
             });
         return services;
     }

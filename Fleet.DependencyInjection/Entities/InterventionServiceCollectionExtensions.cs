@@ -1,6 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Regira.Entities.DependencyInjection.Attachments;
-using Regira.Entities.DependencyInjection.Preppers;
 using Regira.Entities.DependencyInjection.ServiceBuilders.Abstractions;
 using Regira.Entities.Models;
 using Regira.Fleet.Core.Constants;
@@ -26,10 +25,10 @@ public static class InterventionServiceCollectionExtensions
             .For<InterventionType, InterventionTypeSearchObject, EntitySortBy, EntityIncludes>(e =>
             {
                 e.AddNormalizer<FleetEntityNormalizer<InterventionType>>();
-                e.AddQueryFilter<InterventionTypeQueryFilter>();
+                e.AddFilter<InterventionTypeQueryFilter>();
                 _ = dbType == DataBaseTypes.PostgreSQL
-                    ? e.AddQueryFilter<InterventionTypePostgresLikeQueryFilter>()
-                    : e.AddQueryFilter<InterventionTypeLikeQueryFilter>();
+                    ? e.AddFilter<InterventionTypePostgresLikeQueryFilter>()
+                    : e.AddFilter<InterventionTypeLikeQueryFilter>();
                 e.Includes((query, _) => query.Include(x => x.Translations).OrderBy(x => x.Title));
                 e.Related(item => item.Translations, item => item.Translations?.Prepare());
             })
@@ -37,19 +36,23 @@ public static class InterventionServiceCollectionExtensions
             .For<Intervention, InterventionSearchObject, InterventionSortBy, InterventionIncludes>(e =>
             {
                 e.AddNormalizer<InterventionNormalizer>();
-                e.AddQueryFilter<InterventionQueryFilter>();
+                e.AddFilter<InterventionQueryFilter>();
                 _ = dbType == DataBaseTypes.PostgreSQL
-                    ? e.AddQueryFilter<InterventionPostgresLikeQueryFilter>()
-                    : e.AddQueryFilter<InterventionLikeQueryFilter>();
-                e.Includes<InterventionIncludingQueryBuilder>();
+                    ? e.AddFilter<InterventionPostgresLikeQueryFilter>()
+                    : e.AddFilter<InterventionLikeQueryFilter>();
+                e.AddIncludes<InterventionIncludingQueryBuilder>();
                 e.SortBy((query, _) => query
                     .OrderByDescending(x => x.InterventionDate ?? x.Created)
                     //.OrderByDescending(x => x.Invoices!.Max(i => i.InvoiceDate))
-                    .ThenByDescending(x => x.Id));
-                e.Related(item => item.Labels, item => item.Labels?.Prepare());
-                e.UseMapping<InterventionDto, InterventionInputDto>();
-                e.HasAttachments(item => item.Attachments);
+                    .ThenByDescending(x => x.Id)
+                );
+
                 e.AddPrepper<InterventionPrepper>();
+                
+                e.Related(item => item.Labels, item => item.Labels?.Prepare());
+                e.HasAttachments(item => item.Attachments);
+                
+                //e.UseMapping<InterventionDto, InterventionInputDto>();
             });
         return services;
     }

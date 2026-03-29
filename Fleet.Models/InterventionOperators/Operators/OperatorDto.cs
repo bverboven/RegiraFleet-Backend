@@ -2,7 +2,6 @@
 using Regira.Fleet.Models.Addresses;
 using Regira.Fleet.Models.EntityLabels;
 using Regira.Fleet.Models.InterventionOperators.ContactData;
-using Regira.Fleet.Models.InterventionTypes;
 
 namespace Regira.Fleet.Models.InterventionOperators.Operators;
 
@@ -23,7 +22,7 @@ public class OperatorDto
 
     public ICollection<AddressDto>? Addresses { get; set; }
     public ICollection<OperatorContactDataDto>? ContactData { get; set; }
-    public ICollection<InterventionTypeDto>? InterventionTypes { get; set; }
+    public ICollection<OperatorInterventionTypeDto>? InterventionTypes { get; set; }
     public ICollection<EntityLabelDto>? Labels { get; set; }
     public ICollection<EntityAttachmentDto>? Attachments { get; set; }
 }

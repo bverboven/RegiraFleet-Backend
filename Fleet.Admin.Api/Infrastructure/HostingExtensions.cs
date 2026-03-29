@@ -1,22 +1,20 @@
-﻿using System.Text.Json.Serialization;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
+﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.OpenApi;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using Regira.Fleet.Core.Constants;
 using Regira.Fleet.Identity.Authorization;
 using Regira.Fleet.Identity.DependencyInjection;
-using Regira.Fleet.Identity.DependencyInjection.Mapping;
-using Regira.Fleet.Identity.Models;
 using Regira.Fleet.Identity.Web.DependencyInjection;
 using Regira.IO.Storage.FileSystem;
-using Regira.Office.Mail.SendGrid;
+using Regira.Office.Mail.MailGun;
 using Regira.Security.Abstractions;
 using Regira.Security.Encryption;
 using Regira.Serializing.Abstractions;
 using Regira.Serializing.Newtonsoft.Json;
-using Regira.Web.Swagger.Security;
 using Serilog;
+using System.Text.Json.Serialization;
 using JsonSerializer = Regira.Serializing.Newtonsoft.Json.JsonSerializer;
 
 namespace Regira.Fleet.Admin.Api.Infrastructure;
@@ -78,9 +76,21 @@ public static class HostingExtensions
                     )
             )
             // Swagger (with auth)
-            .AddSwaggerGen(c =>
+            .AddOpenApi()
+            .AddSwaggerGen(options =>
             {
-                c.AddJwtAuthentication();
+                options.AddSecurityDefinition("bearer", new OpenApiSecurityScheme
+                {
+                    Type = SecuritySchemeType.Http,
+                    Scheme = "bearer",
+                    BearerFormat = "JWT",
+                    Description = "JWT Authorization header using the Bearer scheme."
+                });
+
+                options.AddSecurityRequirement(document => new OpenApiSecurityRequirement
+                {
+                    [new OpenApiSecuritySchemeReference("bearer", document)] = []
+                });
             })
             // necessary services
             .AddHttpContextAccessor()
@@ -113,11 +123,21 @@ public static class HostingExtensions
                 var options = config.GetSection("Identity").Get<FleetIdentityOptions>()!;
                 o.SecretKey = options.SecretKey;
                 o.Audiences.AddRange(options.Audiences);
+                //o.AddMailer(_ =>
+                //{
+                //    var key = config["SendGrid:Key"];
+                //    ArgumentException.ThrowIfNullOrWhiteSpace(key, "SendGrid API key");
+                //    return new SendGridMailer(new SendGridConfig { Key = key });
+                //});
                 o.AddMailer(_ =>
                 {
-                    var key = config["SendGrid:Key"];
-                    ArgumentException.ThrowIfNullOrWhiteSpace(key, "SendGrid API key");
-                    return new SendGridMailer(new SendGridConfig { Key = key });
+                    var mailConfig = new MailgunConfig
+                    {
+                        Api = config["MailGun:Api"] ?? throw new NullReferenceException("Config missing for MailGun:Api"),
+                        Domain = config["MailGun:Domain"] ?? throw new NullReferenceException("Config missing for MailGun:Domain"),
+                        Key = config["MailGun::Key"] ?? throw new NullReferenceException("Config missing for MailGun:Key")
+                    };
+                    return new MailGunMailer(mailConfig);
                 });
             });
 
@@ -129,7 +149,7 @@ public static class HostingExtensions
 
     public static WebApplication ConfigureApp(this WebApplication app)
     {
-        app.UseSwagger();
+        app.UseSwagger(options => options.OpenApiVersion = OpenApiSpecVersion.OpenApi3_1);
         app.UseSwaggerUI();
 
         app.UseHttpsRedirection();

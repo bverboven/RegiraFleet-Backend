@@ -133,9 +133,7 @@ public static class ServiceCollectionExtensions
     {
         builder.Entities
             .WithAttachments(configure)
-            .ConfigureTypedAttachmentService(_ => (
-            [
-            ]));
+            .ConfigureTypedAttachmentService(_ => []);
 
         return builder;
     }

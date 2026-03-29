@@ -17,7 +17,7 @@ namespace Regira.Fleet.Data.PostgreSQL.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "9.0.8")
+                .HasAnnotation("ProductVersion", "10.0.3")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
@@ -324,19 +324,29 @@ namespace Regira.Fleet.Data.PostgreSQL.Migrations
 
             modelBuilder.Entity("Regira.Fleet.Models.InterventionOperators.Operators.OperatorInterventionType", b =>
                 {
-                    b.Property<int>("OperatorId")
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("integer")
-                        .HasColumnName("operator_id");
+                        .HasColumnName("id");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<int>("InterventionTypeId")
                         .HasColumnType("integer")
                         .HasColumnName("intervention_type_id");
 
-                    b.HasKey("OperatorId", "InterventionTypeId")
+                    b.Property<int>("OperatorId")
+                        .HasColumnType("integer")
+                        .HasColumnName("operator_id");
+
+                    b.HasKey("Id")
                         .HasName("pk_intervention_operator_intervention_types");
 
                     b.HasIndex("InterventionTypeId")
                         .HasDatabaseName("ix_intervention_operator_intervention_types_intervention_type_");
+
+                    b.HasIndex("OperatorId")
+                        .HasDatabaseName("ix_intervention_operator_intervention_types_operator_id");
 
                     b.ToTable("intervention_operator_intervention_types", (string)null);
                 });
@@ -1047,19 +1057,29 @@ namespace Regira.Fleet.Data.PostgreSQL.Migrations
 
             modelBuilder.Entity("Regira.Fleet.Models.Vehicles.VehicleInterventionType", b =>
                 {
-                    b.Property<int>("VehicleId")
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("integer")
-                        .HasColumnName("vehicle_id");
+                        .HasColumnName("id");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<int>("InterventionTypeId")
                         .HasColumnType("integer")
                         .HasColumnName("intervention_type_id");
 
-                    b.HasKey("VehicleId", "InterventionTypeId")
+                    b.Property<int>("VehicleId")
+                        .HasColumnType("integer")
+                        .HasColumnName("vehicle_id");
+
+                    b.HasKey("Id")
                         .HasName("pk_vehicle_intervention_types");
 
                     b.HasIndex("InterventionTypeId")
                         .HasDatabaseName("ix_vehicle_intervention_types_intervention_type_id");
+
+                    b.HasIndex("VehicleId")
+                        .HasDatabaseName("ix_vehicle_intervention_types_vehicle_id");
 
                     b.ToTable("vehicle_intervention_types", (string)null);
                 });
@@ -1277,7 +1297,7 @@ namespace Regira.Fleet.Data.PostgreSQL.Migrations
                         .IsRequired()
                         .HasConstraintName("fk_intervention_operator_intervention_types_intervention_types");
 
-                    b.HasOne("Regira.Fleet.Models.InterventionOperators.Operators.Operator", "Operator")
+                    b.HasOne("Regira.Fleet.Models.InterventionOperators.Operators.Operator", null)
                         .WithMany("InterventionTypes")
                         .HasForeignKey("OperatorId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -1285,8 +1305,6 @@ namespace Regira.Fleet.Data.PostgreSQL.Migrations
                         .HasConstraintName("fk_intervention_operator_intervention_types_intervention_opera");
 
                     b.Navigation("InterventionType");
-
-                    b.Navigation("Operator");
                 });
 
             modelBuilder.Entity("Regira.Fleet.Models.InterventionOperators.Operators.OperatorLabel", b =>
@@ -1460,7 +1478,7 @@ namespace Regira.Fleet.Data.PostgreSQL.Migrations
                         .IsRequired()
                         .HasConstraintName("fk_vehicle_intervention_types_intervention_types_intervention_");
 
-                    b.HasOne("Regira.Fleet.Models.Vehicles.Vehicle", "Vehicle")
+                    b.HasOne("Regira.Fleet.Models.Vehicles.Vehicle", null)
                         .WithMany("InterventionTypes")
                         .HasForeignKey("VehicleId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -1468,8 +1486,6 @@ namespace Regira.Fleet.Data.PostgreSQL.Migrations
                         .HasConstraintName("fk_vehicle_intervention_types_vehicles_vehicle_id");
 
                     b.Navigation("InterventionType");
-
-                    b.Navigation("Vehicle");
                 });
 
             modelBuilder.Entity("Regira.Fleet.Models.Vehicles.VehicleLabel", b =>

@@ -1,0 +1,34 @@
+<Solution>
+  <Folder Name="/APIs/">
+    <Project Path="Fleet.Admin.Api/Fleet.Admin.Api.csproj" />
+    <Project Path="Fleet.Manager.Api/Fleet.Manager.Api.csproj" />
+  </Folder>
+  <Folder Name="/Identity/">
+    <Project Path="Fleet.Identity.Data.Core/Fleet.Identity.Data.Core.csproj" />
+    <Project Path="Fleet.Identity.Data.MySQL/Fleet.Identity.Data.MySQL.csproj" />
+    <Project Path="Fleet.Identity.Data.PostgreSQL/Fleet.Identity.Data.PostgreSQL.csproj" />
+    <Project Path="Fleet.Identity.Data.SqlServer/Fleet.Identity.Data.SqlServer.csproj" />
+    <Project Path="Fleet.Identity.DependencyInjection/Fleet.Identity.DependencyInjection.csproj" />
+    <Project Path="Fleet.Identity.Models/Fleet.Identity.Models.csproj" />
+    <Project Path="Fleet.Identity.Web/Fleet.Identity.Web.csproj" />
+    <Project Path="Fleet.Identity/Fleet.Identity.csproj" />
+  </Folder>
+  <Folder Name="/Manager/">
+    <Project Path="Fleet.Data.Core/Fleet.Data.Core.csproj" />
+    <Project Path="Fleet.Data.MySQL/Fleet.Data.MySQL.csproj" />
+    <Project Path="Fleet.Data.PostgreSQL/Fleet.Data.PostgreSQL.csproj" />
+    <Project Path="Fleet.Data.SqlServer/Fleet.Data.SqlServer.csproj" />
+    <Project Path="Fleet.DependencyInjection/Fleet.DependencyInjection.csproj" />
+    <Project Path="Fleet.Library/Fleet.Library.csproj" />
+    <Project Path="Fleet.Models/Fleet.Models.csproj" />
+  </Folder>
+  <Folder Name="/Solution Items/">
+    <File Path=".gitignore" />
+  </Folder>
+  <Folder Name="/Tools/">
+    <Project Path="DemoData.Console/DemoData.Console.csproj" />
+    <Project Path="Fleet.EfCoreConsole/Fleet.EfCoreConsole.csproj" />
+    <Project Path="UserManager.Console/UserManager.Console.csproj" />
+  </Folder>
+  <Project Path="Fleet.Core/Fleet.Core.csproj" />
+</Solution>

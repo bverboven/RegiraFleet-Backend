@@ -229,12 +229,14 @@ namespace Regira.Fleet.Data.SqlServer.Migrations
                 name: "intervention_operator_intervention_types",
                 columns: table => new
                 {
+                    id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
                     operator_id = table.Column<int>(type: "int", nullable: false),
                     intervention_type_id = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("pk_intervention_operator_intervention_types", x => new { x.operator_id, x.intervention_type_id });
+                    table.PrimaryKey("pk_intervention_operator_intervention_types", x => x.id);
                     table.ForeignKey(
                         name: "fk_intervention_operator_intervention_types_intervention_operators_operator_id",
                         column: x => x.operator_id,
@@ -398,12 +400,14 @@ namespace Regira.Fleet.Data.SqlServer.Migrations
                 name: "vehicle_intervention_types",
                 columns: table => new
                 {
+                    id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
                     vehicle_id = table.Column<int>(type: "int", nullable: false),
                     intervention_type_id = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("pk_vehicle_intervention_types", x => new { x.vehicle_id, x.intervention_type_id });
+                    table.PrimaryKey("pk_vehicle_intervention_types", x => x.id);
                     table.ForeignKey(
                         name: "fk_vehicle_intervention_types_intervention_types_intervention_type_id",
                         column: x => x.intervention_type_id,
@@ -677,6 +681,11 @@ namespace Regira.Fleet.Data.SqlServer.Migrations
                 column: "intervention_type_id");
 
             migrationBuilder.CreateIndex(
+                name: "ix_intervention_operator_intervention_types_operator_id",
+                table: "intervention_operator_intervention_types",
+                column: "operator_id");
+
+            migrationBuilder.CreateIndex(
                 name: "ix_intervention_operator_labels_object_id",
                 table: "intervention_operator_labels",
                 column: "object_id");
@@ -783,6 +792,11 @@ namespace Regira.Fleet.Data.SqlServer.Migrations
                 name: "ix_vehicle_intervention_types_intervention_type_id",
                 table: "vehicle_intervention_types",
                 column: "intervention_type_id");
+
+            migrationBuilder.CreateIndex(
+                name: "ix_vehicle_intervention_types_vehicle_id",
+                table: "vehicle_intervention_types",
+                column: "vehicle_id");
 
             migrationBuilder.CreateIndex(
                 name: "ix_vehicle_labels_object_id",
