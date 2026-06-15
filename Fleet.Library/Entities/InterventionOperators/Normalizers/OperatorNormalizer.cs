@@ -1,4 +1,4 @@
-﻿using Regira.Entities.EFcore.Normalizing.Abstractions;
+﻿using Regira.Entities.Normalizing.Abstractions;
 using Regira.Fleet.Core.Abstractions;
 using Regira.Fleet.Core.Normalizing;
 using Regira.Fleet.Models.EntityLabels;
@@ -11,7 +11,7 @@ public class OperatorNormalizer(INormalizer defaultNormalizer, IdentificationNum
     ContactDataNormalizer contactDataNormalizer, AddressNormalizer addressNormalizer, IEntityNormalizer<IEntityLabel> labelNormalizer, ICultureContext cultureContext)
     : FleetEntityNormalizer<Operator>(defaultNormalizer)
 {
-    public override async Task HandleNormalize(Operator item)
+    public override async Task HandleNormalize(Operator item, CancellationToken cancellationToken = default)
     {
         // KBO
         item.NormalizedIdentificationNumber = idNumberNormalizer.Normalize(item.IdentificationNumber);
@@ -28,7 +28,7 @@ public class OperatorNormalizer(INormalizer defaultNormalizer, IdentificationNum
         // ContactData
         if (item.ContactData?.Any() == true)
         {
-            await contactDataNormalizer.HandleNormalizeMany(item.ContactData);
+            await contactDataNormalizer.HandleNormalizeMany(item.ContactData, cancellationToken);
         }
         if (item.ContactData?.Any() == true)
         {
@@ -48,7 +48,7 @@ public class OperatorNormalizer(INormalizer defaultNormalizer, IdentificationNum
         // Labels
         if (item.Labels?.Any() == true)
         {
-            await labelNormalizer.HandleNormalizeMany(item.Labels);
+            await labelNormalizer.HandleNormalizeMany(item.Labels, cancellationToken);
             contentEntries.AddRange(item.Labels.Select(a => a.NormalizedContent));
         }
 

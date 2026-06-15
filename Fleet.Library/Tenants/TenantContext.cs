@@ -1,7 +1,7 @@
-﻿using System.Security.Claims;
-using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Http;
 using Regira.Fleet.Core.Abstractions;
 using Regira.Fleet.Core.Constants;
+using System.Security.Claims;
 
 namespace Regira.Fleet.Tenants;
 

@@ -1,7 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Regira.Entities.EFcore.QueryBuilders.Abstractions;
 using Regira.Entities.Keywords.Abstractions;
 using Regira.Entities.Models.Abstractions;
+using Regira.Entities.QueryBuilders.Abstractions;
 
 namespace Regira.Fleet.Identity.Data.PostgreSQL.QueryBuilders;
 

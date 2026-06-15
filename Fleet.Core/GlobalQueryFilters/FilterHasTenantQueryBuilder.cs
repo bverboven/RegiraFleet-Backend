@@ -1,5 +1,5 @@
-﻿using Regira.Entities.EFcore.QueryBuilders.Abstractions;
-using Regira.Entities.Models.Abstractions;
+﻿using Regira.Entities.Models.Abstractions;
+using Regira.Entities.QueryBuilders.Abstractions;
 using Regira.Fleet.Core.Abstractions;
 
 namespace Regira.Fleet.Core.GlobalQueryFilters;

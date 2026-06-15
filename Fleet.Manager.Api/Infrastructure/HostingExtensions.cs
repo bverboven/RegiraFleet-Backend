@@ -10,6 +10,7 @@ using Regira.Fleet.Identity.Web.Filters;
 using Regira.Fleet.Identity.Web.Middleware;
 using Regira.Fleet.Statistics;
 using Regira.IO.Storage.FileSystem;
+using Regira.Licensing.DependencyInjection;
 using Regira.Office.Excel.Abstractions;
 using Regira.Office.Mail.MailGun;
 using Regira.Security.Abstractions;
@@ -120,7 +121,7 @@ public static class HostingExtensions
 
         services
             .AddScoped<StatisticsService>()
-            .AddTransient<IExcelManager, FleetExcelManager>();
+            .AddTransient<IExcelService, FleetExcelManager>();
 
         return services;
     }

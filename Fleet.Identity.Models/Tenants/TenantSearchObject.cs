@@ -2,7 +2,7 @@
 
 namespace Regira.Fleet.Identity.Models.Tenants;
 
-public class TenantSearchObject : SearchObject<string>
+public record TenantSearchObject : SearchObject<string>
 {
     public string? Code { get; set; }
     public string? Title { get; set; }

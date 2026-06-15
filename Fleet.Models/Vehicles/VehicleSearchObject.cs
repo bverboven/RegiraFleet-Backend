@@ -2,7 +2,7 @@
 
 namespace Regira.Fleet.Models.Vehicles;
 
-public class VehicleSearchObject : FleetSearchObject
+public record VehicleSearchObject : FleetSearchObject
 {
     public string? Code { get; set; }
     public string? Model { get; set; }

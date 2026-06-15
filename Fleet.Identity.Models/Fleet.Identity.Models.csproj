@@ -11,7 +11,8 @@
     </PropertyGroup>
 
     <ItemGroup>
-	    <PackageReference Include="Regira.Entities" Version="5.0.9" />
+	    <PackageReference Include="Microsoft.Extensions.Identity.Stores" Version="10.0.9" />
+	    <PackageReference Include="Regira.Entities" Version="6.0.0" />
     </ItemGroup>
 
     <ItemGroup>

@@ -13,24 +13,24 @@
   </PropertyGroup>
 
   <ItemGroup>
-	<PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="10.0.5" />
-	<PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="10.0.5" />
+	<PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="10.0.9" />
+	<PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="10.0.9" />
 	<PackageReference Include="Serilog.Extensions.Hosting" Version="10.0.0" />
-	<PackageReference Include="Serilog.Settings.Configuration" Version="10.0.0" />
+	<PackageReference Include="Serilog.Settings.Configuration" Version="10.0.1" />
 	<PackageReference Include="Serilog.Sinks.Console" Version="6.1.1" />
 	<PackageReference Include="Serilog.Sinks.File" Version="7.0.0" />
-	<PackageReference Include="Swashbuckle.AspNetCore.SwaggerGen" Version="10.1.7" />
-	<PackageReference Include="Swashbuckle.AspNetCore.SwaggerUI" Version="10.1.7" />
+	<PackageReference Include="Swashbuckle.AspNetCore.SwaggerGen" Version="10.2.1" />
+	<PackageReference Include="Swashbuckle.AspNetCore.SwaggerUI" Version="10.2.1" />
   </ItemGroup>
 
   <ItemGroup>
 	<!--<PackageReference Include="Regira.Office.Mail.SendGrid" Version="5.0.1" />-->
-	<PackageReference Include="Regira.Office.Mail.MailGun" Version="5.0.2" />
-	<PackageReference Include="Regira.Security" Version="5.0.2" />
-	<PackageReference Include="Regira.Serializing.Newtonsoft" Version="5.0.2" />
+	<PackageReference Include="Regira.Office.Mail.MailGun" Version="6.0.0" />
+	<PackageReference Include="Regira.Serializing.Newtonsoft" Version="6.0.0" />
   </ItemGroup>
 
   <ItemGroup>
+	<ProjectReference Include="..\Fleet.Identity.Models\Fleet.Identity.Models.csproj" />
 	<ProjectReference Include="..\Fleet.Identity.Web\Fleet.Identity.Web.csproj" />
   </ItemGroup>
 

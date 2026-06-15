@@ -1,5 +1,5 @@
 ﻿using Regira.Fleet.Models.Addresses;
-using Regira.Globalization;
+using Regira.Globalization.Utilities;
 using Regira.Normalizing.Abstractions;
 
 namespace Regira.Fleet.Entities.InterventionOperators.Normalizers;

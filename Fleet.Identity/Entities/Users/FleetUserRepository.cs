@@ -2,8 +2,8 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Regira.DAL.Paging;
-using Regira.Entities.EFcore.QueryBuilders.Abstractions;
 using Regira.Entities.Models;
+using Regira.Entities.QueryBuilders.Abstractions;
 using Regira.Entities.Services.Abstractions;
 using Regira.Fleet.Identity.Data;
 using Regira.Fleet.Identity.Models.Users;
@@ -17,42 +17,42 @@ public class FleetUserRepository(AccountsContextBase dbContext, UserManager<Flee
 {
     protected AccountsContextBase DbContext => dbContext;
 
-    public async Task<FleetUserModel?> Details(string id)
+    public async Task<FleetUserModel?> Details(string id, CancellationToken cancellationToken = default)
     {
-        var item = await GetItem(id);
-        return mapper.Map<FleetUserModel>(item);
+        var item = await GetItem(id, cancellationToken);
+        return item != null ? mapper.Map<FleetUserModel>(item) : null;
     }
-    public async Task<IList<FleetUserModel>> List(IList<FleetUserSearchObject?> searchObjects, IList<EntitySortBy> sortBy, FleetUserIncludes? includes = null, PagingInfo? pagingInfo = null)
+    public async Task<IList<FleetUserModel>> List(IList<FleetUserSearchObject?> searchObjects, IList<EntitySortBy> sortBy, FleetUserIncludes? includes = null, PagingInfo? pagingInfo = null, CancellationToken cancellationToken = default)
     {
         IQueryable<FleetUser> query = Query(dbContext.Users, searchObjects, includes, pagingInfo);
         var items = await query
             .AsNoTrackingWithIdentityResolution()
-            .ToListAsync();
+            .ToListAsync(cancellationToken);
         return mapper.Map<List<FleetUserModel>>(items);
     }
-    public Task<IList<FleetUserModel>> List(FleetUserSearchObject? so = null, PagingInfo? pagingInfo = null)
-        => List([so], [], null, pagingInfo);
+    public Task<IList<FleetUserModel>> List(FleetUserSearchObject? so = null, PagingInfo? pagingInfo = null, CancellationToken cancellationToken = default)
+        => List([so], [], null, pagingInfo, cancellationToken);
 
 
-    public Task<IList<FleetUserModel>> List(object? so = null, PagingInfo? pagingInfo = null)
-        => List([Convert(so)], [], null, pagingInfo);
-    public Task<long> Count(IList<FleetUserSearchObject?> searchObjects)
+    public Task<IList<FleetUserModel>> List(object? so = null, PagingInfo? pagingInfo = null, CancellationToken cancellationToken = default)
+        => List([Convert(so)], [], null, pagingInfo, cancellationToken);
+    public Task<long> Count(IList<FleetUserSearchObject?> searchObjects, CancellationToken cancellationToken = default)
     {
         var query = Filter(dbContext.Users, searchObjects.Select(Convert).ToList());
-        return query.LongCountAsync();
+        return query.LongCountAsync(cancellationToken);
     }
-    public Task<long> Count(object? so)
-        => Count([Convert(so)]);
-    public Task<long> Count(FleetUserSearchObject? so)
-        => Count([so]);
+    public Task<long> Count(object? so, CancellationToken cancellationToken = default)
+        => Count([Convert(so)], cancellationToken);
+    public Task<long> Count(FleetUserSearchObject? so, CancellationToken cancellationToken = default)
+        => Count([so], cancellationToken);
 
-    public Task<FleetUser?> GetItem(string id)
+    public Task<FleetUser?> GetItem(string id, CancellationToken cancellationToken = default)
     {
         return AddIncludes(dbContext.Users, FleetUserIncludes.All)
             .AsNoTrackingWithIdentityResolution()
-            .FirstOrDefaultAsync(x => x.Id == id);
+            .FirstOrDefaultAsync(x => x.Id == id, cancellationToken);
     }
-    public IQueryable<FleetUser> Filter(IQueryable<FleetUser> query, FleetUserSearchObject? so)
+    public IQueryable<FleetUser> Filter(IQueryable<FleetUser> query, FleetUserSearchObject? so, CancellationToken cancellationToken = default)
     {
         foreach (var filter in queryFilters)
         {
@@ -61,9 +61,9 @@ public class FleetUserRepository(AccountsContextBase dbContext, UserManager<Flee
 
         return query;
     }
-    public IQueryable<FleetUser> Filter(IQueryable<FleetUser> query, IList<FleetUserSearchObject?> searchObjects)
+    public IQueryable<FleetUser> Filter(IQueryable<FleetUser> query, IList<FleetUserSearchObject?> searchObjects, CancellationToken cancellationToken = default)
         => searchObjects.Aggregate((IQueryable<FleetUser>?)null, (r, so) => r == null ? Filter(query, so) : r.Union(Filter(query, so))) ?? query;
-    public IQueryable<FleetUser> AddIncludes(IQueryable<FleetUser> query, FleetUserIncludes? includes)
+    public IQueryable<FleetUser> AddIncludes(IQueryable<FleetUser> query, FleetUserIncludes? includes, CancellationToken cancellationToken = default)
     {
         if (includes != null)
         {
@@ -80,7 +80,7 @@ public class FleetUserRepository(AccountsContextBase dbContext, UserManager<Flee
 
         return query;
     }
-    public virtual IQueryable<FleetUser> Query(IQueryable<FleetUser> query, IList<FleetUserSearchObject?> searchObjects, FleetUserIncludes? includes, PagingInfo? pagingInfo)
+    public virtual IQueryable<FleetUser> Query(IQueryable<FleetUser> query, IList<FleetUserSearchObject?> searchObjects, FleetUserIncludes? includes, PagingInfo? pagingInfo, CancellationToken cancellationToken = default)
     {
         var filteredQuery = Filter(query, searchObjects);
         var sortedQuery = filteredQuery.OrderBy(x => x.UserName);
@@ -91,9 +91,9 @@ public class FleetUserRepository(AccountsContextBase dbContext, UserManager<Flee
     }
 
 
-    public async Task Add(FleetUserModel model)
+    public async Task Add(FleetUserModel model, CancellationToken cancellationToken = default)
     {
-        PrepareItem(model, null);
+        PrepareItem(model, null, cancellationToken);
         var item = mapper.Map<FleetUser>(model);
         var result = string.IsNullOrWhiteSpace(item.NewPassword)
             ? await userManager.CreateAsync(item)
@@ -103,12 +103,12 @@ public class FleetUserRepository(AccountsContextBase dbContext, UserManager<Flee
             await Modify(model, item);
         }
     }
-    public async Task<FleetUserModel?> Modify(FleetUserModel model)
+    public async Task<FleetUserModel?> Modify(FleetUserModel model, CancellationToken cancellationToken = default)
     {
-        var original = await GetItem(model.Id);
+        var original = await GetItem(model.Id, cancellationToken);
         if (original != null)
         {
-            PrepareItem(model, original);
+            PrepareItem(model, original, cancellationToken);
             await Modify(model, original);
             await UpdateUser(model, original);
 
@@ -117,22 +117,22 @@ public class FleetUserRepository(AccountsContextBase dbContext, UserManager<Flee
 
         return null;
     }
-    public async Task Save(FleetUserModel model)
+    public async Task Save(FleetUserModel model, CancellationToken cancellationToken = default)
     {
-        var original = await GetItem(model.Id);
+        var original = await GetItem(model.Id, cancellationToken);
         if (original != null)
         {
-            PrepareItem(model, original);
+            PrepareItem(model, original, cancellationToken);
             await Modify(model, original);
             await UpdateUser(model, original);
         }
         else
         {
-            await Add(model);
+            await Add(model, cancellationToken);
         }
     }
 
-    public async Task Remove(FleetUserModel item)
+    public async Task Remove(FleetUserModel item, CancellationToken cancellationToken = default)
     {
         var user = await userManager.FindByIdAsync(item.Id);
         if (user != null)
@@ -141,7 +141,7 @@ public class FleetUserRepository(AccountsContextBase dbContext, UserManager<Flee
         }
     }
 
-    public void PrepareItem(FleetUserModel model, FleetUser? original)
+    public void PrepareItem(FleetUserModel model, FleetUser? original, CancellationToken cancellationToken = default)
     {
         if (string.IsNullOrWhiteSpace(model.Id))
         {

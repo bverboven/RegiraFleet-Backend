@@ -1,6 +1,6 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
+using Regira.Entities.DependencyInjection.Extensions;
 using Regira.Entities.DependencyInjection.QueryBuilders;
-using Regira.Entities.DependencyInjection.ServiceBuilders.Extensions;
 using Regira.Entities.EFcore.QueryBuilders.GlobalFilterBuilders;
 using Regira.Entities.Mapping.Mapster;
 using Regira.Fleet.Core.Constants;

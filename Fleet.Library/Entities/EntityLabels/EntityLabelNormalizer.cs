@@ -9,15 +9,15 @@ namespace Regira.Fleet.Entities.EntityLabels;
 public class EntityLabelNormalizer(INormalizer defaultNormalizer, PhoneNumberFormatter phoneNumberNormalizer)
     : FleetEntityNormalizer<IEntityLabel>(defaultNormalizer)
 {
-    public override Task HandleNormalizeMany(IEnumerable<IEntityLabel> instances)
+    public override Task HandleNormalizeMany(IEnumerable<IEntityLabel> instances, CancellationToken cancellationToken = default)
     {
         foreach (var item in instances)
         {
-            HandleNormalize(item);
+            HandleNormalize(item, cancellationToken);
         }
         return Task.CompletedTask;
     }
-    public override Task HandleNormalize(IEntityLabel item)
+    public override Task HandleNormalize(IEntityLabel item, CancellationToken cancellationToken = default)
     {
         var normalizedTitle = DefaultPropertyNormalizer.Normalize(item.Title);
         var normalizedValue = NormalizeValue(item.Value);

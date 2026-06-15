@@ -1,5 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Regira.Entities.EFcore.Preppers.Abstractions;
+using Regira.Entities.Preppers.Abstractions;
 using Regira.Fleet.Data;
 using Regira.Fleet.Models.Interventions;
 
@@ -7,7 +7,7 @@ namespace Regira.Fleet.Entities.Interventions;
 
 public class InterventionPrepper(FleetContextBase dbContext) : EntityPrepperBase<Intervention>
 {
-    public override Task Prepare(Intervention modified, Intervention? original)
+    public override Task Prepare(Intervention modified, Intervention? original, CancellationToken cancellationToken = default)
     {
         if (modified.Invoice != null)
         {

@@ -1,6 +1,7 @@
-using System.Reflection;
 using Regira.Fleet.Manager.Api.Infrastructure;
+using Regira.Licensing.DependencyInjection;
 using Serilog;
+using System.Reflection;
 
 // prevent date errors in Postgres
 AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
@@ -19,6 +20,7 @@ try
     // services
     builder.Services
         .AddApi()
+        .UseRegira(builder.Configuration)
         .AddServices(builder.Configuration)
         .AddIdentity(builder.Configuration);
 

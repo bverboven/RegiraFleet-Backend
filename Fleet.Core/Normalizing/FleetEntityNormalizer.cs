@@ -1,6 +1,6 @@
 ﻿using Regira.Entities.Attachments.Abstractions;
-using Regira.Entities.EFcore.Normalizing.Abstractions;
 using Regira.Entities.Models.Abstractions;
+using Regira.Entities.Normalizing.Abstractions;
 using Regira.Normalizing.Abstractions;
 
 namespace Regira.Fleet.Core.Normalizing;

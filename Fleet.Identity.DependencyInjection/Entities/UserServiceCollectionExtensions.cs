@@ -1,13 +1,12 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Regira.Entities.DependencyInjection.QueryBuilders;
-using Regira.Entities.DependencyInjection.ServiceBuilders.Abstractions;
+using Regira.Entities.DependencyInjection.ServiceCollections.Abstractions;
 using Regira.Entities.Models;
 using Regira.Fleet.Core.Constants;
 using Regira.Fleet.Identity.DependencyInjection.Postgres;
 using Regira.Fleet.Identity.Entities.Users;
 using Regira.Fleet.Identity.Models.Users;
-using Regira.Fleet.Identity.Models.Users.Claims;
 
 namespace Regira.Fleet.Identity.DependencyInjection.Entities;
 

@@ -1,5 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Regira.Entities.EFcore.Normalizing.Abstractions;
+using Regira.Entities.Normalizing.Abstractions;
 using Regira.Fleet.Core.Normalizing;
 using Regira.Fleet.Data;
 using Regira.Fleet.Models.EntityLabels;
@@ -17,17 +17,17 @@ public class VehicleNormalizer(INormalizer normalizer, IEntityNormalizer<IEntity
     private List<Brand> _brands = null!;
     private List<VehicleType> _vehicleTypes = null!;
 
-    public override async Task HandleNormalizeMany(IEnumerable<Vehicle> items)
+    public override async Task HandleNormalizeMany(IEnumerable<Vehicle> items, CancellationToken cancellationToken = default)
     {
         var itemList = items as Vehicle[] ?? items.ToArray();
         var brandIds = itemList.Select(x => x.BrandId ?? 0).Where(id => id > 0).Distinct().ToList();
-        _brands = await dbContext.VehicleBrands.Where(x => brandIds.Contains(x.Id)).ToListAsync();
+        _brands = await dbContext.VehicleBrands.Where(x => brandIds.Contains(x.Id)).ToListAsync(cancellationToken);
         var typeIds = itemList.Select(x => x.VehicleTypeId ?? 0).Where(id => id > 0).Distinct().ToList();
-        _vehicleTypes = await dbContext.VehicleTypes.Where(x => typeIds.Contains(x.Id)).ToListAsync();
+        _vehicleTypes = await dbContext.VehicleTypes.Where(x => typeIds.Contains(x.Id)).ToListAsync(cancellationToken);
 
-        await base.HandleNormalizeMany(itemList);
+        await base.HandleNormalizeMany(itemList, cancellationToken);
     }
-    public override async Task HandleNormalize(Vehicle item)
+    public override async Task HandleNormalize(Vehicle item, CancellationToken cancellationToken = default)
     {
         var brand = item.BrandId.HasValue
             ? item.Brand ?? _brands.Find(x => x.Id == item.BrandId)
@@ -54,7 +54,7 @@ public class VehicleNormalizer(INormalizer normalizer, IEntityNormalizer<IEntity
         // Labels
         if (item.Labels?.Any() == true)
         {
-            await labelNormalizer.HandleNormalizeMany(item.Labels);
+            await labelNormalizer.HandleNormalizeMany(item.Labels, cancellationToken);
             contentEntries.AddRange(item.Labels.Select(a => a.NormalizedContent));
         }
 
