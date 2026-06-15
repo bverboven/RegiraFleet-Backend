@@ -1,5 +1,4 @@
-﻿using System.Security.Claims;
-using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
@@ -8,12 +7,13 @@ using Regira.Fleet.Core.Abstractions;
 using Regira.Fleet.Core.Constants;
 using Regira.Fleet.Identity.Data;
 using Regira.Fleet.Identity.Models.Users;
-using Regira.Fleet.Identity.Models.Users.Claims;
 using Regira.Fleet.Identity.Web.Extensions;
 using Regira.Fleet.Identity.Web.Models;
 using Regira.Fleet.Manager.Api.Models;
 using Regira.Serializing.Abstractions;
 using Regira.Utilities;
+using System.Security.Claims;
+using Regira.Fleet.Identity.Models.Users.Claims;
 
 namespace Regira.Fleet.Manager.Api.Controllers;
 

@@ -2,7 +2,7 @@
 
 namespace Regira.Fleet.Models.InterventionOperators.Operators;
 
-public class OperatorSearchObject : FleetSearchObject
+public record OperatorSearchObject : FleetSearchObject
 {
     public string? Code { get; set; }
     public string? Title { get; set; }

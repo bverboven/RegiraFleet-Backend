@@ -1,5 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Regira.Entities.EFcore.QueryBuilders.Abstractions;
+using Regira.Entities.QueryBuilders.Abstractions;
 using Regira.Fleet.Models.InterventionOperators.Operators;
 
 namespace Regira.Fleet.Entities.InterventionOperators.Operators;

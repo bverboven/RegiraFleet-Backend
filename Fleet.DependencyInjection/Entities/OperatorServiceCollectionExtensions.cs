@@ -1,6 +1,6 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Regira.Entities.DependencyInjection.Attachments;
-using Regira.Entities.DependencyInjection.ServiceBuilders.Abstractions;
+using Regira.Entities.DependencyInjection.ServiceCollections.Abstractions;
 using Regira.Entities.Models;
 using Regira.Fleet.Core.Abstractions;
 using Regira.Fleet.Core.Constants;
@@ -9,10 +9,6 @@ using Regira.Fleet.Data.Extensions;
 using Regira.Fleet.DependencyInjection.Postgres;
 using Regira.Fleet.Entities.InterventionOperators.Normalizers;
 using Regira.Fleet.Entities.InterventionOperators.Operators;
-using Regira.Fleet.Models.Addresses;
-using Regira.Fleet.Models.EntityLabels;
-using Regira.Fleet.Models.InterventionOperators.Addresses;
-using Regira.Fleet.Models.InterventionOperators.ContactData;
 using Regira.Fleet.Models.InterventionOperators.Operators;
 using Regira.Globalization.LibPhoneNumber;
 

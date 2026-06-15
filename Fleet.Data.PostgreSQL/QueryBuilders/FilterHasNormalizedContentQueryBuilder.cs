@@ -1,6 +1,6 @@
-﻿using Regira.Entities.EFcore.QueryBuilders.Abstractions;
-using Regira.Entities.Keywords.Abstractions;
+﻿using Regira.Entities.Keywords.Abstractions;
 using Regira.Entities.Models.Abstractions;
+using Regira.Entities.QueryBuilders.Abstractions;
 using Regira.Fleet.Data.PostgreSQL.Extensions;
 
 namespace Regira.Fleet.Data.PostgreSQL.QueryBuilders;

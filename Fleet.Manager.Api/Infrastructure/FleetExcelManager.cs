@@ -1,24 +1,25 @@
 ﻿using OfficeOpenXml;
 using Regira.IO.Abstractions;
 using Regira.IO.Extensions;
-using Regira.Office.Excel;
 using Regira.Office.Excel.Abstractions;
+using Regira.Office.Excel.Models;
 using System.Data;
 
 namespace Regira.Fleet.Manager.Api.Infrastructure;
 
-public class FleetExcelManager : IExcelManager
+public class FleetExcelManager : IExcelService
 {
-    public IEnumerable<ExcelSheet> Read(IBinaryFile input, string[]? headers = null)
+    public IMemoryFile Create(DataSet dataSet)
     {
         throw new NotImplementedException();
     }
 
-    public IMemoryFile Create(ExcelSheet sheet)
+    public Task<IEnumerable<ExcelSheet>> Read(IBinaryFile input, string[]? headers = null, CancellationToken cancellationToken = new())
     {
-        return Create([sheet]);
+        throw new NotImplementedException();
     }
-    public IMemoryFile Create(IEnumerable<ExcelSheet> sheets)
+
+    public Task<IMemoryFile> Create(IEnumerable<ExcelSheet> sheets, CancellationToken cancellationToken = new())
     {
         var package = new ExcelPackage();
         foreach (var sheet in sheets)
@@ -44,11 +45,7 @@ public class FleetExcelManager : IExcelManager
         }
 
         package.Save();
-        return package.Stream.ToMemoryFile();
-    }
-
-    public IMemoryFile Create(DataSet dataSet)
-    {
-        throw new NotImplementedException();
+        var file = package.Stream.ToMemoryFile();
+        return Task.FromResult(file);
     }
 }

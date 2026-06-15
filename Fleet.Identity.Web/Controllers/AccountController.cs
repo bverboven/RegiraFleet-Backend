@@ -1,5 +1,4 @@
-﻿using System.Security.Claims;
-using Duende.IdentityModel;
+﻿using Duende.IdentityModel;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
@@ -12,6 +11,8 @@ using Regira.Fleet.Identity.Web.Models;
 using Regira.Security.Authentication.Jwt.Abstraction;
 using Regira.Security.Authentication.Jwt.Extensions;
 using Regira.Web.Utilities;
+using System.Security.Claims;
+using RouteNames = Regira.Security.Authentication.Web.Constants.RouteNames;
 
 namespace Regira.Fleet.Identity.Web.Controllers;
 

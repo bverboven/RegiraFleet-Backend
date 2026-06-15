@@ -1,5 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Regira.Entities.EFcore.Normalizing.Abstractions;
+using Regira.Entities.Normalizing.Abstractions;
 using Regira.Fleet.Core.Normalizing;
 using Regira.Fleet.Data;
 using Regira.Fleet.Models.EntityLabels;
@@ -18,26 +18,26 @@ public class InterventionNormalizer(INormalizer normalizer, IEntityNormalizer<IE
     private List<Operator> _suppliers = null!;
     private List<InterventionType> _interventionTypes = null!;
 
-    public override async Task HandleNormalizeMany(IEnumerable<Intervention> items)
+    public override async Task HandleNormalizeMany(IEnumerable<Intervention> items, CancellationToken cancellationToken = default)
     {
         var itemList = items as Intervention[] ?? items.ToArray();
         var vehicleIds = itemList.Select(x => x.VehicleId).Distinct().ToArray();
-        _vehicles = await dbContext.Vehicles.Where(x => vehicleIds.Contains(x.Id)).ToListAsync();
+        _vehicles = await dbContext.Vehicles.Where(x => vehicleIds.Contains(x.Id)).ToListAsync(cancellationToken);
         var supplierIds = itemList.Select(x => x.OperatorId).Distinct().ToArray();
-        _suppliers = await dbContext.InterventionOperators.Where(x => supplierIds.Contains(x.Id)).ToListAsync();
+        _suppliers = await dbContext.InterventionOperators.Where(x => supplierIds.Contains(x.Id)).ToListAsync(cancellationToken);
         var typeIds = itemList.Select(x => x.InterventionTypeId).Where(id => id.HasValue).Distinct().ToArray();
-        _interventionTypes = await dbContext.InterventionTypes.Where(x => typeIds.Contains(x.Id)).ToListAsync();
+        _interventionTypes = await dbContext.InterventionTypes.Where(x => typeIds.Contains(x.Id)).ToListAsync(cancellationToken);
 
-        await base.HandleNormalizeMany(itemList);
+        await base.HandleNormalizeMany(itemList, cancellationToken);
     }
-    public override async Task HandleNormalize(Intervention item)
+    public override async Task HandleNormalize(Intervention item, CancellationToken cancellationToken = default)
     {
         if (item.Labels?.Any() == true)
         {
-            await labelNormalizer.HandleNormalizeMany(item.Labels);
+            await labelNormalizer.HandleNormalizeMany(item.Labels, cancellationToken);
         }
 
-        await base.HandleNormalize(item);
+        await base.HandleNormalize(item, cancellationToken);
 
         var contentEntries = GetDefaultNormalizedContentEntries(item);
 

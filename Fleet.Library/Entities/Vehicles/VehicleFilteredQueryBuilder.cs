@@ -1,4 +1,4 @@
-﻿using Regira.Entities.EFcore.QueryBuilders.Abstractions;
+﻿using Regira.Entities.QueryBuilders.Abstractions;
 using Regira.Fleet.Data;
 using Regira.Fleet.Models.Vehicles;
 

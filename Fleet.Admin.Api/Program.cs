@@ -1,4 +1,5 @@
 using Regira.Fleet.Admin.Api.Infrastructure;
+using Regira.Licensing.DependencyInjection;
 using Serilog;
 
 // prevent date errors in Postgres
@@ -14,6 +15,7 @@ var builder = WebApplication.CreateBuilder(args)
 // services
 builder.Services
     .AddApi()
+    .UseRegira(builder.Configuration)
     .AddServices(builder.Configuration)
     .AddIdentity(builder.Configuration);
 

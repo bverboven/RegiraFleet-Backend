@@ -6,7 +6,7 @@ namespace Regira.Fleet.Tenants;
 
 public class HasTenantPrimer(ITenantContext tenantContext) : EntityPrimerBase<IHasTenantId>
 {
-    public override Task PrepareAsync(IHasTenantId entity, EntityEntry entry)
+    public override Task PrepareAsync(IHasTenantId entity, EntityEntry entry, CancellationToken cancellationToken = default)
     {
         if (!string.IsNullOrWhiteSpace(tenantContext.TenantId))
         {

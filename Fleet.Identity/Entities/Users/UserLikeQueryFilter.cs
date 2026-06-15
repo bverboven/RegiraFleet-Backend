@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Regira.Entities.EFcore.QueryBuilders.Abstractions;
 using Regira.Entities.Keywords.Abstractions;
+using Regira.Entities.QueryBuilders.Abstractions;
 using Regira.Fleet.Identity.Models.Users;
 
 namespace Regira.Fleet.Identity.Entities.Users;
