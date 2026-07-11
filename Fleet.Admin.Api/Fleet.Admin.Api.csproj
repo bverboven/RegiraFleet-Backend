@@ -13,20 +13,19 @@
   </PropertyGroup>
 
   <ItemGroup>
-	<PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="10.0.9" />
 	<PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="10.0.9" />
+	<!-- Pinned to 2.9.* to clear security advisory GHSA-v5pm-xwqc-g5wc; must stay on 2.x for the .NET 10 OpenAPI source generator -->
+	<PackageReference Include="Microsoft.OpenApi" Version="2.9.*" />
+	<PackageReference Include="Scalar.AspNetCore" Version="2.16.11" />
 	<PackageReference Include="Serilog.Extensions.Hosting" Version="10.0.0" />
 	<PackageReference Include="Serilog.Settings.Configuration" Version="10.0.1" />
 	<PackageReference Include="Serilog.Sinks.Console" Version="6.1.1" />
 	<PackageReference Include="Serilog.Sinks.File" Version="7.0.0" />
-	<PackageReference Include="Swashbuckle.AspNetCore.SwaggerGen" Version="10.2.1" />
-	<PackageReference Include="Swashbuckle.AspNetCore.SwaggerUI" Version="10.2.1" />
   </ItemGroup>
 
   <ItemGroup>
-	<!--<PackageReference Include="Regira.Office.Mail.SendGrid" Version="5.0.1" />-->
+	<PackageReference Include="Regira.Licensing" Version="6.0.0" />
 	<PackageReference Include="Regira.Office.Mail.MailGun" Version="6.0.0" />
-	<PackageReference Include="Regira.Serializing.Newtonsoft" Version="6.0.0" />
   </ItemGroup>
 
   <ItemGroup>

@@ -37,8 +37,5 @@ catch (Exception ex)
 }
 finally
 {
-    Console.WriteLine("Press enter to exit");
-    Console.ReadLine();
-
     Log.CloseAndFlush();
 }

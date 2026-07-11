@@ -6,6 +6,7 @@ using Regira.Fleet.Core.Constants;
 using Regira.Fleet.Identity.DependencyInjection;
 using Regira.Fleet.Identity.Models.Users;
 using Regira.IO.Storage.FileSystem;
+using Regira.Licensing.DependencyInjection;
 using Regira.Security.Abstractions;
 using Regira.Security.Encryption;
 using UserManager.Console;
@@ -68,6 +69,7 @@ static void ConfigureServices(HostBuilderContext context, IServiceCollection ser
     var config = context.Configuration;
 
     services
+        .UseRegira(config)
         .AddTransient<IEncrypter, SymmetricEncrypter>();
 
     services.AddAuthentication();

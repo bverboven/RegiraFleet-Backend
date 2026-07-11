@@ -363,6 +363,6 @@ MigrationBackup/
 FodyWeavers.xsd
 
 # AI Instructions
-/.github
-/.claude/agents
-/.regira/instructions
+.github/
+.claude/agents
+.regira/

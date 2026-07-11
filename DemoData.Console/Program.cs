@@ -10,6 +10,7 @@ using Regira.Fleet.Identity.Data;
 using Regira.Fleet.Identity.DependencyInjection;
 using Regira.Fleet.Tenants;
 using Regira.IO.Storage.FileSystem;
+using Regira.Licensing.DependencyInjection;
 using Regira.Security.Abstractions;
 using Regira.Security.Encryption;
 
@@ -66,6 +67,7 @@ static void ConfigureServices(HostBuilderContext context, IServiceCollection ser
     var config = context.Configuration;
 
     services
+        .UseRegira(config)
         .AddTransient<IEncrypter, SymmetricEncrypter>()
         .AddTransient<DataSeeder>()
         .AddTransient<AccountSeeder>();

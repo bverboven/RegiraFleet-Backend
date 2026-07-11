@@ -1,8 +1,5 @@
 ﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.OpenApi;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Converters;
 using Regira.Fleet.Core.Constants;
 using Regira.Fleet.Identity.Authorization;
 using Regira.Fleet.Identity.DependencyInjection;
@@ -11,12 +8,11 @@ using Regira.IO.Storage.FileSystem;
 using Regira.Licensing.DependencyInjection;
 using Regira.Office.Mail.MailGun;
 using Regira.Security.Abstractions;
+using Regira.Security.Authentication.Web.OpenApi.Transformers;
 using Regira.Security.Encryption;
-using Regira.Serializing.Abstractions;
-using Regira.Serializing.Newtonsoft.Json;
+using Scalar.AspNetCore;
 using Serilog;
 using System.Text.Json.Serialization;
-using JsonSerializer = Regira.Serializing.Newtonsoft.Json.JsonSerializer;
 
 namespace Regira.Fleet.Admin.Api.Infrastructure;
 
@@ -32,39 +28,19 @@ public static class HostingExtensions
     public static IServiceCollection AddApi(this IServiceCollection services)
     {
         services
-            .AddControllers(_ =>
+            .AddControllers()
+            .AddJsonOptions(o =>
             {
-                //var routePrefix = "api";
-                //if (!string.IsNullOrWhiteSpace(routePrefix))
-                //{
-                //    o.UseCentralRoutePrefix(new RouteAttribute(routePrefix));
-                //}
-            })
-            .AddJsonOptions(o => o.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter()))
-            .AddNewtonsoftJson(o =>
-            {
-                //o.SerializerSettings.DateParseHandling = DateParseHandling.DateTimeOffset;
-                o.UseCamelCasing(true);
-                var settings = o.SerializerSettings;
-                settings.NullValueHandling = NullValueHandling.Ignore;
-                settings.MissingMemberHandling = MissingMemberHandling.Ignore;
-                settings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
-                settings.DefaultValueHandling = DefaultValueHandling.Include;
-                var converters = settings.Converters;
-                converters.Add(new StringEnumConverter());
-                converters.Add(new BoolNumberConverter());
-                converters.Add(new DateOnlyJsonConverter());
-                converters.Add(new DateAndTimeConverter());
+                o.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
+                o.JsonSerializerOptions.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull;
+                o.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
+                o.JsonSerializerOptions.AllowOutOfOrderMetadataProperties = true;
             });
 
         // global error handling
         //services.AddGlobalExceptionHandling();
 
-        services.AddTransient<ISerializer, JsonSerializer>();
-
         services
-            // Api routing
-            .AddEndpointsApiExplorer()
             // Enable Cors
             .AddCors(options =>
                 options
@@ -76,22 +52,10 @@ public static class HostingExtensions
                     //.WithMethods("GET", "PUT", "POST", "DELETE", "OPTIONS")
                     )
             )
-            // Swagger (with auth)
-            .AddOpenApi()
-            .AddSwaggerGen(options =>
+            // OpenAPI (with JWT bearer security scheme)
+            .AddOpenApi(options =>
             {
-                options.AddSecurityDefinition("bearer", new OpenApiSecurityScheme
-                {
-                    Type = SecuritySchemeType.Http,
-                    Scheme = "bearer",
-                    BearerFormat = "JWT",
-                    Description = "JWT Authorization header using the Bearer scheme."
-                });
-
-                options.AddSecurityRequirement(document => new OpenApiSecurityRequirement
-                {
-                    [new OpenApiSecuritySchemeReference("bearer", document)] = []
-                });
+                options.AddDocumentTransformer<BearerSecuritySchemeTransformer>();
             })
             // necessary services
             .AddHttpContextAccessor()
@@ -124,19 +88,13 @@ public static class HostingExtensions
                 var options = config.GetSection("Identity").Get<FleetIdentityOptions>()!;
                 o.SecretKey = options.SecretKey;
                 o.Audiences.AddRange(options.Audiences);
-                //o.AddMailer(_ =>
-                //{
-                //    var key = config["SendGrid:Key"];
-                //    ArgumentException.ThrowIfNullOrWhiteSpace(key, "SendGrid API key");
-                //    return new SendGridMailer(new SendGridConfig { Key = key });
-                //});
                 o.AddMailer(_ =>
                 {
                     var mailConfig = new MailgunConfig
                     {
                         Api = config["MailGun:Api"] ?? throw new NullReferenceException("Config missing for MailGun:Api"),
                         Domain = config["MailGun:Domain"] ?? throw new NullReferenceException("Config missing for MailGun:Domain"),
-                        Key = config["MailGun::Key"] ?? throw new NullReferenceException("Config missing for MailGun:Key")
+                        Key = config["MailGun:Key"] ?? throw new NullReferenceException("Config missing for MailGun:Key")
                     };
                     return new MailGunMailer(mailConfig);
                 });
@@ -150,8 +108,16 @@ public static class HostingExtensions
 
     public static WebApplication ConfigureApp(this WebApplication app)
     {
-        app.UseSwagger(options => options.OpenApiVersion = OpenApiSpecVersion.OpenApi3_1);
-        app.UseSwaggerUI();
+        // OpenAPI + Scalar UI
+        app.MapOpenApi()
+            .AllowAnonymous();
+        app.MapScalarApiReference(options =>
+        {
+            options.Authentication = new ScalarAuthenticationOptions
+            {
+                PreferredSecuritySchemes = [JwtBearerDefaults.AuthenticationScheme]
+            };
+        }).AllowAnonymous();
 
         app.UseHttpsRedirection();
 

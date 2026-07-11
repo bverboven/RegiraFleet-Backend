@@ -24,6 +24,7 @@
   </Folder>
   <Folder Name="/Solution Items/">
     <File Path=".gitignore" />
+    <File Path="README.md" />
   </Folder>
   <Folder Name="/Tools/">
     <Project Path="DemoData.Console/DemoData.Console.csproj" />

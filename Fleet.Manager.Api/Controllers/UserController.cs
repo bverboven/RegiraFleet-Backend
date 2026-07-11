@@ -10,17 +10,16 @@ using Regira.Fleet.Identity.Models.Users;
 using Regira.Fleet.Identity.Web.Extensions;
 using Regira.Fleet.Identity.Web.Models;
 using Regira.Fleet.Manager.Api.Models;
-using Regira.Serializing.Abstractions;
 using Regira.Utilities;
 using System.Security.Claims;
 using Regira.Fleet.Identity.Models.Users.Claims;
+using UserTokenModel = Regira.Security.Authentication.Web.Models.UserTokenModel;
 
 namespace Regira.Fleet.Manager.Api.Controllers;
 
 [ApiController]
 [Route("users")]
-//public class UserController(UserManager<FleetUser> userManager, AccountsContextBase dbContext, ISerializer serializer, ITenantContext tenantContext) : ControllerBase
-public class UserController(UserManager<FleetUser> userManager, IAccountsDbContext dbContext, ISerializer serializer, ITenantContext tenantContext) : ControllerBase
+public class UserController(UserManager<FleetUser> userManager, IAccountsDbContext dbContext, ITenantContext tenantContext) : ControllerBase
 {
     static readonly string[] ALLOWED_PERMISSIONS = [TenantPermissions.CanRead, TenantPermissions.CanWrite];
 
@@ -89,7 +88,7 @@ public class UserController(UserManager<FleetUser> userManager, IAccountsDbConte
                 return BadRequest(ModelState);
             }
             var confirmToken = await userManager.GenerateEmailConfirmationTokenAsync(user);
-            var token = serializer.Serialize(new UserTokenModel { Token = confirmToken, Username = user.UserName }).Base64Encode();
+            var token = System.Text.Json.JsonSerializer.Serialize(new UserTokenModel { Token = confirmToken, Username = user.UserName! }).Base64Encode();
             if (string.IsNullOrWhiteSpace(model.SiteUrl))
             {
                 ModelState.AddModelError(nameof(model.SiteUrl), "Required for new user");
@@ -118,7 +117,21 @@ Token: {token}
     [HttpPost("confirm-email", Name = RouteNames.ConfirmEmail)]
     public async Task<IActionResult> ConfirmEmail([FromBody] ConfirmEmailInput model)
     {
-        var tokenModel = serializer.Deserialize<UserTokenModel>(model.Token.Base64Decode())!;
+        UserTokenModel? tokenModel;
+        try
+        {
+            tokenModel = System.Text.Json.JsonSerializer.Deserialize<UserTokenModel>(model.Token.Base64Decode());
+        }
+        catch (Exception ex) when (ex is FormatException or System.Text.Json.JsonException)
+        {
+            // malformed token (invalid Base64 or unparseable payload)
+            tokenModel = null;
+        }
+        if (tokenModel == null)
+        {
+            return BadRequest();
+        }
+
         var user = await userManager.FindByNameAsync(tokenModel.Username);
         if (user != null)
         {
@@ -150,7 +163,7 @@ Token: {token}
         if (user != null)
         {
             var confirmToken = await userManager.GenerateEmailConfirmationTokenAsync(user);
-            var token = serializer.Serialize(new UserTokenModel { Token = confirmToken, Username = user.UserName! }).Base64Encode();
+            var token = System.Text.Json.JsonSerializer.Serialize(new UserTokenModel { Token = confirmToken, Username = user.UserName! }).Base64Encode();
 
             var confirmationUri = new UriBuilder(input.SiteUrl)
             {

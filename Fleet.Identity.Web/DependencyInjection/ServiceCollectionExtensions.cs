@@ -10,8 +10,6 @@ using Regira.Security.Encryption;
 namespace Regira.Fleet.Identity.Web.DependencyInjection;
 public static class ServiceCollectionExtensions
 {
-    const string AUTH_SECRET = "ACA_FLEET_SECRET:F061E1B7-363F-40F3-B052-0EE536792551:5A296568-C287-412F-836B-8E29ACD93A6A";
-
     public static AuthenticationBuilder AddFleetIdentity(this IServiceCollection services, Action<FleetIdentityOptions> configure)
     {
         var options = new FleetIdentityOptions();
@@ -44,8 +42,7 @@ public static class ServiceCollectionExtensions
                 {
                     throw new NullReferenceException($"No SecretKey found in {nameof(IConfiguration)}");
                 }
-                var decryptedKey = encrypter.Decrypt(secretKey);
-                var jwtSecret = $"{AUTH_SECRET}:{decryptedKey}";
+                var jwtSecret = encrypter.Decrypt(secretKey);
 
                 c.Secret = jwtSecret;
                 c.Authority = "identity-api";

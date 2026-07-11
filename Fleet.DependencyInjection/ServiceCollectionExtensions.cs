@@ -15,6 +15,7 @@ using Regira.Fleet.Data.SqlServer;
 using Regira.Fleet.Models.InterventionOperators.Operators;
 using Regira.Fleet.Models.Interventions;
 using Regira.Fleet.Models.Vehicles;
+using MySql.EntityFrameworkCore.Extensions;
 using Regira.Fleet.Tenants;
 using Regira.IO.Storage.Abstractions;
 
@@ -99,7 +100,7 @@ public static class ServiceCollectionExtensions
     {
         return builder.AddDbContext<FleetMySqlContext>(db =>
             {
-                db.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString), o =>
+                db.UseMySQL(connectionString, o =>
                     {
                         o
                             .MigrationsAssembly(typeof(FleetMySqlContext).Assembly)

@@ -13,6 +13,7 @@ using Regira.Fleet.Identity.Data.MySQL;
 using Regira.Fleet.Identity.Data.PostgreSQL;
 using Regira.Fleet.Identity.Data.SqlServer;
 using Regira.Fleet.Identity.Models.Users;
+using MySql.EntityFrameworkCore.Extensions;
 using Regira.Fleet.Identity.Services;
 using Regira.IO.Storage.Abstractions;
 
@@ -68,7 +69,7 @@ public static class ServiceCollectionExtensions
     {
         return services.AddAccountsDbContext<AccountsMySqlContext>(db =>
             {
-                db.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString), o =>
+                db.UseMySQL(connectionString, o =>
                 {
                     o
                         .MigrationsAssembly(typeof(AccountsMySqlContext).Assembly)
