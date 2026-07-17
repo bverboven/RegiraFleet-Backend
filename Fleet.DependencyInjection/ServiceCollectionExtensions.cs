@@ -1,9 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
-using Regira.DAL.EFcore.Services;
 using Regira.Entities.EFcore.Attachments;
-using Regira.Entities.EFcore.Normalizing;
-using Regira.Entities.EFcore.Primers;
 using Regira.Fleet.Core.Abstractions;
 using Regira.Fleet.Core.Constants;
 using Regira.Fleet.Core.DependencyInjection;
@@ -15,7 +12,6 @@ using Regira.Fleet.Data.SqlServer;
 using Regira.Fleet.Models.InterventionOperators.Operators;
 using Regira.Fleet.Models.Interventions;
 using Regira.Fleet.Models.Vehicles;
-using MySql.EntityFrameworkCore.Extensions;
 using Regira.Fleet.Tenants;
 using Regira.IO.Storage.Abstractions;
 
@@ -64,13 +60,7 @@ public static class ServiceCollectionExtensions
         where TContext : FleetContextBase
     {
         builder.Services
-            .AddDbContext<TContext>((sp, db) =>
-            {
-                configureDb(db);
-                db.AddPrimerInterceptors(sp);
-                db.AddNormalizerInterceptors(sp);
-                db.AddAutoTruncateInterceptors();
-            })
+            .AddDbContext<TContext>(configureDb)
             .AddScoped<FleetContextBase, TContext>()
             .AddScoped<IFleetDbContext, TContext>();
 

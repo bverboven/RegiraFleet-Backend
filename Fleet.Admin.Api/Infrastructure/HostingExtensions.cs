@@ -5,7 +5,6 @@ using Regira.Fleet.Identity.Authorization;
 using Regira.Fleet.Identity.DependencyInjection;
 using Regira.Fleet.Identity.Web.DependencyInjection;
 using Regira.IO.Storage.FileSystem;
-using Regira.Licensing.DependencyInjection;
 using Regira.Office.Mail.MailGun;
 using Regira.Security.Abstractions;
 using Regira.Security.Authentication.Web.OpenApi.Transformers;
