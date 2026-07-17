@@ -2,9 +2,6 @@
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
-using Regira.DAL.EFcore.Services;
-using Regira.Entities.EFcore.Normalizing;
-using Regira.Entities.EFcore.Primers;
 using Regira.Fleet.Core.Abstractions;
 using Regira.Fleet.Core.Constants;
 using Regira.Fleet.Core.DependencyInjection;
@@ -13,7 +10,6 @@ using Regira.Fleet.Identity.Data.MySQL;
 using Regira.Fleet.Identity.Data.PostgreSQL;
 using Regira.Fleet.Identity.Data.SqlServer;
 using Regira.Fleet.Identity.Models.Users;
-using MySql.EntityFrameworkCore.Extensions;
 using Regira.Fleet.Identity.Services;
 using Regira.IO.Storage.Abstractions;
 
@@ -55,13 +51,7 @@ public static class ServiceCollectionExtensions
         where TContext : AccountsContextBase
     {
         return services
-            .AddDbContext<TContext>((sp, db) =>
-            {
-                configureDb(db);
-                db.AddPrimerInterceptors(sp);
-                db.AddNormalizerInterceptors(sp);
-                db.AddAutoTruncateInterceptors();
-            })
+            .AddDbContext<TContext>(configureDb)
             .AddScoped<AccountsContextBase, TContext>()
             .AddScoped<IAccountsDbContext, TContext>();
     }
