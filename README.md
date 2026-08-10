@@ -1,6 +1,6 @@
 # Fleet Backend
 
-A sample **Fleet Management** API built on top of the [Regira Entities](https://regira.github.io/Regira-Codebase/src/Common.Entities/) framework.
+A sample **Fleet Management** API built on top of the [Regira Entities](https://regira.github.io/Regira-Packages/src/Common.Entities/) framework.
 
 The project tracks **vehicles**, the **interventions** (maintenance, repairs, inspections) performed on them, the **operators** (garages, suppliers) who carry them out, and the resulting **invoices**. It is multi-tenant from the ground up and shows how Regira Entities handles filtering, sorting, includes, DTO mapping, normalization, attachments, and DI wiring in a realistic, non-trivial domain.
 
@@ -9,7 +9,9 @@ The headline feature of this sample is **database portability**: the exact same 
 | Site | URL |
 |---|---|
 | 🏢 Regira | [regira.com](https://www.regira.com) |
-| 📚 Regira Entities | [Regira Entities framework](https://regira.github.io/Regira-Codebase/src/Common.Entities/) |
+| 🚗 Live demo | [fleet-demo.regira.com](https://fleet-demo.regira.com/) |
+| 📚 Regira Entities | [Regira Entities framework](https://regira.github.io/Regira-Packages/src/Common.Entities/) |
+| 📦 Package sources | [Regira/Regira-Packages](https://github.com/Regira/Regira-Packages) |
 | 🍳 Sibling demo (PIM) | [Regira/Regira-PIM-Backend](https://github.com/Regira/Regira-PIM-Backend) |
 
 > ⚠️ **A valid license for Regira Entities is required to run this example.** You can request one — including a free trial — at [regira.com/licensing?product=regira.entities](https://regira.com/licensing?product=regira.entities#request). See [License](#license) for details.
@@ -402,7 +404,9 @@ Obtain a token via the identity endpoints (`/account/login`). Claims are scoped 
 
 ## License
 
-This example is built on the **Regira Entities** framework, which requires a valid license to run. Without a license key the API will not start (unless validation is explicitly skipped during local development).
+The sample code in this repository is licensed under the **MIT License** — see [LICENSE](LICENSE). The referenced Regira NuGet packages keep their own licenses (most are Apache-2.0; the Entities registration packages are commercially licensed with a free tier).
+
+This example registers more entities than the free tier covers (5 simple + 2 complex), so the **Regira Entities** framework requires a valid license to run it. Without a license key the API will not start (unless validation is explicitly skipped during local development).
 
 You can request a license — including a **free trial** — here:
 

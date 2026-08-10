@@ -10,11 +10,11 @@
 
     <ItemGroup>
         <!-- Pinned to 2.9.* to clear security advisory GHSA-v5pm-xwqc-g5wc; must stay on 2.x for the .NET 10 OpenAPI source generator -->
-        <PackageReference Include="Microsoft.OpenApi" Version="2.9.*" />
-        <PackageReference Include="Regira.Entities.Web" Version="6.0.0" />
-        <PackageReference Include="Regira.Office" Version="6.0.0" />
-        <PackageReference Include="Regira.Security" Version="6.0.0" />
-        <PackageReference Include="Regira.Security.Authentication.Web" Version="6.0.0" />
+        <PackageReference Include="Microsoft.OpenApi" Version="2.11.0" />
+        <PackageReference Include="Regira.Entities.Web" Version="6.0.2" />
+        <PackageReference Include="Regira.Office" Version="6.0.2" />
+        <PackageReference Include="Regira.Security" Version="6.0.2" />
+        <PackageReference Include="Regira.Security.Authentication.Web" Version="6.0.2" />
     </ItemGroup>
 
     <ItemGroup>
