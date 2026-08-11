@@ -144,6 +144,10 @@ public static class ServiceCollectionExtensions
                 o.Password.RequiredLength = 2;
                 o.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(5);
                 o.Lockout.MaxFailedAccessAttempts = 5;
+                // Mint roles under the JWT spelling. JwtTokenOptions.RoleClaimType is "role", so leaving
+                // this at the default long ClaimTypes.Role URI puts the claim in the token under a name
+                // the bearer identity does not resolve roles through.
+                o.ClaimsIdentity.RoleClaimType = "role";
             })
             .AddRoles<IdentityRole>()
             .AddEntityFrameworkStores<AccountsContextBase>()

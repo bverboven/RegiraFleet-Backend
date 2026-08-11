@@ -17,7 +17,7 @@
 	<PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="10.0.10" />
 	<!-- Pinned to 2.9.* to clear security advisory GHSA-v5pm-xwqc-g5wc; must stay on 2.x for the .NET 10 OpenAPI source generator -->
 	<PackageReference Include="Microsoft.OpenApi" Version="2.11.0" />
-	<PackageReference Include="Scalar.AspNetCore" Version="2.16.17" />
+	<PackageReference Include="Scalar.AspNetCore" Version="2.16.18" />
 	<PackageReference Include="Serilog.Extensions.Hosting" Version="10.0.0" />
 	<PackageReference Include="Serilog.Settings.Configuration" Version="10.0.1" />
 	<PackageReference Include="Serilog.Sinks.Console" Version="6.1.1" />
@@ -25,11 +25,11 @@
   </ItemGroup>
 
   <ItemGroup>
-	<PackageReference Include="Regira.Licensing" Version="6.0.2" />
-	<PackageReference Include="Regira.Office.Excel.NpoiMapper" Version="6.0.2" />
-	<PackageReference Include="Regira.Office.Excel.EPPlus" Version="6.0.2" />
-	<PackageReference Include="Regira.Office.Mail.MailGun" Version="6.0.2" />
-	<PackageReference Include="Regira.Security" Version="6.0.2" />
+	<PackageReference Include="Regira.Licensing" Version="6.1.0" />
+	<PackageReference Include="Regira.Office.Excel.NpoiMapper" Version="6.1.0" />
+	<PackageReference Include="Regira.Office.Excel.EPPlus" Version="6.1.0" />
+	<PackageReference Include="Regira.Office.Mail.MailGun" Version="6.1.0" />
+	<PackageReference Include="Regira.Security" Version="6.1.0" />
   </ItemGroup>
 
   <ItemGroup>

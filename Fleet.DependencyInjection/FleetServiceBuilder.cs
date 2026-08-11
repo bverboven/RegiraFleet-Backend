@@ -45,6 +45,9 @@ public class FleetServiceBuilder(IServiceCollection services, FleetHostingOption
                 _ = options.DatabaseType == DataBaseTypes.PostgreSQL
                     ? c.AddGlobalFilterQueryBuilder<PgFilterHasNormalizedContentQueryBuilder>()
                     : c.AddGlobalFilterQueryBuilder<FilterHasNormalizedContentQueryBuilder>();
+
+                // host-supplied options (e.g. UseAttachmentUris() from a web host)
+                options.EntityOptionsFactory?.Invoke(c);
             })
             .WithAttachments(options.FileServiceFactory ?? throw new InvalidOperationException($"No implementation for {nameof(IFileService)} configured"));
 

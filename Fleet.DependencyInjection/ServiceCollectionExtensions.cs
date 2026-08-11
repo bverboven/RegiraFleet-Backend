@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.Extensions.DependencyInjection;
 using Regira.Entities.EFcore.Attachments;
 using Regira.Fleet.Core.Abstractions;
@@ -60,7 +61,14 @@ public static class ServiceCollectionExtensions
         where TContext : FleetContextBase
     {
         builder.Services
-            .AddDbContext<TContext>(configureDb)
+            .AddDbContext<TContext>(db =>
+            {
+                configureDb(db);
+                // Vehicle and Operator are IArchivable aggregate parents with required dependents, which
+                // EF flags per relationship. That is the intent here — archiving a vehicle takes its
+                // interventions with it — and FleetContextBase mirrors the filter so count and items agree.
+                db.ConfigureWarnings(w => w.Ignore(CoreEventId.PossibleIncorrectRequiredNavigationWithQueryFilterInteractionWarning));
+            })
             .AddScoped<FleetContextBase, TContext>()
             .AddScoped<IFleetDbContext, TContext>();
 

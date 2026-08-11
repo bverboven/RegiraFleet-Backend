@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
+using Regira.Entities.Web.Attachments.DependencyInjection;
 using Regira.Fleet.DependencyInjection;
 using Regira.Fleet.Identity.DependencyInjection;
 using Regira.Fleet.Identity.Web.DependencyInjection;
@@ -88,6 +89,9 @@ public static class HostingExtensions
                     };
                     return new BinaryFileService(fsConfig);
                 });
+                // Populate Uri on attachment DTOs — the SPA downloads saved attachments through it.
+                // Without this the null resolver stays in place and every Uri comes back null.
+                c.ConfigureEntities(e => e.UseAttachmentUris());
             });
 
         services

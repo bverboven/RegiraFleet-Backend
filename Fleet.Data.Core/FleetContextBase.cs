@@ -54,6 +54,11 @@ public abstract class FleetContextBase(DbContextOptions options) : DbContext(opt
         {
             entity.HasIndex(e => e.TenantId);
 
+            // Vehicle and Operator are IArchivable and required here, so the archived filter on either
+            // drops interventions from the items projection but not from the count. Mirroring it keeps
+            // the two in agreement. Intervention is not IArchivable, so this filter stands alone.
+            entity.HasQueryFilter(e => !e.Vehicle!.IsArchived && !e.Operator!.IsArchived);
+
             // Labels
             entity.HasMany(e => e.Labels)
                 .WithOne()
@@ -110,9 +115,14 @@ public abstract class FleetContextBase(DbContextOptions options) : DbContext(opt
 
             // Attachments
             entity.HasMany(e => e.Attachments)
-                .WithOne()
+                .WithOne(a => a.Operator!)
                 .HasForeignKey(e => e.ObjectId)
                 .HasPrincipalKey(e => e.Id);
+        });
+        // Operator is IArchivable: hide its files along with it, so the attachment list agrees with the parent.
+        modelBuilder.Entity<OperatorAttachment>(entity =>
+        {
+            entity.HasQueryFilter(e => !e.Operator!.IsArchived);
         });
 
         // Vehicles
@@ -140,9 +150,14 @@ public abstract class FleetContextBase(DbContextOptions options) : DbContext(opt
 
             // Attachments
             entity.HasMany(e => e.Attachments)
-                .WithOne()
+                .WithOne(a => a.Vehicle!)
                 .HasForeignKey(e => e.ObjectId)
                 .HasPrincipalKey(e => e.Id);
+        });
+        // Vehicle is IArchivable: hide its files along with it, so the attachment list agrees with the parent.
+        modelBuilder.Entity<VehicleAttachment>(entity =>
+        {
+            entity.HasQueryFilter(e => !e.Vehicle!.IsArchived);
         });
         modelBuilder.Entity<VehicleType>(entity =>
         {
