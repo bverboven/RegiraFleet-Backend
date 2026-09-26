@@ -1,4 +1,4 @@
-﻿using Regira.Entities.Mapping.Models;
+using Regira.Entities.Mapping.Models;
 using Regira.Fleet.Models.EntityLabels;
 using Regira.Fleet.Models.Vehicles.Brands;
 using Regira.Fleet.Models.Vehicles.VehicleTypes;
@@ -19,6 +19,7 @@ public class VehicleDto
     public DateTime Created { get; set; }
     public DateTime? LastModified { get; set; }
     public bool IsArchived { get; set; }
+    public Guid ConcurrencyToken { get; set; }
 
     public virtual BrandDto? Brand { get; set; }
     public virtual VehicleTypeDto? VehicleType { get; set; }

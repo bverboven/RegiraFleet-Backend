@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+using Regira.Entities.Attributes;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using Regira.Entities.Attachments.Abstractions;
 using Regira.Entities.Models.Abstractions;
@@ -12,10 +13,12 @@ using Regira.Fleet.Models.Vehicles;
 
 namespace Regira.Fleet.Models.Interventions;
 
-public class Intervention : IFleetEntity, IEntityWithSerial, IHasDescription, IHasNormalizedContent, 
+public class Intervention : IFleetEntity, IHasConcurrencyToken, IEntityWithSerial, IHasDescription, IHasNormalizedContent, 
     IHasLabels<InterventionLabel>, IHasLabels, IHasAttachments, IHasAttachments<InterventionAttachment>
 {
     public int Id { get; set; }
+    // Not on the input DTO: keep the stored value on update instead of a freshly minted one
+    [ServerOwned]
     [StringLength(32)]
     public string Guid { get; set; } = System.Guid.NewGuid().ToString("N");
     [StringLength(32)]
@@ -31,6 +34,7 @@ public class Intervention : IFleetEntity, IEntityWithSerial, IHasDescription, IH
 
     public DateTime Created { get; set; } = DateTime.Now;
     public DateTime? LastModified { get; set; }
+    public Guid ConcurrencyToken { get; set; }
 
 
     public Vehicle? Vehicle { get; set; }

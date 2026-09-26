@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+using Regira.Entities.Attributes;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using Regira.Entities.Attachments.Abstractions;
 using Regira.Entities.Models.Abstractions;
@@ -11,6 +12,8 @@ namespace Regira.Fleet.Models.Interventions.Actions;
 public class InterventionAction : IFleetEntity, IEntityWithSerial, IHasDescription, IHasNormalizedContent, IHasAttachments, IHasAttachments<InterventionActionAttachment>
 {
     public int Id { get; set; }
+    // Not on the input DTO: keep the stored value on update instead of a freshly minted one
+    [ServerOwned]
     [StringLength(32)]
     public string Guid { get; set; } = System.Guid.NewGuid().ToString("N");
     [StringLength(32)]

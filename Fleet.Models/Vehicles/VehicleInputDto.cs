@@ -1,4 +1,4 @@
-﻿using Regira.Entities.Mapping.Models;
+using Regira.Entities.Mapping.Models;
 using Regira.Fleet.Models.EntityLabels;
 using System.ComponentModel.DataAnnotations;
 
@@ -18,6 +18,8 @@ public class VehicleInputDto
     public string? IdentificationNumber { get; set; }
     public string? Description { get; set; }
     public bool IsArchived { get; set; }
+    // Send back the token that was read: a stale one answers 409 Conflict
+    public Guid ConcurrencyToken { get; set; }
     public ICollection<VehicleInterventionTypeInputDto>? InterventionTypes { get; set; }
     public ICollection<EntityLabelInputDto>? Labels { get; set; }
     public ICollection<EntityAttachmentInputDto>? Attachments { get; set; }

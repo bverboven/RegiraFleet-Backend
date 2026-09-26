@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Regira.Fleet.Data.SqlServer;
 
@@ -11,9 +12,11 @@ using Regira.Fleet.Data.SqlServer;
 namespace Regira.Fleet.Data.SqlServer.Migrations
 {
     [DbContext(typeof(FleetSqlServerContext))]
-    partial class FleetSqlServerContextModelSnapshot : ModelSnapshot
+    [Migration("20260926194319_ConcurrencyTokensAndActionAttachments")]
+    partial class ConcurrencyTokensAndActionAttachments
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

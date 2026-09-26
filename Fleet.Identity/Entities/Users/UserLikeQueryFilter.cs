@@ -1,4 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using Regira.Entities.Keywords.Abstractions;
 using Regira.Entities.QueryBuilders.Abstractions;
 using Regira.Fleet.Identity.Models.Users;
@@ -24,8 +24,8 @@ public class UserLikeQueryFilter(IQKeywordHelper qHelper)
                 var qNames = qHelper.Parse(so.Title);
                 foreach (var q in qNames)
                 {
-                    query = query.Where(x => EF.Functions.Like(x.GivenName, q.Q) 
-                                             || EF.Functions.Like(x.LastName, q.Q));
+                    query = query.Where(x => EF.Functions.Like(x.GivenName, q.TrimmedQ) 
+                                             || EF.Functions.Like(x.LastName, q.TrimmedQ));
                 }
             }
             // Q
@@ -37,8 +37,8 @@ public class UserLikeQueryFilter(IQKeywordHelper qHelper)
                     query = query.Where(x =>
                         EF.Functions.Like(x.NormalizedUserName, q.QW)
                         || EF.Functions.Like(x.NormalizedEmail, q.QW)
-                        || EF.Functions.Like(x.GivenName, q.QW)
-                        || EF.Functions.Like(x.LastName, q.QW)
+                        || EF.Functions.Like(x.GivenName, q.TrimmedQW)
+                        || EF.Functions.Like(x.LastName, q.TrimmedQW)
                     );
                 }
             }

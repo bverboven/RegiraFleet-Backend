@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
 	<TargetFramework>net10.0</TargetFramework>
@@ -9,11 +9,11 @@
   </PropertyGroup>
 
   <ItemGroup>
-	<PackageReference Include="Regira.Common" Version="6.1.0" />
-	<PackageReference Include="Regira.Entities.Mapping.Mapster" Version="6.1.0" />
-	<PackageReference Include="Regira.Office" Version="6.1.0" />
-	<PackageReference Include="Regira.Security" Version="6.1.0" />
-	<PackageReference Include="Regira.Security.Authentication" Version="6.1.0" />
+	<PackageReference Include="Regira.Common" Version="6.4.0" />
+	<PackageReference Include="Regira.Entities.Mapping.Mapster" Version="6.4.0" />
+	<PackageReference Include="Regira.Office" Version="6.4.0" />
+	<PackageReference Include="Regira.Security" Version="6.4.0" />
+	<PackageReference Include="Regira.Security.Authentication" Version="6.4.0" />
   </ItemGroup>
 
   <ItemGroup>

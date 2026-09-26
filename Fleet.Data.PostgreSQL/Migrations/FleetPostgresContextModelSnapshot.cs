@@ -17,7 +17,7 @@ namespace Regira.Fleet.Data.PostgreSQL.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "10.0.3")
+                .HasAnnotation("ProductVersion", "10.0.12")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
@@ -218,6 +218,11 @@ namespace Regira.Fleet.Data.PostgreSQL.Migrations
                         .HasMaxLength(8)
                         .HasColumnType("character varying(8)")
                         .HasColumnName("code");
+
+                    b.Property<Guid>("ConcurrencyToken")
+                        .IsConcurrencyToken()
+                        .HasColumnType("uuid")
+                        .HasColumnName("concurrency_token");
 
                     b.Property<DateTime>("Created")
                         .HasColumnType("timestamp without time zone")
@@ -608,10 +613,6 @@ namespace Regira.Fleet.Data.PostgreSQL.Migrations
                         .HasColumnType("integer")
                         .HasColumnName("attachment_id");
 
-                    b.Property<int?>("InterventionActionId")
-                        .HasColumnType("integer")
-                        .HasColumnName("intervention_action_id");
-
                     b.Property<int>("ObjectId")
                         .HasColumnType("integer")
                         .HasColumnName("object_id");
@@ -626,8 +627,8 @@ namespace Regira.Fleet.Data.PostgreSQL.Migrations
                     b.HasIndex("AttachmentId")
                         .HasDatabaseName("ix_intervention_action_attachment_attachment_id");
 
-                    b.HasIndex("InterventionActionId")
-                        .HasDatabaseName("ix_intervention_action_attachment_intervention_action_id");
+                    b.HasIndex("ObjectId")
+                        .HasDatabaseName("ix_intervention_action_attachment_object_id");
 
                     b.ToTable("intervention_action_attachment", (string)null);
                 });
@@ -640,6 +641,11 @@ namespace Regira.Fleet.Data.PostgreSQL.Migrations
                         .HasColumnName("id");
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<Guid>("ConcurrencyToken")
+                        .IsConcurrencyToken()
+                        .HasColumnType("uuid")
+                        .HasColumnName("concurrency_token");
 
                     b.Property<DateTime>("Created")
                         .HasColumnType("timestamp without time zone")
@@ -942,6 +948,11 @@ namespace Regira.Fleet.Data.PostgreSQL.Migrations
                         .HasMaxLength(8)
                         .HasColumnType("character varying(8)")
                         .HasColumnName("code");
+
+                    b.Property<Guid>("ConcurrencyToken")
+                        .IsConcurrencyToken()
+                        .HasColumnType("uuid")
+                        .HasColumnName("concurrency_token");
 
                     b.Property<DateTime>("Created")
                         .HasColumnType("timestamp without time zone")
@@ -1278,7 +1289,7 @@ namespace Regira.Fleet.Data.PostgreSQL.Migrations
                         .IsRequired()
                         .HasConstraintName("fk_intervention_operator_attachments_attachments_attachment_id");
 
-                    b.HasOne("Regira.Fleet.Models.InterventionOperators.Operators.Operator", null)
+                    b.HasOne("Regira.Fleet.Models.InterventionOperators.Operators.Operator", "Operator")
                         .WithMany("Attachments")
                         .HasForeignKey("ObjectId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -1286,6 +1297,8 @@ namespace Regira.Fleet.Data.PostgreSQL.Migrations
                         .HasConstraintName("fk_intervention_operator_attachments_intervention_operators_ob");
 
                     b.Navigation("Attachment");
+
+                    b.Navigation("Operator");
                 });
 
             modelBuilder.Entity("Regira.Fleet.Models.InterventionOperators.Operators.OperatorInterventionType", b =>
@@ -1360,8 +1373,10 @@ namespace Regira.Fleet.Data.PostgreSQL.Migrations
 
                     b.HasOne("Regira.Fleet.Models.Interventions.Actions.InterventionAction", null)
                         .WithMany("Attachments")
-                        .HasForeignKey("InterventionActionId")
-                        .HasConstraintName("fk_intervention_action_attachment_intervention_actions_interve");
+                        .HasForeignKey("ObjectId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("fk_intervention_action_attachment_intervention_actions_object_");
 
                     b.Navigation("Attachment");
                 });
@@ -1459,7 +1474,7 @@ namespace Regira.Fleet.Data.PostgreSQL.Migrations
                         .IsRequired()
                         .HasConstraintName("fk_vehicle_attachments_attachments_attachment_id");
 
-                    b.HasOne("Regira.Fleet.Models.Vehicles.Vehicle", null)
+                    b.HasOne("Regira.Fleet.Models.Vehicles.Vehicle", "Vehicle")
                         .WithMany("Attachments")
                         .HasForeignKey("ObjectId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -1467,6 +1482,8 @@ namespace Regira.Fleet.Data.PostgreSQL.Migrations
                         .HasConstraintName("fk_vehicle_attachments_vehicles_object_id");
 
                     b.Navigation("Attachment");
+
+                    b.Navigation("Vehicle");
                 });
 
             modelBuilder.Entity("Regira.Fleet.Models.Vehicles.VehicleInterventionType", b =>

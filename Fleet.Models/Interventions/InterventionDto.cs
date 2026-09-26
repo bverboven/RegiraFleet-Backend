@@ -1,4 +1,4 @@
-﻿using Regira.Entities.Mapping.Models;
+using Regira.Entities.Mapping.Models;
 using Regira.Fleet.Models.EntityLabels;
 using Regira.Fleet.Models.InterventionOperators.Operators;
 using Regira.Fleet.Models.Interventions.Invoices;
@@ -22,6 +22,7 @@ public class InterventionDto
 
     public DateTime Created { get; set; }
     public DateTime? LastModified { get; set; }
+    public Guid ConcurrencyToken { get; set; }
 
 
     public VehicleDto? Vehicle { get; set; }

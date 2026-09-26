@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
         <TargetFramework>net10.0</TargetFramework>
@@ -11,13 +11,13 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="Dapper" Version="2.1.79" />
+        <PackageReference Include="Dapper" Version="2.1.89" />
     </ItemGroup>
 
     <ItemGroup>
-        <PackageReference Include="Regira.Globalization.LibPhoneNumber" Version="6.1.0" />
-        <PackageReference Include="Regira.Entities.Mapping.Mapster" Version="6.1.0" />
-        <PackageReference Include="Regira.Web" Version="6.1.0" />
+        <PackageReference Include="Regira.Globalization.LibPhoneNumber" Version="6.4.0" />
+        <PackageReference Include="Regira.Entities.Mapping.Mapster" Version="6.4.0" />
+        <PackageReference Include="Regira.Web" Version="6.4.0" />
     </ItemGroup>
 
     <ItemGroup>

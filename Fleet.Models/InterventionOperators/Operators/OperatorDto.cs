@@ -1,4 +1,4 @@
-﻿using Regira.Entities.Mapping.Models;
+using Regira.Entities.Mapping.Models;
 using Regira.Fleet.Models.Addresses;
 using Regira.Fleet.Models.EntityLabels;
 using Regira.Fleet.Models.InterventionOperators.ContactData;
@@ -19,6 +19,7 @@ public class OperatorDto
     public DateTime Created { get; set; }
     public DateTime? LastModified { get; set; }
     public bool IsArchived { get; set; }
+    public Guid ConcurrencyToken { get; set; }
 
     public ICollection<AddressDto>? Addresses { get; set; }
     public ICollection<OperatorContactDataDto>? ContactData { get; set; }

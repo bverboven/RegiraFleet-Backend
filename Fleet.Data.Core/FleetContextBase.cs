@@ -75,8 +75,13 @@ public abstract class FleetContextBase(DbContextOptions options) : DbContext(opt
         {
             entity.HasIndex(e => e.InvoiceNumber);
         });
-        modelBuilder.Entity<InterventionAction>(_ =>
+        modelBuilder.Entity<InterventionAction>(entity =>
         {
+            // Attachments
+            entity.HasMany(e => e.Attachments)
+                .WithOne()
+                .HasForeignKey(e => e.ObjectId)
+                .HasPrincipalKey(e => e.Id);
         });
         modelBuilder.Entity<OperatorAddress>(_ =>
         {

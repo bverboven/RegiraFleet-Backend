@@ -1,4 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using Regira.Entities.Keywords;
 using Regira.Entities.Models.Abstractions;
 
@@ -13,7 +13,7 @@ public static class QueryExtensions
         {
             foreach (var kw in keywords ?? [])
             {
-                query = query.Where(x => EF.Functions.Like(x.Code!, $"{kw.Trimmed}%") 
+                query = query.Where(x => EF.Functions.Like(x.Code!, kw.TrimmedStartsWith!) 
                                          || EF.Functions.Like(x.NormalizedTitle!, $"{kw.Q}"));
             }
 
@@ -24,7 +24,7 @@ public static class QueryExtensions
         {
             foreach (var kw in keywords ?? [])
             {
-                query = query.Where(x => EF.Functions.Like(x.Code!, kw.QW!) 
+                query = query.Where(x => EF.Functions.Like(x.Code!, kw.TrimmedQW!) 
                                          || EF.Functions.Like(x.NormalizedTitle!, kw.Q!));
             }
 

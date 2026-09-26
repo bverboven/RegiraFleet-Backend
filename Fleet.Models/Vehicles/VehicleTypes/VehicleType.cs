@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+using Regira.Entities.Attributes;
+using System.ComponentModel.DataAnnotations;
 using Regira.Entities.Models.Abstractions;
 using Regira.Fleet.Models.Abstractions;
 using Regira.Fleet.Models.Translations;
@@ -9,6 +10,8 @@ namespace Regira.Fleet.Models.Vehicles.VehicleTypes;
 public class VehicleType : IFleetEntity, IEntityWithSerial, IHasCode, IHasNormalizedTitle, IHasDescription, IHasTranslations<VehicleTypeTranslation>, IHasTranslations, IArchivable
 {
     public int Id { get; set; }
+    // Not on the input DTO: keep the stored value on update instead of a freshly minted one
+    [ServerOwned]
     [StringLength(32)]
     public string Guid { get; set; } = System.Guid.NewGuid().ToString("N");
     [StringLength(32)]

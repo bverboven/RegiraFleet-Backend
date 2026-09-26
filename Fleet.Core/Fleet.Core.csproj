@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
         <TargetFramework>net10.0</TargetFramework>
@@ -9,7 +9,7 @@
     </PropertyGroup>
 
     <ItemGroup>
-	    <PackageReference Include="Regira.Entities.DependencyInjection" Version="6.1.0" />
+	    <PackageReference Include="Regira.Entities.DependencyInjection" Version="6.4.0" />
     </ItemGroup>
 
 </Project>
