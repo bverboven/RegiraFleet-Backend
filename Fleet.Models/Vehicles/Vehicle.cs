@@ -1,4 +1,5 @@
-﻿using Regira.Entities.Attachments.Abstractions;
+using Regira.Entities.Attributes;
+using Regira.Entities.Attachments.Abstractions;
 using Regira.Entities.Models.Abstractions;
 using Regira.Fleet.Models.Abstractions;
 using Regira.Fleet.Models.EntityLabels;
@@ -10,10 +11,12 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Regira.Fleet.Models.Vehicles;
 
-public class Vehicle : IFleetEntity, IEntityWithSerial, IHasCode, IArchivable, IHasDescription, IHasNormalizedTitle, IHasNormalizedContent,
+public class Vehicle : IFleetEntity, IHasConcurrencyToken, IEntityWithSerial, IHasCode, IArchivable, IHasDescription, IHasNormalizedTitle, IHasNormalizedContent,
     IHasLabels<VehicleLabel>, IHasLabels, IHasAttachments, IHasAttachments<VehicleAttachment>
 {
     public int Id { get; set; }
+    // Not on the input DTO: keep the stored value on update instead of a freshly minted one
+    [ServerOwned]
     [StringLength(32)]
     public string Guid { get; set; } = System.Guid.NewGuid().ToString("N");
     [StringLength(32)]
@@ -37,6 +40,7 @@ public class Vehicle : IFleetEntity, IEntityWithSerial, IHasCode, IArchivable, I
     public DateTime Created { get; set; } = DateTime.Now;
     public DateTime? LastModified { get; set; }
     public bool IsArchived { get; set; }
+    public Guid ConcurrencyToken { get; set; }
 
     public virtual Brand? Brand { get; set; }
     public virtual VehicleType? VehicleType { get; set; }

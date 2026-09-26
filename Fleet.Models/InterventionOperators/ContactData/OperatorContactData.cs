@@ -1,9 +1,9 @@
-﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations;
 using Regira.Entities.Models.Abstractions;
 
 namespace Regira.Fleet.Models.InterventionOperators.ContactData;
 
-public class OperatorContactData : IEntityWithSerial, ISortable
+public class OperatorContactData : IEntityWithSerial, ISortable, IHasTimestamps
 {
     public int Id { get; set; }
     [MaxLength(64)]

@@ -1,4 +1,4 @@
-﻿using Regira.Entities.Mapping.Models;
+using Regira.Entities.Mapping.Models;
 using Regira.Fleet.Models.Addresses;
 using Regira.Fleet.Models.EntityLabels;
 using Regira.Fleet.Models.InterventionOperators.ContactData;
@@ -19,6 +19,8 @@ public class OperatorInputDto
     public string? IdentificationNumber { get; set; }
     public string? Description { get; set; }
     public bool IsArchived { get; set; }
+    // Send back the token that was read: a stale one answers 409 Conflict
+    public Guid ConcurrencyToken { get; set; }
     public ICollection<AddressInputDto>? Addresses { get; set; }
     public ICollection<OperatorContactDataInputDto>? ContactData { get; set; }
     public ICollection<OperatorInterventionTypeInputDto>? InterventionTypes { get; set; }

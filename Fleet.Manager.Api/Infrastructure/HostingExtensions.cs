@@ -1,6 +1,7 @@
-﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Regira.Entities.Web.Attachments.DependencyInjection;
+using Regira.Entities.Web.DependencyInjection;
 using Regira.Fleet.DependencyInjection;
 using Regira.Fleet.Identity.DependencyInjection;
 using Regira.Fleet.Identity.Web.DependencyInjection;
@@ -16,7 +17,6 @@ using Regira.Security.Authentication.Web.OpenApi.Transformers;
 using Regira.Security.Encryption;
 using Scalar.AspNetCore;
 using Serilog;
-using System.Text.Json.Serialization;
 
 namespace Regira.Fleet.Manager.Api.Infrastructure;
 
@@ -38,14 +38,12 @@ public static class HostingExtensions
                 // Global filters for authorization
                 o.Filters.Add<CanReadAuthorizationFilter>();
                 o.Filters.Add<CanWriteAuthorizationFilter>();
-            })
-            .AddJsonOptions(o =>
-            {
-                o.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
-                o.JsonSerializerOptions.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull;
-                o.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
-                o.JsonSerializerOptions.AllowOutOfOrderMetadataProperties = true;
             });
+        // Cycles, nulls, enum names and UTC request dates on both the MVC and Http.Json (OpenAPI) options,
+        // plus the entity exception filter (EntityInputException → 400, constraint/concurrency → 409) for every action
+        services.ConfigureDefaultJsonOptions(
+            o => o.JsonSerializerOptions.AllowOutOfOrderMetadataProperties = true,
+            o => o.SerializerOptions.AllowOutOfOrderMetadataProperties = true);
 
         // global error handling
         //services.AddGlobalExceptionHandling();

@@ -1,4 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations;
 using Regira.Entities.Mapping.Models;
 using Regira.Fleet.Models.EntityLabels;
 using Regira.Fleet.Models.Interventions.Invoices;
@@ -16,6 +16,8 @@ public class InterventionInputDto
     public DateTime? InterventionDate { get; set; }
     public int? Mileage { get; set; }
     public string? Description { get; set; }
+    // Send back the token that was read: a stale one answers 409 Conflict
+    public Guid ConcurrencyToken { get; set; }
 
 
     public InvoiceInputDto? Invoice { get; set; }

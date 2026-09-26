@@ -1,10 +1,10 @@
-﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations;
 using Regira.Entities.Models.Abstractions;
 using Regira.Fleet.Core.Abstractions;
 
 namespace Regira.Fleet.Identity.Models.Tenants.Subscriptions;
 
-public class TenantSubscription : IEntityWithSerial, IHasTenantId, IHasDescription, IHasStartEndDate
+public class TenantSubscription : IEntityWithSerial, IHasTenantId, IHasDescription, IHasStartEndDate, IHasTimestamps
 {
     public int Id { get; set; }
     [StringLength(32)]

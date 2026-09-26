@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+using Regira.Entities.Attributes;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using Regira.Entities.Attachments.Abstractions;
 using Regira.Entities.Models.Abstractions;
@@ -10,10 +11,12 @@ using Regira.Fleet.Models.InterventionOperators.ContactData;
 namespace Regira.Fleet.Models.InterventionOperators.Operators;
 
 // InterventionOperator ??
-public class Operator : IFleetEntity, IEntityWithSerial, IHasCode, IHasNormalizedTitle, IHasDescription, IHasNormalizedContent, IArchivable, 
+public class Operator : IFleetEntity, IHasConcurrencyToken, IEntityWithSerial, IHasCode, IHasNormalizedTitle, IHasDescription, IHasNormalizedContent, IArchivable, 
     IHasLabels<OperatorLabel>, IHasLabels, IHasAttachments<OperatorAttachment>, IHasAttachments
 {
     public int Id { get; set; }
+    // Not on the input DTO: keep the stored value on update instead of a freshly minted one
+    [ServerOwned]
     [StringLength(32)]
     public string Guid { get; set; } = System.Guid.NewGuid().ToString("N");
     [StringLength(32)]
@@ -32,6 +35,7 @@ public class Operator : IFleetEntity, IEntityWithSerial, IHasCode, IHasNormalize
     public DateTime Created { get; set; } = DateTime.Now;
     public DateTime? LastModified { get; set; }
     public bool IsArchived { get; set; }
+    public Guid ConcurrencyToken { get; set; }
 
     public ICollection<OperatorAddress>? Addresses { get; set; }
     public ICollection<OperatorContactData>? ContactData { get; set; }

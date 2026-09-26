@@ -1,4 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using Regira.Entities.Keywords.Abstractions;
 using Regira.Entities.QueryBuilders.Abstractions;
 using Regira.Fleet.Data.PostgreSQL.Extensions;
@@ -16,14 +16,14 @@ public class VehiclePostgresLikeQueryFilter(IQKeywordHelper qHelper) : FilteredQ
             if (!string.IsNullOrWhiteSpace(so.Brand))
             {
                 var kw = qHelper.ParseKeyword(so.Brand);
-                query = query.Where(x => EF.Functions.ILike(x.Brand!.Code!, kw.Q!) ||
+                query = query.Where(x => EF.Functions.ILike(x.Brand!.Code!, kw.TrimmedQ!) ||
                                          EF.Functions.ILike(x.Brand.NormalizedTitle!, kw.Q!));
             }
             // VehicleType
             if (!string.IsNullOrWhiteSpace(so.VehicleType))
             {
                 var kw = qHelper.ParseKeyword(so.VehicleType);
-                query = query.Where(x => EF.Functions.ILike(x.VehicleType!.Code!, kw.Q!) ||
+                query = query.Where(x => EF.Functions.ILike(x.VehicleType!.Code!, kw.TrimmedQ!) ||
                                          EF.Functions.ILike(x.VehicleType.NormalizedTitle!, kw.Q!));
             }
             // Title

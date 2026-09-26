@@ -3,7 +3,6 @@ using Regira.Entities.DependencyInjection.Extensions;
 using Regira.Entities.DependencyInjection.Normalizers;
 using Regira.Entities.DependencyInjection.Primers;
 using Regira.Entities.DependencyInjection.QueryBuilders;
-using Regira.Entities.EFcore.Primers;
 using Regira.Entities.Mapping.Mapster;
 using Regira.Fleet.Core.Constants;
 using Regira.Fleet.Core.DependencyInjection;
@@ -39,7 +38,7 @@ public class FleetServiceBuilder(IServiceCollection services, FleetHostingOption
                 // make sure only allowed tenantId items are loaded
                 c.AddGlobalFilterQueryBuilder<FilterHasTenantQueryBuilder>();
                 c.AddPrimer<HasTenantPrimer>();
-                c.AddPrimer<ArchivablePrimer>();
+                // ArchivablePrimer is registered by UseDefaults()
 
                 // Postgres ILike?
                 _ = options.DatabaseType == DataBaseTypes.PostgreSQL
