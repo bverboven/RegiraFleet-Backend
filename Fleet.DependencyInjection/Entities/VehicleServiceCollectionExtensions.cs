@@ -1,5 +1,6 @@
 ﻿using Regira.Entities.DependencyInjection.Attachments;
 using Regira.Entities.DependencyInjection.ServiceCollections.Abstractions;
+using Regira.Entities.DependencyInjection.Validators;
 using Regira.Entities.Models;
 using Regira.Fleet.Core.Constants;
 using Regira.Fleet.Core.Normalizing;
@@ -13,6 +14,7 @@ using Regira.Fleet.Entities.Vehicles.VehicleTypes;
 using Regira.Fleet.Models.Vehicles;
 using Regira.Fleet.Models.Vehicles.Brands;
 using Regira.Fleet.Models.Vehicles.VehicleTypes;
+using Regira.Fleet.Tenants;
 
 namespace Regira.Fleet.DependencyInjection.Entities;
 
@@ -53,7 +55,9 @@ public static class VehicleServiceCollectionExtensions
 
                 e.Related(item => item.Labels, item => item.Labels?.Prepare());
                 e.Related(item => item.InterventionTypes, item => item.InterventionTypes?.Prepare());
-                e.HasAttachments(item => item.Attachments);
+                e.HasAttachments(item => item.Attachments, a => a.AddValidator<AttachmentOwnerValidator<VehicleAttachment, Vehicle>>());
+
+                e.AddValidator<VehicleReferenceValidator>();
 
                 //e.UseMapping<VehicleDto, VehicleInputDto>();
                 //e.AddMapping<VehicleInterventionType, VehicleInterventionTypeDto>();

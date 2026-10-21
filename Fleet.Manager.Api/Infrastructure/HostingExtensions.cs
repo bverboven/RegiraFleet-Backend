@@ -2,11 +2,14 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Regira.Entities.Web.Attachments.DependencyInjection;
 using Regira.Entities.Web.DependencyInjection;
+using Regira.Fleet.Core.Constants;
 using Regira.Fleet.DependencyInjection;
 using Regira.Fleet.Identity.DependencyInjection;
+using Regira.Fleet.Identity.Web.Controllers;
 using Regira.Fleet.Identity.Web.DependencyInjection;
 using Regira.Fleet.Identity.Web.Filters;
 using Regira.Fleet.Identity.Web.Middleware;
+using Regira.Fleet.Manager.Api.Controllers;
 using Regira.Fleet.Statistics;
 using Regira.IO.Storage.FileSystem;
 using Regira.Licensing.DependencyInjection;
@@ -40,6 +43,22 @@ public static class HostingExtensions
                 o.Filters.Add<CanReadAuthorizationFilter>();
                 o.Filters.Add<CanWriteAuthorizationFilter>();
             });
+        // Every controller that takes writes, and who may write through it. A controller missing here refuses every write
+        // (CountryController on purpose: countries are read-only reference data)
+        services.Configure<CanWriteAuthorizationOptions>(o => o
+            .Allow<BrandController>(TenantPermissions.CanWrite)
+            .Allow<VehicleTypeController>(TenantPermissions.CanWrite)
+            .Allow<InterventionTypeController>(TenantPermissions.CanWrite)
+            .Allow<VehicleController>(TenantPermissions.CanWrite)
+            .Allow<VehicleAttachmentController>(TenantPermissions.CanWrite)
+            .Allow<InterventionOperatorController>(TenantPermissions.CanWrite)
+            .Allow<InterventionOperatorAttachmentController>(TenantPermissions.CanWrite)
+            .Allow<InterventionController>(TenantPermissions.CanWrite)
+            .Allow<InterventionAttachmentController>(TenantPermissions.CanWrite)
+            // every signed-in user: their own session, password and personal data; the user admin actions carry the admin policy
+            .Allow<AccountController>()
+            .Allow<PasswordController>()
+            .Allow<UserController>());
         // Cycles, nulls, enum names and UTC request dates on both the MVC and Http.Json (OpenAPI) options,
         // plus the entity exception filter (EntityInputException → 400, constraint/concurrency → 409) for every action
         services.ConfigureDefaultJsonOptions(

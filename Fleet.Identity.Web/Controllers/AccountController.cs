@@ -1,113 +1,21 @@
-﻿using Duende.IdentityModel;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Regira.Fleet.Core.Constants;
 using Regira.Fleet.Identity.Models.Users;
 using Regira.Fleet.Identity.Services;
-using Regira.Fleet.Identity.Web.Models;
 using Regira.Security.Authentication.Jwt.Abstraction;
 using Regira.Security.Authentication.Jwt.Extensions;
-using Regira.Web.Utilities;
-using System.Security.Claims;
-using RouteNames = Regira.Security.Authentication.Web.Constants.RouteNames;
+using Regira.Security.Authentication.Web.Controllers;
 
 namespace Regira.Fleet.Identity.Web.Controllers;
 
-[ApiController]
-[Route("auth")]
-public class AccountController(ITokenHelper tokenHelper, FleetUserIdentityManager userManager, IUserClaimsPrincipalFactory<FleetUser> claimsFactory, ILogger<AccountController> logger) : ControllerBase
+// sign-in, validate, refresh and personal-data come from the base, with its lockout, sign-in options and token claims
+public class AccountController(ITokenHelper tokenHelper, FleetUserIdentityManager userManager, IUserClaimsPrincipalFactory<FleetUser> claimsFactory, ILogger<AccountController> logger)
+    : AccountControllerBase<FleetUser>(tokenHelper, userManager, claimsFactory, logger)
 {
-    [AllowAnonymous]
-    [HttpPost]
-    [Route("", Name = RouteNames.Authenticate)]
-    public async Task<IActionResult> Authenticate([FromBody] AuthenticateInputDto model, [FromQuery] string clientApp)
-    {
-        bool? isLockedOut = null;
-        DateTimeOffset? lockedOutEnd = null;
-
-        var user = await userManager.FindByNameAsync(model.Username);
-        if (user != null)
-        {
-            isLockedOut = await userManager.IsLockedOutAsync(user);
-            if (isLockedOut == false)
-            {
-                bool isAuthenticated = await userManager.CheckPasswordAsync(user, model.Password);
-                if (isAuthenticated)
-                {
-                    var principal = await claimsFactory.CreateAsync(user);
-                    return Ok(CreateSuccessResponse(principal.Claims, clientApp));
-                }
-                // authentication failed
-                await userManager.AccessFailedAsync(user);
-            }
-            else
-            {
-                lockedOutEnd = await userManager.GetLockoutEndDateAsync(user);
-                logger.LogWarning($"User {user.Id} {Request.GetIPAddress()} locked out until {lockedOutEnd:HH:mm:ss}");
-            }
-        }
-
-        return StatusCode(StatusCodes.Status401Unauthorized, CreateFailedResponse(isLockedOut, lockedOutEnd));
-    }
-
-    [HttpPost("validate")]
-    public async Task<IActionResult> Validate()
-    {
-        if (User.Identity?.IsAuthenticated ?? false)
-        {
-            // check if user is valid
-            var exists = await userManager.FindByIdAsync(User.FindUserId()!) != null;
-            return exists ? NoContent() : Forbid();
-        }
-
-        return Unauthorized();
-    }
-    [HttpPost("refresh")]
-    public async Task<IActionResult> Refresh()
-    {
-        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-        if (string.IsNullOrWhiteSpace(userId))
-        {
-            return Unauthorized(new
-            {
-                isAuthenticated = false
-            });
-        }
-        var user = await userManager.FindByIdAsync(userId);
-        if (user == null)
-        {
-            return Unauthorized(new
-            {
-                isAuthenticated = false
-            });
-        }
-        var principal = await claimsFactory.CreateAsync(user);
-        return Ok(CreateSuccessResponse(principal.Claims, User.FindFirstValue("aud")!));
-    }
-
-
-    [HttpGet("personal-data")]
-    public async Task<IActionResult> GetPersonalData()
-    {
-        var user = await userManager.FindByIdAsync(User.FindUserId()!);
-        if (user == null)
-        {
-            return Unauthorized();
-        }
-        var principal = await claimsFactory.CreateAsync(user);
-        var personalDataClaimTypes = new[]
-        {
-            JwtClaimTypes.GivenName, JwtClaimTypes.FamilyName
-        };
-        var personalData = principal.Claims.Where(c => personalDataClaimTypes.Contains(c.Type))
-            .ToDictionary(x => x.Type, x => x.Value);
-        return Ok(personalData);
-    }
     [HttpGet("permissions")]
-    public async Task<IActionResult> GetPermissions()
+    public async Task<IActionResult> GetPermissions([FromServices] FleetUserIdentityManager userManager, [FromServices] IUserClaimsPrincipalFactory<FleetUser> claimsFactory)
     {
         var user = await userManager.FindByIdAsync(User.FindUserId()!);
         if (user == null)
@@ -117,25 +25,5 @@ public class AccountController(ITokenHelper tokenHelper, FleetUserIdentityManage
         var principal = await claimsFactory.CreateAsync(user);
         var permissions = principal.Claims.Where(c => c.Type == TenantClaimTypes.Permission).Select(c => c.Value);
         return Ok(permissions);
-    }
-
-
-    protected AuthenticateResponseDto CreateFailedResponse(bool? isLockedOut = null, DateTimeOffset? lockedOutEnd = null)
-    {
-        return new AuthenticateResponseDto
-        {
-            IsLockedOut = isLockedOut,
-            // datetime without timezone
-            LockedOutEnd = lockedOutEnd.HasValue ? new DateTime(lockedOutEnd.Value.Ticks) : null
-        };
-    }
-    protected AuthenticateResponseDto CreateSuccessResponse(IEnumerable<Claim> claims, string? audience = null)
-    {
-        var token = tokenHelper.Create(claims, audience);
-        return new AuthenticateResponseDto
-        {
-            IsAuthenticated = true,
-            Token = token
-        };
     }
 }

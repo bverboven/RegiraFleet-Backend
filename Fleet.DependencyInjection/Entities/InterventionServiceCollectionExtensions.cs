@@ -2,6 +2,7 @@
 using Regira.Entities.DependencyInjection.Attachments;
 using Regira.Entities.DependencyInjection.ServiceBuilders.Abstractions;
 using Regira.Entities.DependencyInjection.ServiceCollections.Abstractions;
+using Regira.Entities.DependencyInjection.Validators;
 using Regira.Entities.Models;
 using Regira.Fleet.Core.Constants;
 using Regira.Fleet.Core.Normalizing;
@@ -13,6 +14,7 @@ using Regira.Fleet.Entities.Interventions.Normalizers;
 using Regira.Fleet.Entities.InterventionTypes;
 using Regira.Fleet.Models.Interventions;
 using Regira.Fleet.Models.InterventionTypes;
+using Regira.Fleet.Tenants;
 
 namespace Regira.Fleet.DependencyInjection.Entities;
 
@@ -49,10 +51,11 @@ public static class InterventionServiceCollectionExtensions
                 );
 
                 e.AddPrepper<InterventionPrepper>();
-                
+                e.AddValidator<InterventionReferenceValidator>();
+
                 e.Related(item => item.Labels, item => item.Labels?.Prepare());
-                e.HasAttachments(item => item.Attachments);
-                
+                e.HasAttachments(item => item.Attachments, a => a.AddValidator<AttachmentOwnerValidator<InterventionAttachment, Intervention>>());
+
                 //e.UseMapping<InterventionDto, InterventionInputDto>();
             });
         return services;
