@@ -1,15 +1,17 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
-    <PropertyGroup>
-        <TargetFramework>net10.0</TargetFramework>
-        <ImplicitUsings>enable</ImplicitUsings>
-        <Nullable>enable</Nullable>
-        <RootNamespace>Regira.Fleet.Core</RootNamespace>
-        <AssemblyName>Regira.Fleet.Core</AssemblyName>
-    </PropertyGroup>
+  <PropertyGroup>
+	<TargetFramework>net10.0</TargetFramework>
+	<ImplicitUsings>enable</ImplicitUsings>
+	<Nullable>enable</Nullable>
+	<RootNamespace>Regira.Fleet.Core</RootNamespace>
+	<AssemblyName>Regira.Fleet.Core</AssemblyName>
+  </PropertyGroup>
 
-    <ItemGroup>
-	    <PackageReference Include="Regira.Entities.DependencyInjection" Version="6.4.0" />
-    </ItemGroup>
+  <ItemGroup>
+	<PackageReference Include="Regira.Entities.DependencyInjection" Version="6.6.0" />
+	<!-- Fix Vulnerability -->
+	<PackageReference Include="System.Security.Cryptography.Pkcs" Version="10.0.13" />
+  </ItemGroup>
 
 </Project>

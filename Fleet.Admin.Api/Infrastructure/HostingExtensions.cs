@@ -8,6 +8,7 @@ using Regira.Fleet.Identity.Web.DependencyInjection;
 using Regira.IO.Storage.FileSystem;
 using Regira.Office.Mail.MailGun;
 using Regira.Security.Abstractions;
+using Regira.Security.Authentication.Web.Models;
 using Regira.Security.Authentication.Web.OpenApi.Transformers;
 using Regira.Security.Encryption;
 using Scalar.AspNetCore;
@@ -52,7 +53,7 @@ public static class HostingExtensions
             // OpenAPI (with JWT bearer security scheme)
             .AddOpenApi(options =>
             {
-                options.AddDocumentTransformer<BearerSecuritySchemeTransformer>();
+                options.AddDocumentTransformer<AuthenticationSchemeDocumentTransformer>();
             })
             // necessary services
             .AddHttpContextAccessor()
@@ -96,6 +97,8 @@ public static class HostingExtensions
                     return new MailGunMailer(mailConfig);
                 });
             });
+        // password-reset mails: the origins their links may open, and the site name in the subject
+        services.Configure<AccountEmailOptions>(config.GetSection("Authentication:AccountEmails"));
 
         // Requirements
         services.AddSingleton<IAuthorizationHandler, SuperUserRequirementHandler>();
