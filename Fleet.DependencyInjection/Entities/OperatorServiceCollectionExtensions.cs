@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Regira.Entities.DependencyInjection.Attachments;
 using Regira.Entities.DependencyInjection.ServiceCollections.Abstractions;
+using Regira.Entities.DependencyInjection.Validators;
 using Regira.Entities.Models;
 using Regira.Fleet.Core.Abstractions;
 using Regira.Fleet.Core.Constants;
@@ -10,6 +11,7 @@ using Regira.Fleet.DependencyInjection.Postgres;
 using Regira.Fleet.Entities.InterventionOperators.Normalizers;
 using Regira.Fleet.Entities.InterventionOperators.Operators;
 using Regira.Fleet.Models.InterventionOperators.Operators;
+using Regira.Fleet.Tenants;
 using Regira.Globalization.LibPhoneNumber;
 
 namespace Regira.Fleet.DependencyInjection.Entities;
@@ -39,7 +41,9 @@ public static class OperatorServiceCollectionExtensions
                 e.Related(item => item.ContactData, item => item.ContactData?.Prepare());
                 e.Related(item => item.Labels, item => item.Labels?.Prepare());
                 e.Related(item => item.InterventionTypes, item => item.InterventionTypes?.Prepare());
-                e.HasAttachments(item => item.Attachments);
+                e.HasAttachments(item => item.Attachments, a => a.AddValidator<AttachmentOwnerValidator<OperatorAttachment, Operator>>());
+
+                e.AddValidator<OperatorReferenceValidator>();
 
                 //e.UseMapping<OperatorDto, OperatorInputDto>();
                 //e.AddMapping<OperatorAddress, AddressDto>();

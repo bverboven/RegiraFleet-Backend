@@ -26,10 +26,11 @@ public class IdentityTenantUserClaimsService(AccountsContextBase dbContext, IHtt
         if (!tenantClaims.Any())
         {
             // return claims for first tenant if requestedTenant is not present
+            // (that tenant's only: the token names one tenant, so it must not carry another tenant's permissions)
             tenantClaims = allClaims
                 .GroupBy(x => x.TenantId)
-                .SelectMany(x => x.ToList())
-                .ToList();
+                .FirstOrDefault()?
+                .ToList() ?? [];
         }
         if (tenantClaims.Any())
         {

@@ -10,6 +10,7 @@ using Regira.Fleet.Identity.Models.Users;
 using Regira.Fleet.Identity.Web.Extensions;
 using Regira.Fleet.Identity.Web.Models;
 using Regira.Fleet.Manager.Api.Models;
+using Regira.Security.Authentication.Web.Controllers;
 using Regira.Utilities;
 using System.Security.Claims;
 using Regira.Fleet.Identity.Models.Users.Claims;
@@ -79,6 +80,14 @@ public class UserController(UserManager<FleetUser> userManager, IAccountsDbConte
         var user = await userManager.FindByEmailAsync(model.Email);
         if (user == null)
         {
+            // checked before the user is created: a refused page leaves no account behind
+            var page = HttpContext.GetAccountEmailOptions().FindAllowedPage(model.SiteUrl);
+            if (page == null)
+            {
+                ModelState.AddModelError(nameof(model.SiteUrl), string.IsNullOrWhiteSpace(model.SiteUrl) ? "Required for new user" : AccountLinks.NotAllowed);
+                return BadRequest(ModelState);
+            }
+
             user = new FleetUser { UserName = model.Email, Email = model.Email, Culture = model.Culture };
             var response = await userManager.CreateAsync(user);
             if (!response.Succeeded)
@@ -87,24 +96,7 @@ public class UserController(UserManager<FleetUser> userManager, IAccountsDbConte
                 ModelState.AddIdentityErrors(response.Errors);
                 return BadRequest(ModelState);
             }
-            var confirmToken = await userManager.GenerateEmailConfirmationTokenAsync(user);
-            var token = System.Text.Json.JsonSerializer.Serialize(new UserTokenModel { Token = confirmToken, Username = user.UserName! }).Base64Encode();
-            if (string.IsNullOrWhiteSpace(model.SiteUrl))
-            {
-                ModelState.AddModelError(nameof(model.SiteUrl), "Required for new user");
-                return BadRequest(ModelState);
-            }
-            var confirmationUri = new UriBuilder(model.SiteUrl)
-            {
-                Query = $"?token={token}"
-            };
-            var body = $@"Welcome {user.UserName}, 
-Please follow link below to confirm email:
-{confirmationUri.Uri}
-
-Token: {token}
-";
-            await mailer.SendEmailAsync(model.Email, "Welcome at Regira Fleetmanager", body);
+            await mailer.SendEmailAsync(model.Email, "Welcome at Regira Fleetmanager", await CreateConfirmEmailBody(user, page));
         }
 
         await SaveTenantClaims(user, model.Permissions);
@@ -156,28 +148,41 @@ Token: {token}
         return Ok();
     }
 
+    [Authorize(FleetPolicies.AdminPolicy)]
     [HttpPost("send-confirm-email")]
     public async Task<IActionResult> RequestConfirmEmail(RequestConfirmEmailInput input, [FromServices] IEmailSender mailer)
     {
-        var user = await userManager.FindByNameAsync(input.Email);
-        if (user != null)
+        // checked before the user lookup, so a refused page reveals no account
+        var page = HttpContext.GetAccountEmailOptions().FindAllowedPage(input.SiteUrl);
+        if (page == null)
         {
-            var confirmToken = await userManager.GenerateEmailConfirmationTokenAsync(user);
-            var token = System.Text.Json.JsonSerializer.Serialize(new UserTokenModel { Token = confirmToken, Username = user.UserName! }).Base64Encode();
+            ModelState.AddModelError(nameof(input.SiteUrl), AccountLinks.NotAllowed);
+            return BadRequest(ModelState);
+        }
 
-            var confirmationUri = new UriBuilder(input.SiteUrl)
-            {
-                Query = $"?token={token}"
-            };
-            var body = $@"Welcome {user.UserName}, 
+        var user = await userManager.FindByNameAsync(input.Email);
+        // only for a user of the admin's own tenant
+        if (user != null && await dbContext.TenantUserClaims.AnyAsync(x => x.TenantId == tenantContext.TenantId && x.UserId == user.Id))
+        {
+            await mailer.SendEmailAsync(input.Email, "Please confirm your email address", await CreateConfirmEmailBody(user, page));
+        }
+        return Ok();
+    }
+
+    /// <summary>
+    /// The confirmation token goes to the user's own mailbox, in a link to <paramref name="page"/>, which is on an allowed origin.
+    /// WithToken percent-encodes it, so a '+' in the Base64 survives the query string.
+    /// </summary>
+    async Task<string> CreateConfirmEmailBody(FleetUser user, Uri page)
+    {
+        var confirmToken = await userManager.GenerateEmailConfirmationTokenAsync(user);
+        var token = System.Text.Json.JsonSerializer.Serialize(new UserTokenModel { Token = confirmToken, Username = user.UserName! }).Base64Encode();
+        return $@"Welcome {user.UserName},
 Please follow link below to confirm email:
-{confirmationUri.Uri}
+{page.WithToken(token)}
 
 Token: {token}
 ";
-            await mailer.SendEmailAsync(input.Email, "Please confirm your email address", body);
-        }
-        return Ok();
     }
 
     protected async Task SaveTenantClaims(FleetUser user, ICollection<string>? inputPermissions)

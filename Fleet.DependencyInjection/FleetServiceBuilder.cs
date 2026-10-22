@@ -37,6 +37,10 @@ public class FleetServiceBuilder(IServiceCollection services, FleetHostingOption
 
                 // make sure only allowed tenantId items are loaded
                 c.AddGlobalFilterQueryBuilder<FilterHasTenantQueryBuilder>();
+                // attachment links have no tenant of their own: scope them through their owner
+                c.AddGlobalFilterQueryBuilder<VehicleAttachmentTenantFilter>();
+                c.AddGlobalFilterQueryBuilder<OperatorAttachmentTenantFilter>();
+                c.AddGlobalFilterQueryBuilder<InterventionAttachmentTenantFilter>();
                 c.AddPrimer<HasTenantPrimer>();
                 // ArchivablePrimer is registered by UseDefaults()
 

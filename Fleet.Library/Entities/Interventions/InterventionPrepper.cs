@@ -2,16 +2,25 @@
 using Regira.Entities.Preppers.Abstractions;
 using Regira.Fleet.Data;
 using Regira.Fleet.Models.Interventions;
+using Regira.Fleet.Models.Interventions.Invoices;
 
 namespace Regira.Fleet.Entities.Interventions;
 
 public class InterventionPrepper(FleetContextBase dbContext) : EntityPrepperBase<Intervention>
 {
-    public override Task Prepare(Intervention modified, Intervention? original, CancellationToken cancellationToken = default)
+    public override async Task Prepare(Intervention modified, Intervention? original, CancellationToken cancellationToken = default)
     {
         if (modified.Invoice != null)
         {
             modified.Invoice.InterventionId = modified.Id;
+            // an intervention has one invoice, its own: its id is the stored one, never the client's,
+            // or a save could take over another intervention's invoice, another tenant's included
+            modified.Invoice.Id = modified.Id == 0
+                ? 0
+                : await dbContext.Set<Invoice>()
+                    .Where(x => x.InterventionId == modified.Id)
+                    .Select(x => x.Id)
+                    .FirstOrDefaultAsync(cancellationToken);
         }
 
         if (original != null)
@@ -29,7 +38,5 @@ public class InterventionPrepper(FleetContextBase dbContext) : EntityPrepperBase
                 dbContext.Entry(original.Invoice).State = EntityState.Deleted;
             }
         }
-
-        return Task.CompletedTask;
     }
 }
